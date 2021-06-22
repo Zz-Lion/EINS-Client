@@ -6,22 +6,19 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubeProvider with ChangeNotifier {
   int? _length;
-  List<Container?> _youtubePlayerList = <Container?>[];
-  List<YoutubePlayerController?> _youtubeControllerList =
-      <YoutubePlayerController?>[];
   int? _selectedIndex;
+  List<Container> _youtubePlayerList = <Container>[];
+  List<YoutubePlayerController> _youtubeControllerList =
+      <YoutubePlayerController>[];
   List<String> _urlList = <String>[];
   List<String> _titleList = <String>[];
 
   int get length => _length ?? 0;
-  List<Container?> get youtubePlayerList => _youtubePlayerList;
   int? get selectedIndex => _selectedIndex;
+  List<Container> get youtubePlayerList => _youtubePlayerList;
   List<String> get titleList => _titleList;
 
   Future<void> getYoutubeInfo() async {
-    List<Container?> tempPlayerList = <Container?>[];
-    List<YoutubePlayerController?> tempControllerList =
-        <YoutubePlayerController?>[];
     List<String> tempUrlList = <String>[];
     List<String> tempTitleList = <String>[];
 
@@ -34,8 +31,6 @@ class YoutubeProvider with ChangeNotifier {
 
         tempUrlList.add(e["url"]);
         tempTitleList.add(e["title"]);
-        tempPlayerList.add(null);
-        tempControllerList.add(null);
       });
     } catch (e) {
       rethrow;
@@ -44,8 +39,6 @@ class YoutubeProvider with ChangeNotifier {
     _length = tempUrlList.length;
     _urlList = tempUrlList;
     _titleList = tempTitleList;
-    _youtubePlayerList = tempPlayerList;
-    _youtubeControllerList = tempControllerList;
 
     notifyListeners();
   }
@@ -69,16 +62,16 @@ class YoutubeProvider with ChangeNotifier {
       key: playerKey,
       child: WillPopScope(
         onWillPop: () async {
-          final controller = _youtubeControllerList[index]!;
+          final controller = _youtubeControllerList[index];
           if (controller.value.isFullScreen) {
-            _youtubeControllerList[index]!.toggleFullScreenMode();
+            _youtubeControllerList[index].toggleFullScreenMode();
             return false;
           }
           return true;
         },
         child: YoutubePlayer(
           aspectRatio: 16 / 9,
-          controller: _youtubeControllerList[index]!,
+          controller: _youtubeControllerList[index],
           showVideoProgressIndicator: true,
           bottomActions: [
             const SizedBox(width: 14.0),
@@ -88,7 +81,7 @@ class YoutubeProvider with ChangeNotifier {
             RemainingDuration(),
             IconButton(
               icon: Icon(
-                _youtubeControllerList[index]!.value.isFullScreen
+                _youtubeControllerList[index].value.isFullScreen
                     ? Icons.fullscreen_exit
                     : Icons.fullscreen,
                 color: Colors.white,
@@ -104,17 +97,17 @@ class YoutubeProvider with ChangeNotifier {
   }
 
   void selectPlayer(int index) {
-    if (!_youtubeControllerList[index]!.value.isPlaying) {
+    if (!_youtubeControllerList[index].value.isPlaying) {
       for (int i = 0; i < _length!; i++) {
-        if (_youtubeControllerList[i]!.value.isPlaying) {
-          _youtubeControllerList[i]!.pause();
+        if (_youtubeControllerList[i].value.isPlaying) {
+          _youtubeControllerList[i].pause();
         }
       }
     }
 
     _selectedIndex = _selectedIndex == index ? null : index;
 
-    _youtubeControllerList[index]!.toggleFullScreenMode();
+    _youtubeControllerList[index].toggleFullScreenMode();
 
     if (_selectedIndex == null) {
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
@@ -125,6 +118,6 @@ class YoutubeProvider with ChangeNotifier {
   }
 
   void disposeController(int index) {
-    _youtubeControllerList[index]!.dispose();
+    _youtubeControllerList[index].dispose();
   }
 }

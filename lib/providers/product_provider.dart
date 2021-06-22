@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 
 class ProductProvider with ChangeNotifier {
   int? _length;
-  Map<String, Product>? _products;
-  Map<String, Image>? _productImages;
+  Map<String, Product> _products = <String, Product>{};
+  Map<String, Image> _productImages = <String, Image>{};
 
   int get length => _length ?? 0;
-  Map<String, Product>? get products => _products;
-  Map<String, Image>? get productImages => _productImages;
+  Map<String, Product> get products => _products;
+  Map<String, Image> get productImages => _productImages;
 
   Future<void> getProductInfo() async {
     Map<String, Product> tempProducts = Map<String, Product>();

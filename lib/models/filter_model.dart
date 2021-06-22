@@ -25,8 +25,8 @@ class Filter {
       id: filterDoc.id,
       productName: filterData["product_name"] as String,
       defaultDuration: filterData["default_duration"] as int,
-      startDate: filterData["start_date"] as DateTime,
-      replaceDate: filterData["replace_date"] as DateTime,
+      startDate: (filterData["start_date"] as Timestamp).toDate(),
+      replaceDate: (filterData["replace_date"] as Timestamp).toDate(),
       desc: filterData["desc"] as String,
     );
   }

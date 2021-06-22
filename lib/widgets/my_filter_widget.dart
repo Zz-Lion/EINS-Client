@@ -97,7 +97,7 @@ class _MyFilterState extends State<MyFilter>
     final int usageDay = DateTime.now().difference(startDate).inDays;
     final Image? filterImage =
         Provider.of<ProductProvider>(context, listen: false)
-            .productImages![e.productName];
+            .productImages[e.productName];
 
     return Container(
       width: mediaSize.width - 20,

@@ -1,6 +1,5 @@
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:eins_client/widgets/eins_youtube_player_widget.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -124,7 +123,7 @@ class _InfoPageState extends State<InfoPage>
                 return Container(
                   width: mediaSize.width,
                   height: mediaSize.height,
-                  child: youtubeProv.youtubePlayerList[index]!,
+                  child: youtubeProv.youtubePlayerList[index],
                 );
               },
             );

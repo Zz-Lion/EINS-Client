@@ -7,18 +7,21 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 class YoutubeProvider with ChangeNotifier {
   int? _length;
   int? _selectedIndex;
+  List<String> _urlList = <String>[];
+  List<String> _titleList = <String>[];
   List<Container> _youtubePlayerList = <Container>[];
   List<YoutubePlayerController> _youtubeControllerList =
       <YoutubePlayerController>[];
-  List<String> _urlList = <String>[];
-  List<String> _titleList = <String>[];
 
   int get length => _length ?? 0;
   int? get selectedIndex => _selectedIndex;
-  List<Container> get youtubePlayerList => _youtubePlayerList;
   List<String> get titleList => _titleList;
+  List<Container?> get youtubePlayerList => _youtubePlayerList;
 
   Future<void> getYoutubeInfo() async {
+    List<Container> tempPlayerList = <Container>[];
+    List<YoutubePlayerController> tempControllerList =
+        <YoutubePlayerController>[];
     List<String> tempUrlList = <String>[];
     List<String> tempTitleList = <String>[];
 
@@ -31,6 +34,8 @@ class YoutubeProvider with ChangeNotifier {
 
         tempUrlList.add(e["url"]);
         tempTitleList.add(e["title"]);
+        tempPlayerList.add(Container());
+        tempControllerList.add(YoutubePlayerController(initialVideoId: ""));
       });
     } catch (e) {
       rethrow;
@@ -39,6 +44,8 @@ class YoutubeProvider with ChangeNotifier {
     _length = tempUrlList.length;
     _urlList = tempUrlList;
     _titleList = tempTitleList;
+    _youtubePlayerList = tempPlayerList;
+    _youtubeControllerList = tempControllerList;
 
     notifyListeners();
   }

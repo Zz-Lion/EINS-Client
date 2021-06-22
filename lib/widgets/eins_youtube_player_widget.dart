@@ -31,7 +31,7 @@ class EinsYoutubePlayer extends StatelessWidget {
               )),
           Padding(
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-              child: youtubeProv.youtubePlayerList[index]!),
+              child: youtubeProv.youtubePlayerList[index]),
         ],
       ),
     );

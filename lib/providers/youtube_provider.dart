@@ -54,7 +54,14 @@ class YoutubeProvider with ChangeNotifier {
     final GlobalKey playerKey = GlobalKey();
     final String? id = YoutubePlayer.convertUrlToId(_urlList[index]);
 
-    if (id == null) throw Exception("receive wrong url");
+    if (id == null) {
+      _youtubeControllerList[index] =
+          YoutubePlayerController(initialVideoId: "");
+      _youtubePlayerList[index] =
+          Container(child: AspectRatio(aspectRatio: 16 / 9));
+
+      throw Exception("receive wrong url");
+    }
 
     _youtubeControllerList[index] = YoutubePlayerController(
       initialVideoId: id,
@@ -70,8 +77,10 @@ class YoutubeProvider with ChangeNotifier {
       child: WillPopScope(
         onWillPop: () async {
           final controller = _youtubeControllerList[index];
+
           if (controller.value.isFullScreen) {
-            _youtubeControllerList[index].toggleFullScreenMode();
+            selectPlayer(index);
+
             return false;
           }
           return true;
@@ -121,6 +130,7 @@ class YoutubeProvider with ChangeNotifier {
     } else {
       SystemChrome.setEnabledSystemUIOverlays([]);
     }
+
     notifyListeners();
   }
 

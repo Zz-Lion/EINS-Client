@@ -22,7 +22,9 @@ class _InfoPageState extends State<InfoPage>
 
     _youtubeProv = Provider.of<YoutubeProvider>(context, listen: false);
     for (int i = 0; i < _youtubeProv.length; i++) {
-      _youtubeProv.initController(i);
+      try {
+        _youtubeProv.initController(i);
+      } catch (e) {}
     }
   }
 

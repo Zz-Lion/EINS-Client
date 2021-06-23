@@ -1,4 +1,4 @@
-import 'package:async/async.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +22,6 @@ class _MyFilterState extends State<MyFilter>
   late bool _initialized;
   late List<TextEditingController> _descTextController;
   late List<FocusNode> _focus;
-
-  final AsyncMemoizer<bool> _memoizer = AsyncMemoizer<bool>();
-
-  _fetchData(Future<bool> future) {
-    return _memoizer.runOnce(() {
-      return future;
-    });
-  }
 
   @override
   void initState() {
@@ -95,9 +87,8 @@ class _MyFilterState extends State<MyFilter>
     final DateTime replaceDate = e.replaceDate;
     final int allDay = replaceDate.difference(startDate).inDays;
     final int usageDay = DateTime.now().difference(startDate).inDays;
-    final Image? filterImage =
-        Provider.of<ProductProvider>(context, listen: false)
-            .productImages[e.productName];
+    final CachedNetworkImage? filterImage =
+        context.read<ProductProvider>().productImages[e.productName];
 
     return Container(
       width: mediaSize.width - 20,
@@ -359,7 +350,7 @@ class _MyFilterState extends State<MyFilter>
     final Size mediaSize = MediaQuery.of(context).size;
 
     return FutureBuilder<bool>(
-      future: _fetchData(storage.ready),
+      future: storage.ready,
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (!_initialized) {

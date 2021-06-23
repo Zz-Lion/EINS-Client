@@ -9,8 +9,7 @@ class EinsYoutubePlayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final YoutubeProvider youtubeProv =
-        Provider.of<YoutubeProvider>(context, listen: false);
+    final YoutubeProvider youtubeProv = context.read<YoutubeProvider>();
 
     return Container(
       color: Colors.indigo[50],
@@ -24,9 +23,9 @@ class EinsYoutubePlayer extends StatelessWidget {
                 child: Text(
                   "${youtubeProv.titleList[index]}",
                   style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.indigo[900]),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               )),
           Padding(

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class EinsBanner extends StatefulWidget {
-  final List<Image> einsBanners;
+  final List<FadeInImage> einsBanners;
 
   const EinsBanner({Key? key, required this.einsBanners}) : super(key: key);
 
@@ -76,12 +76,12 @@ class _EinsBannerState extends State<EinsBanner> {
                       widget.einsBanners.length,
                       (index) => Expanded(
                             child: Container(
-                              height: 5,
+                              height: 2,
                               decoration: BoxDecoration(
                                 color: index ==
                                         (_currentPage %
                                             widget.einsBanners.length)
-                                    ? Colors.indigo[200]
+                                    ? Colors.indigo[900]
                                     : Colors.indigo[100],
                               ),
                             ),

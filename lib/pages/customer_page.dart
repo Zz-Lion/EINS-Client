@@ -13,7 +13,7 @@ class CustomerPage extends StatelessWidget {
         title: Center(
           child: Image.asset(
             'assets/images/EINS.jpg',
-            height: 24,
+            height: 40,
             fit: BoxFit.fitHeight,
           ),
         ),
@@ -25,25 +25,25 @@ class CustomerPage extends StatelessWidget {
             Tab(
               child: Text(
                 "홈",
-                style: TextStyle(fontSize: 18.0),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
             ),
             Tab(
               child: Text(
                 "필터정보",
-                style: TextStyle(fontSize: 18.0),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
             ),
             Tab(
               child: Text(
                 "구매하기",
-                style: TextStyle(fontSize: 18.0),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
             ),
             Tab(
               child: Text(
                 "고객센터",
-                style: TextStyle(fontSize: 18.0),
+                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
             ),
           ],

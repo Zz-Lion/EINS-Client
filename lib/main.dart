@@ -1,60 +1,98 @@
-import 'package:async/async.dart';
-import 'package:eins_client/pages/customerpage.dart';
-import 'package:eins_client/pages/homepage.dart';
-import 'package:eins_client/pages/infopage.dart';
-import 'package:eins_client/pages/productpage.dart';
+import 'package:eins_client/pages/customer_page.dart';
+import 'package:eins_client/pages/home_page.dart';
+import 'package:eins_client/pages/info_page.dart';
+import 'package:eins_client/pages/product_page.dart';
+import 'package:eins_client/providers/banner_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:transparent_image/transparent_image.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp();
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
 
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<YoutubeProvider>(
+        create: (_) => YoutubeProvider(),
+      ),
+      ChangeNotifierProvider<ProductProvider>(
+        create: (_) => ProductProvider(),
+      ),
+      ChangeNotifierProvider<BannerProvider>(create: (_) => BannerProvider()),
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
+  Future<void> _initializeEins(BuildContext context) async {
+    await Firebase.initializeApp();
+
+    await context.read<ProductProvider>().getProductInfo();
+
+    await context.read<YoutubeProvider>().getYoutubeInfo();
+
+    await context.read<BannerProvider>().getBannerInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<YoutubeProvider>(
-          create: (_) => YoutubeProvider(),
+    return FutureBuilder<void>(
+      future: _initializeEins(context),
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            builder: (BuildContext context, Widget? child) {
+              return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                  child: child!);
+            },
+            title: "EINS",
+            theme: ThemeData(
+              primarySwatch: Colors.indigo,
+              appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+              tabBarTheme: TabBarTheme(
+                labelColor: Colors.indigo,
+                unselectedLabelColor: Colors.black,
+              ),
+            ),
+            home: EinsClient(),
+          );
+        }
+
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+          ),
+          home: Splash(),
+        );
+      },
+    );
+  }
+}
+
+class Splash extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: FadeInImage(
+          placeholder: MemoryImage(kTransparentImage),
+          image: Image.asset(
+            'assets/images/EINS.jpg',
+            width: MediaQuery.of(context).size.width * 0.785,
+            fit: BoxFit.fitWidth,
+          ).image,
         ),
-        ChangeNotifierProvider<ProductProvider>(
-          create: (_) => ProductProvider(),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        builder: (BuildContext context, Widget? child) {
-          return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-              child: child!);
-        },
-        title: "EINS",
-        theme: ThemeData(
-          primarySwatch: Colors.indigo,
-        ),
-        home: Builder(builder: (context) {
-          return FutureBuilder<void>(
-              future: Provider.of<ProductProvider>(context, listen: false)
-                  .getProductInfo(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return EinsClient();
-                }
-                return Container();
-              });
-        }),
       ),
     );
   }
@@ -71,11 +109,6 @@ class EinsClient extends StatefulWidget {
 
 class _EinsClientState extends State<EinsClient> {
   late PageController _pageController;
-  final AsyncMemoizer<void> _memoizer = AsyncMemoizer<void>();
-
-  _fetchData(Future<void> future) {
-    return _memoizer.runOnce(() => future);
-  }
 
   @override
   void initState() {
@@ -87,6 +120,7 @@ class _EinsClientState extends State<EinsClient> {
   @override
   void dispose() {
     _pageController.dispose();
+
     super.dispose();
   }
 
@@ -99,60 +133,7 @@ class _EinsClientState extends State<EinsClient> {
         physics: NeverScrollableScrollPhysics(),
         children: [
           HomePage(controller: _pageController),
-          FutureBuilder<void>(
-            future:
-                _fetchData(context.read<YoutubeProvider>().getYoutubeInfo()),
-            builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return InfoPage(controller: _pageController);
-              }
-
-              return Scaffold(
-                appBar: AppBar(
-                  elevation: 0,
-                  title: Center(
-                    child: Image.asset(
-                      'assets/images/EINS.jpg',
-                      height: 24,
-                      fit: BoxFit.fitHeight,
-                    ),
-                  ),
-                  bottom: const TabBar(
-                    onTap: null,
-                    tabs: [
-                      Tab(
-                        child: Text(
-                          "홈",
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          "필터정보",
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          "구매하기",
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          "고객센터",
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                body: Container(
-                    color: Colors.indigo[100],
-                    child: Center(child: CircularProgressIndicator())),
-              );
-            },
-          ),
+          InfoPage(controller: _pageController),
           ProductPage(controller: _pageController),
           CustomerPage(controller: _pageController),
         ],

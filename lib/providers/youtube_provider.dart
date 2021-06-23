@@ -26,7 +26,7 @@ class YoutubeProvider with ChangeNotifier {
     List<String> tempTitleList = <String>[];
 
     try {
-      QuerySnapshot<Map<String, dynamic>> youtubeData =
+      final QuerySnapshot<Map<String, dynamic>> youtubeData =
           await youtubeRef.orderBy("order").get();
 
       youtubeData.docs.forEach((element) {

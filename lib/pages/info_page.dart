@@ -14,7 +14,10 @@ class InfoPage extends StatefulWidget {
 
 class _InfoPageState extends State<InfoPage>
     with AutomaticKeepAliveClientMixin {
-  late YoutubeProvider _youtubeProv;
+  late final YoutubeProvider _youtubeProv;
+  late final List<Widget> youtubePlayerList;
+  late ScrollController _scrollController;
+  double _scrollOffset = 0;
 
   @override
   void initState() {
@@ -26,6 +29,9 @@ class _InfoPageState extends State<InfoPage>
         _youtubeProv.initController(i);
       } catch (e) {}
     }
+
+    youtubePlayerList = List<Widget>.generate(
+        _youtubeProv.length, (index) => EinsYoutubePlayer(index: index));
   }
 
   @override
@@ -33,6 +39,8 @@ class _InfoPageState extends State<InfoPage>
     for (int i = 0; i < _youtubeProv.length; i++) {
       _youtubeProv.disposeController(i);
     }
+
+    _scrollController.dispose();
 
     super.dispose();
   }
@@ -42,10 +50,6 @@ class _InfoPageState extends State<InfoPage>
     super.build(context);
 
     final Size mediaSize = MediaQuery.of(context).size;
-    final YoutubeProvider youtubeProv =
-        Provider.of<YoutubeProvider>(context, listen: false);
-    final List<Widget> youtubePlayerList = List<Widget>.generate(
-        youtubeProv.length, (index) => EinsYoutubePlayer(index: index));
 
     final Widget defaultWidget = Builder(
         builder: (context) => Scaffold(
@@ -54,7 +58,7 @@ class _InfoPageState extends State<InfoPage>
                 title: Center(
                   child: Image.asset(
                     'assets/images/EINS.jpg',
-                    height: 24,
+                    height: 40,
                     fit: BoxFit.fitHeight,
                   ),
                 ),
@@ -66,37 +70,42 @@ class _InfoPageState extends State<InfoPage>
                     Tab(
                       child: Text(
                         "홈",
-                        style: TextStyle(fontSize: 18.0),
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Tab(
                       child: Text(
                         "필터정보",
-                        style: TextStyle(fontSize: 18.0),
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Tab(
                       child: Text(
                         "구매하기",
-                        style: TextStyle(fontSize: 18.0),
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Tab(
                       child: Text(
                         "고객센터",
-                        style: TextStyle(fontSize: 18.0),
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
                 ),
               ),
               body: Builder(builder: (context) {
-                return Container(
-                  height: mediaSize.height -
-                      (Scaffold.of(context).appBarMaxHeight ?? 0.0),
-                  width: mediaSize.width,
-                  color: Colors.indigo[100],
-                  child: SingleChildScrollView(
+                _scrollController =
+                    ScrollController(initialScrollOffset: _scrollOffset);
+
+                return SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Container(
+                    color: Colors.indigo[100],
                     child: Column(
                       children: <Widget>[
                         Column(
@@ -112,23 +121,28 @@ class _InfoPageState extends State<InfoPage>
     return OrientationBuilder(builder: (context, orientation) {
       final ScrollController scrollController = ScrollController(
         initialScrollOffset:
-            (youtubeProv.selectedIndex ?? 0) * mediaSize.height,
+            (_youtubeProv.selectedIndex ?? 0) * mediaSize.height,
       );
 
-      return orientation == Orientation.portrait
-          ? defaultWidget
-          : ListView.builder(
-              controller: scrollController,
-              itemCount: youtubeProv.length,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return Container(
-                  width: mediaSize.width,
-                  height: mediaSize.height,
-                  child: youtubeProv.youtubePlayerList[index],
-                );
-              },
+      if (orientation == Orientation.portrait) {
+        return defaultWidget;
+      } else {
+        _scrollOffset = _scrollController.offset;
+        _scrollController.dispose();
+
+        return ListView.builder(
+          controller: scrollController,
+          itemCount: _youtubeProv.length,
+          physics: NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            return Container(
+              width: mediaSize.width,
+              height: mediaSize.height,
+              child: _youtubeProv.youtubePlayerList[index],
             );
+          },
+        );
+      }
     });
   }
 

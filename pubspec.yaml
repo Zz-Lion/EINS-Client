@@ -33,6 +33,7 @@ dependencies:
   async: ^2.5.0
   transparent_image: ^2.0.0
   cached_network_image: ^3.0.0
+  dotted_decoration: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -66,7 +67,7 @@ flutter_native_splash:
 
   # The image parameter allows you to specify an image used in the splash screen.  It must be a
   # png file.
-  image: assets/images/EINS_png.png
+  image: assets/images/EINS.png
 
   # The color_dark, background_image_dark, and image_dark are parameters that set the background
   # and image when the device is in dark mode. If they are not specified, the app will use the

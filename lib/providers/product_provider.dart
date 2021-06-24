@@ -6,34 +6,41 @@ import 'package:flutter/material.dart';
 
 class ProductProvider with ChangeNotifier {
   int? _length;
-  Map<String, Product> _products = <String, Product>{};
-  Map<String, CachedNetworkImage> _productImages =
-      <String, CachedNetworkImage>{};
+  List<Product> _productList = <Product>[];
+  List<CachedNetworkImage> _productImageList = <CachedNetworkImage>[];
 
   int get length => _length ?? 0;
-  Map<String, Product> get products => _products;
-  Map<String, CachedNetworkImage> get productImages => _productImages;
+  List<Product> get productList => _productList;
+  List<CachedNetworkImage> get productImageList => _productImageList;
 
   Future<void> getProductInfo() async {
-    Map<String, Product> tempProducts = Map<String, Product>();
-    Map<String, CachedNetworkImage> tempImages =
-        Map<String, CachedNetworkImage>();
+    List<Product> tempProducts = <Product>[];
+    List<CachedNetworkImage> tempImages = <CachedNetworkImage>[];
     try {
       final QuerySnapshot<Map<String, dynamic>> productsData =
-          await productsRef.get();
+          await productsRef.orderBy("release_date", descending: true).get();
 
       productsData.docs.forEach((element) {
         Map<String, dynamic> e = element.data();
 
-        tempProducts[e["product_name"] as String] = Product.fromDoc(element);
-        tempImages[e["product_name"] as String] = CachedNetworkImage(
-            imageUrl: e["image_url"] as String, fit: BoxFit.fitHeight);
+        tempProducts.add(Product.fromDoc(element));
+        tempImages.add(CachedNetworkImage(
+            imageUrl: e["image_url"] as String, fit: BoxFit.fitHeight));
       });
     } catch (e) {
       rethrow;
     }
 
-    _products = tempProducts;
-    _productImages = tempImages;
+    _productList = tempProducts;
+    _productImageList = tempImages;
+    _length = tempProducts.length;
+  }
+
+  CachedNetworkImage? productImageByName(String productName) {
+    for (int i = 0; i < (_length ?? 0); i++) {
+      if (_productList[i].productName == productName) {
+        return _productImageList[i];
+      }
+    }
   }
 }

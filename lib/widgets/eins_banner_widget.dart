@@ -43,6 +43,7 @@ class _EinsBannerState extends State<EinsBanner> {
     final Size mediaSize = MediaQuery.of(context).size;
 
     return Container(
+      color: Colors.indigo[50],
       width: mediaSize.width,
       height: mediaSize.width * 0.4,
       child: Stack(

@@ -86,10 +86,10 @@ class Splash extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: FadeInImage(
+          width: MediaQuery.of(context).size.width * 0.785,
           placeholder: MemoryImage(kTransparentImage),
           image: Image.asset(
-            'assets/images/EINS.jpg',
-            width: MediaQuery.of(context).size.width * 0.785,
+            'assets/images/EINS_title.png',
             fit: BoxFit.fitWidth,
           ).image,
         ),

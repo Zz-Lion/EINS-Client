@@ -1,5 +1,7 @@
 import 'package:eins_client/providers/youtube_provider.dart';
+import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/eins_youtube_player_widget.dart';
+import 'package:eins_client/widgets/product_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -53,51 +55,7 @@ class _InfoPageState extends State<InfoPage>
 
     final Widget defaultWidget = Builder(
         builder: (context) => Scaffold(
-              appBar: AppBar(
-                elevation: 0,
-                title: Center(
-                  child: Image.asset(
-                    'assets/images/EINS.jpg',
-                    height: 40,
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
-                bottom: TabBar(
-                  onTap: (index) {
-                    widget.controller.jumpToPage(index);
-                  },
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        "홈",
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        "필터정보",
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        "구매하기",
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        "고객센터",
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              appBar: appBar(widget.controller),
               body: Builder(builder: (context) {
                 _scrollController =
                     ScrollController(initialScrollOffset: _scrollOffset);
@@ -108,6 +66,7 @@ class _InfoPageState extends State<InfoPage>
                     color: Colors.indigo[100],
                     child: Column(
                       children: <Widget>[
+                        ProductView(),
                         Column(
                           children: youtubePlayerList,
                         ),

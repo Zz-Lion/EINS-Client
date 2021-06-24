@@ -88,7 +88,7 @@ class _MyFilterState extends State<MyFilter>
     final int allDay = replaceDate.difference(startDate).inDays;
     final int usageDay = DateTime.now().difference(startDate).inDays;
     final CachedNetworkImage? filterImage =
-        context.read<ProductProvider>().productImages[e.productName];
+        context.read<ProductProvider>().productImageByName(e.productName);
 
     return Container(
       width: mediaSize.width - 20,
@@ -262,8 +262,9 @@ class _MyFilterState extends State<MyFilter>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: filterImage),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: filterImage,
+                ),
                 Expanded(
                   child: Container(
                     height: ((mediaSize.width - 20) / 4 - 20) / 2,

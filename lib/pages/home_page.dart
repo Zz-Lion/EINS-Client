@@ -16,29 +16,31 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: appBar(controller),
-      body: Builder(builder: (context) {
-        return SingleChildScrollView(
-          child: Container(
-            height: mediaSize.height -
-                (Scaffold.of(context).appBarMaxHeight ?? 0.0),
-            width: mediaSize.width,
-            color: Colors.indigo[100],
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                    child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(10),
-                  child: MyFilter(),
-                )),
-                const SizedBox(height: 10),
-                EinsBanner(
-                  einsBanners: context.read<BannerProvider>().bannerImages,
-                ),
-              ],
+      body: SafeArea(
+        child: Builder(builder: (context) {
+          return SingleChildScrollView(
+            child: Container(
+              width: mediaSize.width,
+              height: mediaSize.height -
+                  (Scaffold.of(context).appBarMaxHeight ?? 0.0),
+              color: Colors.indigo[100],
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                      child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(10),
+                    child: MyFilter(),
+                  )),
+                  const SizedBox(height: 10),
+                  EinsBanner(
+                    einsBanners: context.read<BannerProvider>().bannerImages,
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }

@@ -31,7 +31,7 @@ class ProductView extends StatelessWidget {
           ),
           Container(
             width: mediaSize.width,
-            height: 255,
+            height: 225,
             child: GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               itemCount: productProv.length,
@@ -39,8 +39,8 @@ class ProductView extends StatelessWidget {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
                 mainAxisSpacing: 10,
-                childAspectRatio: (225 / 360),
-                mainAxisExtent: 360,
+                childAspectRatio: (225 / 375),
+                mainAxisExtent: 375,
               ),
               itemBuilder: (context, index) {
                 return Container(
@@ -55,6 +55,7 @@ class ProductView extends StatelessWidget {
                       Container(
                         width: 150,
                         height: 225,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: Colors.indigo[50],
                           borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -65,18 +66,20 @@ class ProductView extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        width: 205,
+                        width: 220,
                         height: 225,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 10, 0, 10),
+                            Center(
                               child: Text(
                                 productProv.productList[index].productName,
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.indigo[900],
+                                ),
                               ),
                             ),
                             Expanded(
@@ -88,23 +91,27 @@ class ProductView extends StatelessWidget {
                                   children: <Widget>[
                                     Text(
                                       "용도",
-                                      style: TextStyle(fontSize: 16),
+                                      style: TextStyle(fontSize: 14),
                                     ),
                                     Text(
                                       productProv.productList[index].usage,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       "권장사용기간",
-                                      style: TextStyle(fontSize: 16),
+                                      style: TextStyle(fontSize: 14),
                                     ),
                                     Text(
                                       productProv
                                           .productList[index].recommendedPeriod,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.bold),
                                     ),
                                     productProv.productList[index]
@@ -116,13 +123,15 @@ class ProductView extends StatelessWidget {
                                             children: <Widget>[
                                               Text(
                                                 "취득인증",
-                                                style: TextStyle(fontSize: 16),
+                                                style: TextStyle(fontSize: 14),
                                               ),
                                               Text(
                                                 productProv.productList[index]
                                                     .certification!,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 14,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -138,13 +147,15 @@ class ProductView extends StatelessWidget {
                                             children: <Widget>[
                                               Text(
                                                 "성능",
-                                                style: TextStyle(fontSize: 16),
+                                                style: TextStyle(fontSize: 14),
                                               ),
                                               Text(
                                                 productProv.productList[index]
                                                     .performence!,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 14,
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),

@@ -25,7 +25,7 @@ class _InfoPageState extends State<InfoPage>
   void initState() {
     super.initState();
 
-    _youtubeProv = Provider.of<YoutubeProvider>(context, listen: false);
+    _youtubeProv = context.read<YoutubeProvider>();
     for (int i = 0; i < _youtubeProv.length; i++) {
       try {
         _youtubeProv.initController(i);
@@ -56,25 +56,27 @@ class _InfoPageState extends State<InfoPage>
     final Widget defaultWidget = Builder(
         builder: (context) => Scaffold(
               appBar: appBar(widget.controller),
-              body: Builder(builder: (context) {
-                _scrollController =
-                    ScrollController(initialScrollOffset: _scrollOffset);
+              body: SafeArea(
+                child: Builder(builder: (context) {
+                  _scrollController =
+                      ScrollController(initialScrollOffset: _scrollOffset);
 
-                return SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Container(
-                    color: Colors.indigo[100],
-                    child: Column(
-                      children: <Widget>[
-                        ProductView(),
-                        Column(
-                          children: youtubePlayerList,
-                        ),
-                      ],
+                  return SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Container(
+                      color: Colors.indigo[100],
+                      child: Column(
+                        children: <Widget>[
+                          ProductView(),
+                          Column(
+                            children: youtubePlayerList,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             )).build(context);
 
     return OrientationBuilder(builder: (context, orientation) {

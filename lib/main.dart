@@ -1,9 +1,10 @@
 import 'package:eins_client/pages/customer_page.dart';
 import 'package:eins_client/pages/home_page.dart';
 import 'package:eins_client/pages/info_page.dart';
-import 'package:eins_client/pages/product_page.dart';
+import 'package:eins_client/pages/sales_page.dart';
 import 'package:eins_client/providers/banner_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
+import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +20,10 @@ void main() {
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider<YoutubeProvider>(
-        create: (_) => YoutubeProvider(),
-      ),
-      ChangeNotifierProvider<ProductProvider>(
-        create: (_) => ProductProvider(),
-      ),
+      ChangeNotifierProvider<YoutubeProvider>(create: (_) => YoutubeProvider()),
+      ChangeNotifierProvider<ProductProvider>(create: (_) => ProductProvider()),
       ChangeNotifierProvider<BannerProvider>(create: (_) => BannerProvider()),
+      ChangeNotifierProvider<SalesProvider>(create: (_) => SalesProvider()),
     ],
     child: MyApp(),
   ));
@@ -40,6 +38,8 @@ class MyApp extends StatelessWidget {
     await context.read<YoutubeProvider>().getYoutubeInfo();
 
     await context.read<BannerProvider>().getBannerInfo();
+
+    await context.read<SalesProvider>().getSalesInfo();
   }
 
   @override
@@ -134,7 +134,7 @@ class _EinsClientState extends State<EinsClient> {
         children: [
           HomePage(controller: _pageController),
           InfoPage(controller: _pageController),
-          ProductPage(controller: _pageController),
+          SalesPage(controller: _pageController),
           CustomerPage(controller: _pageController),
         ],
       ),

@@ -10,6 +10,9 @@ class CustomerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(controller),
+      body: SafeArea(
+        child: Container(),
+      ),
     );
   }
 }

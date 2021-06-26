@@ -69,25 +69,26 @@ class _EinsBannerState extends State<EinsBanner> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: mediaSize.width * 0.35),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List<Widget>.generate(
-                      widget.einsBanners.length,
-                      (index) => Expanded(
-                            child: Container(
-                              height: 2,
-                              decoration: BoxDecoration(
-                                color: index ==
-                                        (_currentPage %
-                                            widget.einsBanners.length)
-                                    ? Colors.indigo[900]
-                                    : Colors.indigo[100],
-                              ),
-                            ),
-                          )),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List<Widget>.generate(
+                    widget.einsBanners.length * 2 - 1, (index) {
+                  if (index % 2 == 0) {
+                    return Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: index / 2 ==
+                                (_currentPage % widget.einsBanners.length)
+                            ? Colors.indigo
+                            : Colors.indigo[100],
+                      ),
+                    );
+                  } else {
+                    return SizedBox(width: 10);
+                  }
+                }),
               ),
             ],
           ),

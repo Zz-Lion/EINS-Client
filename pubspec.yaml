@@ -34,6 +34,7 @@ dependencies:
   transparent_image: ^2.0.0
   cached_network_image: ^3.0.0
   dotted_decoration: ^2.0.0
+  webview_flutter: ^2.0.9
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -1,11 +1,9 @@
-import 'package:eins_client/pages/customer_page.dart';
-import 'package:eins_client/pages/home_page.dart';
-import 'package:eins_client/pages/info_page.dart';
-import 'package:eins_client/pages/sales_page.dart';
 import 'package:eins_client/providers/banner_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
+import 'package:eins_client/screens/eins_client_screen.dart';
+import 'package:eins_client/screens/sales_web_view_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,19 +50,46 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             builder: (BuildContext context, Widget? child) {
               return MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                  child: child!);
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                child: child!,
+              );
             },
             title: "EINS",
             theme: ThemeData(
               primarySwatch: Colors.indigo,
-              appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+              appBarTheme: AppBarTheme(
+                backgroundColor: Colors.white,
+                iconTheme: IconThemeData(
+                  color: Colors.indigo[900],
+                ),
+              ),
               tabBarTheme: TabBarTheme(
                 labelColor: Colors.indigo,
                 unselectedLabelColor: Colors.black,
               ),
             ),
             home: EinsClient(),
+            onGenerateRoute: (RouteSettings settings) {
+              switch (settings.name) {
+                case EinsClient.routeName:
+                  return MaterialPageRoute(builder: (_) => EinsClient());
+                case SalesWebView.routeName:
+                  return PageRouteBuilder(
+                    pageBuilder: (_, __, ___) =>
+                        SalesWebView(url: settings.arguments as String),
+                    transitionsBuilder:
+                        (_, Animation animation, __, Widget child) =>
+                            SlideTransition(
+                      position: animation.drive(Tween(
+                        begin: Offset(0.0, 1.0),
+                        end: Offset.zero,
+                      ).chain(CurveTween(curve: Curves.ease))),
+                      child: child,
+                    ),
+                    transitionDuration: const Duration(milliseconds: 750),
+                  );
+              }
+            },
           );
         }
 
@@ -93,50 +118,6 @@ class Splash extends StatelessWidget {
             fit: BoxFit.fitWidth,
           ).image,
         ),
-      ),
-    );
-  }
-}
-
-class EinsClient extends StatefulWidget {
-  const EinsClient({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  _EinsClientState createState() => _EinsClientState();
-}
-
-class _EinsClientState extends State<EinsClient> {
-  late PageController _pageController;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: PageView(
-        controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
-        children: [
-          HomePage(controller: _pageController),
-          InfoPage(controller: _pageController),
-          SalesPage(controller: _pageController),
-          CustomerPage(controller: _pageController),
-        ],
       ),
     );
   }

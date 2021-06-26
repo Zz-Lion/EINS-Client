@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:eins_client/providers/sales_provider.dart';
+import 'package:eins_client/screens/sales_web_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -142,6 +143,7 @@ class _SalesItemState extends State<SalesItem> {
                     ),
                   ],
                 ),
+                SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     children: <Widget>[
@@ -164,17 +166,26 @@ class _SalesItemState extends State<SalesItem> {
                           ],
                         ),
                       ),
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
-                        ),
-                        child: Center(
-                          child: Text(
-                            "naver 구매",
-                            style: TextStyle(color: Colors.white),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            SalesWebView.routeName,
+                            arguments: salesProv.salesUrlList[widget.index],
+                          );
+                        },
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.green,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "naver 구매",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
                       ),

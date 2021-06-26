@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 PreferredSizeWidget? appBar(PageController controller) {
   return AppBar(
+    automaticallyImplyLeading: false,
     elevation: 0,
     title: Center(
       child: Image.asset(

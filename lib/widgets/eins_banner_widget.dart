@@ -23,10 +23,10 @@ class _EinsBannerState extends State<EinsBanner> {
     _pageController =
         PageController(initialPage: widget.einsBanners.length * 100);
     _currentPage = widget.einsBanners.length * 100;
-    _timer = Timer.periodic(Duration(milliseconds: 5200), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 5200), (timer) {
       _currentPage++;
       _pageController.animateToPage(_currentPage,
-          duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
     });
   }
 
@@ -56,7 +56,7 @@ class _EinsBannerState extends State<EinsBanner> {
                 _timer = Timer.periodic(Duration(milliseconds: 5200), (timer) {
                   _currentPage++;
                   _pageController.animateToPage(_currentPage,
-                      duration: Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
                       curve: Curves.easeIn);
                 });
               });

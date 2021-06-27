@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eins_client/constants/db_constants.dart';
 import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
 
 class MyFilter extends StatefulWidget {
@@ -53,14 +58,70 @@ class _MyFilterState extends State<MyFilter>
     storage.setItem('eins_filter', (_filters.map((e) => e.toJson())).toList());
   }
 
-  _addFilter(BuildContext context) {
+  Future<String> handleTag(NfcTag tag) async {
+    final List<int> tempIntList =
+        List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+    String id = "";
+
+    tempIntList.forEach((element) {
+      id = id + element.toRadixString(16);
+    });
+
+    final DocumentSnapshot<Map<String, dynamic>> filterData =
+        await filtersRef.doc(id).get();
+
+    return filterData.data()!["product_name"] as String;
+  }
+
+  _addFilter(BuildContext context) async {
+    String? result;
+
+    if (!(await NfcManager.instance.isAvailable())) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('오류'),
+          content: Text('NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.'),
+          actions: [
+            TextButton(
+              child: Text('확인'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (Platform.isIOS) {
+      return NfcManager.instance.startSession(
+        alertMessage: "기기를 필터 가까이에 가져다주세요.",
+        onDiscovered: (NfcTag tag) async {
+          try {
+            result = await handleTag(tag);
+            if (result == null) return;
+            await NfcManager.instance.stopSession(alertMessage: result);
+          } catch (e) {
+            await NfcManager.instance.stopSession(errorMessage: '$e');
+          }
+        },
+      );
+    }
+
+    if (Platform.isAndroid) {
+      result = await showDialog(
+        context: context,
+        builder: (context) =>
+            _AndroidSessionDialog("기기를 필터 가까이에 가져다주세요.", handleTag),
+      );
+    }
+
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
         _filters.insert(
             0,
             Filter(
               id: DateTime.now().toString(),
-              productName: "GV900",
+              productName: result!,
               defaultDuration: 12,
               startDate: DateTime(2021, 1, 1),
               replaceDate: DateTime(2021, 12, 31),
@@ -431,4 +492,77 @@ class _MyFilterState extends State<MyFilter>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _AndroidSessionDialog extends StatefulWidget {
+  const _AndroidSessionDialog(this.alertMessage, this.handleTag);
+
+  final String alertMessage;
+
+  final Future<String?> Function(NfcTag tag) handleTag;
+
+  @override
+  State<StatefulWidget> createState() => _AndroidSessionDialogState();
+}
+
+class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
+  String? _alertMessage;
+
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    NfcManager.instance.startSession(
+      onDiscovered: (tag) async {
+        try {
+          final result = await widget.handleTag(tag);
+          if (result == null) return;
+          await NfcManager.instance.stopSession();
+          setState(() => _alertMessage = result);
+        } catch (e) {
+          await NfcManager.instance.stopSession().catchError((_) {/* no op */});
+          setState(() => _errorMessage = '$e');
+        }
+      },
+    ).catchError((e) => setState(() => _errorMessage = '$e'));
+  }
+
+  @override
+  void dispose() {
+    NfcManager.instance.stopSession().catchError((_) {/* no op */});
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        _errorMessage?.isNotEmpty == true
+            ? 'Error'
+            : _alertMessage?.isNotEmpty == true
+                ? 'Success'
+                : 'Ready to scan',
+      ),
+      content: Text(
+        _errorMessage?.isNotEmpty == true
+            ? _errorMessage!
+            : _alertMessage?.isNotEmpty == true
+                ? _alertMessage!
+                : widget.alertMessage,
+      ),
+      actions: [
+        TextButton(
+          child: Text(
+            _errorMessage?.isNotEmpty == true
+                ? 'GOT IT'
+                : _alertMessage?.isNotEmpty == true
+                    ? 'OK'
+                    : 'CANCEL',
+          ),
+          onPressed: () => Navigator.pop(context, _alertMessage),
+        ),
+      ],
+    );
+  }
 }

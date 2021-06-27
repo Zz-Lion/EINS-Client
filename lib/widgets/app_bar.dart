@@ -19,25 +19,25 @@ PreferredSizeWidget? appBar(PageController controller) {
         Tab(
           child: Text(
             "홈",
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
         ),
         Tab(
           child: Text(
             "필터정보",
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
         ),
         Tab(
           child: Text(
             "구매하기",
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
         ),
         Tab(
           child: Text(
             "고객센터",
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
         ),
       ],

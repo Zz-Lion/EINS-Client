@@ -154,14 +154,14 @@ class _SalesItemState extends State<SalesItem> {
                               child: Text(
                                 salesProv.titleList[widget.index],
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.indigo[900]),
                               ),
                             ),
                             Text(
                               salesProv.subTitleList[widget.index],
-                              style: TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 12),
                             ),
                           ],
                         ),

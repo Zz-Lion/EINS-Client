@@ -29,12 +29,8 @@ class Product {
       releaseDate: (productData["release_date"] as Timestamp).toDate(),
       usage: productData["usage"] as String,
       recommendedPeriod: productData["recommended_period"] as String,
-      certification: productData["certification"] != null
-          ? productData["certification"] as String
-          : null,
-      performence: productData["performence"] != null
-          ? productData["performence"] as String
-          : null,
+      certification: productData["certification"] as String?,
+      performence: productData["performence"] as String?,
     );
   }
 

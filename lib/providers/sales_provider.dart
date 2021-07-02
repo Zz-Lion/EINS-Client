@@ -9,7 +9,8 @@ class SalesProvider with ChangeNotifier {
   List<String> _titleList = <String>[];
   List<String> _subTitleList = <String>[];
   List<int> _costList = <int>[];
-  List<List<CachedNetworkImage>> _mainImageList = <List<CachedNetworkImage>>[];
+  List<int> _originalCostList = <int>[];
+  List<CachedNetworkImage> _mainImageList = <CachedNetworkImage>[];
   List<CachedNetworkImage> _infoImageList = <CachedNetworkImage>[];
 
   int get length => _length ?? 0;
@@ -17,7 +18,8 @@ class SalesProvider with ChangeNotifier {
   List<String> get titleList => _titleList;
   List<String> get subTitleList => _subTitleList;
   List<int> get costList => _costList;
-  List<List<CachedNetworkImage>> get mainImageList => _mainImageList;
+  List<int> get originalCostList => _originalCostList;
+  List<CachedNetworkImage> get mainImageList => _mainImageList;
   List<CachedNetworkImage> get infoImageList => _infoImageList;
 
   Future<void> getSalesInfo() async {
@@ -25,8 +27,8 @@ class SalesProvider with ChangeNotifier {
     List<String> tempTitleList = <String>[];
     List<String> tempSubTitleList = <String>[];
     List<int> tempCostList = <int>[];
-    List<List<CachedNetworkImage>> tempMainImageList =
-        <List<CachedNetworkImage>>[];
+    List<int> tempOriginalCostList = <int>[];
+    List<CachedNetworkImage> tempMainImageList = <CachedNetworkImage>[];
     List<CachedNetworkImage> tempInfoImageList = <CachedNetworkImage>[];
 
     try {
@@ -37,14 +39,13 @@ class SalesProvider with ChangeNotifier {
       tempTitleList = List<String>.from(einsSales.data()!["title"]);
       tempSubTitleList = List<String>.from(einsSales.data()!["sub_title"]);
       tempCostList = List<int>.from(einsSales.data()!["cost"]);
-      Map<String, List>.from(einsSales.data()!["main_image_url"])
-          .forEach((key, value) {
-        tempMainImageList.add(
-            List<CachedNetworkImage>.from(value.map((e) => CachedNetworkImage(
-                  imageUrl: e as String,
-                  fit: BoxFit.fill,
-                ))));
-      });
+      tempOriginalCostList = List<int>.from(einsSales.data()!["original_cost"]);
+      tempMainImageList = List<CachedNetworkImage>.from(
+          List<String>.from(einsSales.data()!["main_image_url"])
+              .map((e) => CachedNetworkImage(
+                    imageUrl: e,
+                    fit: BoxFit.fill,
+                  )));
       tempInfoImageList = List<CachedNetworkImage>.from(
           List<String>.from(einsSales.data()!["info_image_url"])
               .map((e) => CachedNetworkImage(
@@ -61,6 +62,7 @@ class SalesProvider with ChangeNotifier {
     _titleList = tempTitleList;
     _subTitleList = tempSubTitleList;
     _costList = tempCostList;
+    _originalCostList = tempOriginalCostList;
     _mainImageList = tempMainImageList;
     _infoImageList = tempInfoImageList;
   }

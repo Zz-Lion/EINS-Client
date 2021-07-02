@@ -1,13 +1,14 @@
-import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eins_client/constants/db_constants.dart';
 import 'package:eins_client/models/filter_model.dart';
+import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
+import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -18,32 +19,39 @@ class MyFilter extends StatefulWidget {
   _MyFilterState createState() => _MyFilterState();
 }
 
-class _MyFilterState extends State<MyFilter>
-    with AutomaticKeepAliveClientMixin<MyFilter> {
-  late final LocalStorage storage;
+class _MyFilterState extends State<MyFilter> {
+  late final LocalStorageProvider _localStorageProv;
   late List<Filter> _filters;
-  late List<Widget> _filterWidgets;
   late List<bool> _isEditable;
-  late bool _initialized;
   late List<TextEditingController> _descTextController;
   late List<FocusNode> _focus;
+  late List<Widget> _filterWidgets;
+  late int _currentPage;
 
   @override
   void initState() {
     super.initState();
 
-    storage = LocalStorage('eins_filter');
-    _filters = <Filter>[];
-    _filterWidgets = <Widget>[];
-    _isEditable = <bool>[];
-    _initialized = false;
-    _descTextController = <TextEditingController>[];
-    _focus = <FocusNode>[];
+    _localStorageProv = context.read<LocalStorageProvider>();
+
+    _filters = _localStorageProv.fetchData();
+    _isEditable = List<bool>.generate(_filters.length, (index) => false);
+    _descTextController = List<TextEditingController>.generate(_filters.length,
+        (index) => TextEditingController(text: _filters[index].desc));
+    _focus = List<FocusNode>.generate(_filters.length, (index) => FocusNode());
+    _currentPage = 0;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _filterWidgets =
+        List<Widget>.from(_filters.map((e) => _makeFilterWidget(context, e)));
   }
 
   @override
   void dispose() {
-    storage.dispose();
     _descTextController.forEach((element) {
       element.dispose();
     });
@@ -54,92 +62,141 @@ class _MyFilterState extends State<MyFilter>
     super.dispose();
   }
 
-  _saveToStorage() {
-    storage.setItem('eins_filter', (_filters.map((e) => e.toJson())).toList());
-  }
+  String _handleTag(NfcTag tag) {
+    try {
+      final List<int> tempIntList =
+          List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+      String id = "";
 
-  Future<String> handleTag(NfcTag tag) async {
-    final List<int> tempIntList =
-        List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
-    String id = "";
-
-    tempIntList.forEach((element) {
-      id = id + element.toRadixString(16);
-    });
-
-    final DocumentSnapshot<Map<String, dynamic>> filterData =
-        await filtersRef.doc(id).get();
-
-    return filterData.data()!["product_name"] as String;
-  }
-
-  _addFilter(BuildContext context) async {
-    String? result;
-
-    if (!(await NfcManager.instance.isAvailable())) {
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('오류'),
-          content: Text('NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.'),
-          actions: [
-            TextButton(
-              child: Text('확인'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (Platform.isIOS) {
-      return NfcManager.instance.startSession(
-        alertMessage: "기기를 필터 가까이에 가져다주세요.",
-        onDiscovered: (NfcTag tag) async {
-          try {
-            result = await handleTag(tag);
-            if (result == null) return;
-            await NfcManager.instance.stopSession(alertMessage: result);
-          } catch (e) {
-            await NfcManager.instance.stopSession(errorMessage: '$e');
-          }
-        },
-      );
-    }
-
-    if (Platform.isAndroid) {
-      result = await showDialog(
-        context: context,
-        builder: (context) =>
-            _AndroidSessionDialog("기기를 필터 가까이에 가져다주세요.", handleTag),
-      );
-    }
-
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      setState(() {
-        _filters.insert(
-            0,
-            Filter(
-              id: DateTime.now().toString(),
-              productName: result!,
-              defaultDuration: 12,
-              startDate: DateTime(2021, 1, 1),
-              replaceDate: DateTime(2021, 12, 31),
-              desc: "테스트입니다.",
-            ));
-
-        _isEditable.insert(0, false);
-
-        _filterWidgets.insert(0, _makeFilterWidget(context, _filters[0]));
-
-        _descTextController.insert(
-            0, TextEditingController(text: _filters[0].desc));
-
-        _focus.insert(0, FocusNode());
-
-        _saveToStorage();
+      tempIntList.forEach((element) {
+        id = id + element.toRadixString(16);
       });
-    });
+
+      return id;
+    } catch (e) {
+      throw Exception("NFC 데이터를 가져올 수 없습니다.");
+    }
+  }
+
+  Future<void> _addFilter(BuildContext context) async {
+    String? id = "4a81962323580";
+    try {
+      if (id != null) {
+        DocumentSnapshot<Map<String, dynamic>> filterData =
+            await filtersRef.doc(id).get();
+
+        if (filterData.exists) {
+          if (filterData.data()!["start_date"] == null) {
+            final int value = await showModalBottomSheet(
+              enableDrag: false,
+              context: context,
+              builder: (context) => Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      "필터를 사용하시는 환경을 설정해주세요.",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      _bottomSheetButton(context,
+                          text: "3인 이하 가정집", icon: Icons.home_filled, num: 1),
+                      _bottomSheetButton(context,
+                          text: "4인 이상 가정집", icon: Icons.home_filled, num: 2),
+                      _bottomSheetButton(context,
+                          text: "사무실", icon: Icons.home_filled, num: 2),
+                    ],
+                  ),
+                ],
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+              ),
+            );
+
+            Map<String, dynamic> tempDoc = <String, dynamic>{};
+            DateTime startDate = DateTime.now();
+            DateTime replaceDate = startDate.add(Duration(
+                days: 30 *
+                    (filterData.data()!["default_duration"] as int) ~/
+                    value));
+
+            tempDoc.addAll(filterData.data()!);
+            tempDoc.addAll({
+              "id": id,
+              "start_date": Timestamp.fromDate(startDate),
+              "replace_date": Timestamp.fromDate(replaceDate),
+              "desc": "나의 " + (filterData.data()!["product_name"] as String),
+            });
+
+            await filtersRef.doc(id).set(tempDoc);
+
+            final DocumentSnapshot<Map<String, dynamic>> newFilterData;
+
+            newFilterData = await filtersRef.doc(id).get();
+
+            filterData = newFilterData;
+          }
+
+          WidgetsBinding.instance?.addPostFrameCallback((_) {
+            setState(() {
+              _filters.insert(0, Filter.fromDoc(filterData));
+
+              _isEditable.insert(0, false);
+
+              _filterWidgets.insert(0, _makeFilterWidget(context, _filters[0]));
+
+              _descTextController.insert(
+                  0, TextEditingController(text: _filters[0].desc));
+
+              _focus.insert(0, FocusNode());
+
+              _localStorageProv.saveData(_filters);
+            });
+          });
+        } else {
+          throw Exception("등록되지 않은 필터입니다.");
+        }
+      } else {
+        throw Exception("NFC태그 id를 확인할 수 없습니다.");
+      }
+    } catch (e) {
+      errorDialog(context, Exception(e));
+    }
+    // if (!(await NfcManager.instance.isAvailable())) {
+    //   throw Exception("NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.");
+    // }
+
+    // try {
+    //   if (Platform.isIOS) {
+    //     await NfcManager.instance.startSession(
+    //       alertMessage: "기기를 필터 가까이에 가져다주세요.",
+    //       onDiscovered: (NfcTag tag) async {
+    //         try {
+    //           id = _handleTag(tag);
+    //           await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
+    //         } catch (e) {
+    //           id = null;
+
+    //           throw Exception("NFC태그 정보를 불러올 수 없습니다.");
+    //         }
+    //       },
+    //     );
+    //   }
+
+    //   if (Platform.isAndroid) {
+    //     id = await showDialog(
+    //       context: context,
+    //       builder: (context) =>
+    //           _AndroidSessionDialog("기기를 필터 가까이에 가져다주세요.", _handleTag),
+    //     );
+    //   }
+    // } catch (e) {
+    //   throw Exception("NFC태그 정보를 불러올 수 없습니다.");
+    // }
   }
 
   Widget _makeFilterWidget(BuildContext context, Filter e) {
@@ -151,226 +208,342 @@ class _MyFilterState extends State<MyFilter>
     final CachedNetworkImage? filterImage =
         context.read<ProductProvider>().productImageByName(e.productName);
 
-    return Container(
-      width: mediaSize.width - 20,
-      height: (mediaSize.width - 20) * 3 / 4,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          width: 10,
-          color: Colors.indigo[300]!,
-        ),
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-            final int filterIndex = _findIndex(e.id);
+    return Stack(
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    height: 54,
+                    width: e.productName.length * 24,
+                    child: FittedBox(
+                      fit: BoxFit.fill,
+                      child: Text(
+                        e.productName,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline1!
+                            .copyWith(fontWeight: FontWeight.bold, height: 1),
+                      ),
+                    ),
+                  ),
+                  Opacity(
+                    opacity: 0,
+                    child: Container(
+                      height: (mediaSize.height -
+                          (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
+                          (68 + MediaQuery.of(context).padding.bottom) -
+                          (mediaSize.width) +
+                          10),
+                      child: filterImage,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(40, 40, 40, 20),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: mediaSize.width - 80,
+                      height: (mediaSize.width - 80) * 3 / 4,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                        color: Colors.deepPurple[300],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          StatefulBuilder(builder:
+                              (BuildContext context, StateSetter setState) {
+                            final int filterIndex = _findIndex(e.id);
 
-            return Row(
-              children: <Widget>[
-                const SizedBox(
-                  width: 10,
-                  height: 30,
-                ),
-                Container(
-                    height: 30,
-                    width: mediaSize.width - 118,
-                    padding: const EdgeInsets.only(top: 5),
-                    child: _isEditable[filterIndex]
-                        ? TextField(
-                            focusNode: _focus[filterIndex],
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.all(0),
-                              focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.indigo)),
-                            ),
-                            scrollPadding: const EdgeInsets.all(0),
-                            controller: _descTextController[filterIndex],
-                            style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 20,
-                                height: 1.0,
-                                fontWeight: FontWeight.bold),
-                          )
-                        : Text(
-                            "${e.desc}",
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                fontSize: 20,
-                                height: 1.0,
-                                fontWeight: FontWeight.bold),
-                          )),
-                _isEditable[filterIndex]
-                    ? InkWell(
-                        child: Icon(
-                          Icons.check,
-                          size: 24,
-                          color: Colors.indigo[900],
-                        ),
-                        onTap: () {
-                          _editFilter(context, filterIndex);
-                        },
-                      )
-                    : InkWell(
-                        child: Icon(
-                          Icons.edit,
-                          size: 24,
-                          color: Colors.indigo[900],
-                        ),
-                        onTap: () {
-                          setState(() {
-                            _isEditable[filterIndex] = true;
-                            _focus[filterIndex].requestFocus();
-                          });
-                        },
-                      ),
-                const SizedBox(
-                  width: 10,
-                  height: 30,
-                ),
-                InkWell(
-                  child: Icon(
-                    Icons.delete,
-                    size: 24,
-                    color: Colors.indigo[900],
-                  ),
-                  onTap: () {
-                    _deleteFilter(filterIndex);
-                  },
-                ),
-                const SizedBox(
-                  width: 10,
-                  height: 30,
-                ),
-              ],
-            );
-          }),
-          Row(
-            children: <Widget>[
-              Container(
-                decoration: BoxDecoration(
-                    border: Border(
-                  top: BorderSide(
-                    color: Colors.grey[300]!,
-                    width: 2,
-                  ),
-                  right: BorderSide(
-                    color: Colors.grey[300]!,
-                    width: 1,
-                  ),
-                )),
-                width: (mediaSize.width - 40) / 2,
-                height: (mediaSize.width - 20) / 2 - 50,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "사용 시작일",
-                      style: TextStyle(
-                        color: Colors.indigo[900],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                    Text("${DateFormat("yyyy년 MM월 dd일").format(startDate)}"),
-                    Text("${DateFormat("a hh:mm").format(startDate)}"),
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border(
-                  top: BorderSide(
-                    color: Colors.grey[300]!,
-                    width: 2,
-                  ),
-                  left: BorderSide(
-                    color: Colors.grey[300]!,
-                    width: 1,
-                  ),
-                )),
-                width: (mediaSize.width - 40) / 2,
-                height: (mediaSize.width - 20) / 2 - 50,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      "필터 교체일",
-                      style: TextStyle(
-                        color: Colors.indigo[900],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                    Text("${DateFormat("yyyy년 MM월 dd일").format(replaceDate)}"),
-                    Text("${DateFormat("a hh:mm").format(replaceDate)}"),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            width: mediaSize.width - 40,
-            height: (mediaSize.width - 20) / 4,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: filterImage,
-                ),
-                Expanded(
-                  child: Container(
-                    height: ((mediaSize.width - 20) / 4 - 20) / 2,
-                    decoration: BoxDecoration(
-                      color: Colors.lightBlue[100],
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text("정수량:"),
-                        Expanded(
-                          flex: usageDay,
-                          child: Container(
-                            height: ((mediaSize.width - 20) / 4 - 20) / 6,
-                            color: Colors.lightBlue[300],
+                            return Row(
+                              children: <Widget>[
+                                const SizedBox(
+                                  width: 10,
+                                  height: 30,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 30,
+                                    padding: const EdgeInsets.only(top: 5),
+                                    child: _isEditable[filterIndex]
+                                        ? TextField(
+                                            focusNode: _focus[filterIndex],
+                                            maxLength: 15,
+                                            decoration: const InputDecoration(
+                                              isDense: true,
+                                              contentPadding: EdgeInsets.all(0),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color: Colors.white)),
+                                              counterText: "",
+                                            ),
+                                            scrollPadding:
+                                                const EdgeInsets.all(0),
+                                            controller: _descTextController[
+                                                filterIndex],
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle2!
+                                                .copyWith(
+                                                    color: Colors.grey[400]),
+                                          )
+                                        : Text(
+                                            "${e.desc}",
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle2,
+                                          ),
+                                  ),
+                                ),
+                                _isEditable[filterIndex]
+                                    ? InkWell(
+                                        child: Icon(
+                                          Icons.check,
+                                          size: 24,
+                                          color: Colors.white,
+                                        ),
+                                        onTap: () {
+                                          _editFilter(context, filterIndex);
+                                        },
+                                      )
+                                    : InkWell(
+                                        child: Icon(
+                                          Icons.edit,
+                                          size: 24,
+                                          color: Colors.white,
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            _isEditable[filterIndex] = true;
+                                            _focus[filterIndex].requestFocus();
+                                          });
+                                        },
+                                      ),
+                                const SizedBox(
+                                  width: 10,
+                                  height: 30,
+                                ),
+                                InkWell(
+                                  child: Icon(
+                                    Icons.delete,
+                                    size: 24,
+                                    color: Colors.white,
+                                  ),
+                                  onTap: () {
+                                    _deleteFilter(filterIndex);
+                                  },
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                  height: 30,
+                                ),
+                              ],
+                            );
+                          }),
+                          Stack(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    width:
+                                        ((mediaSize.width - 80) * 3 / 4 - 30) /
+                                            2,
+                                    height: (mediaSize.width - 80) * 3 / 4 - 30,
+                                    child: CustomPaint(
+                                      painter: MyPainter(
+                                        color: usageDay / allDay < 0.7
+                                            ? Colors.blue[400]!
+                                            : (usageDay / allDay < 0.9
+                                                ? Colors.orange[400]!
+                                                : Colors.red[700]!),
+                                        radian: (usageDay / allDay) * pi,
+                                      ),
+                                      size: Size(
+                                          ((mediaSize.width - 80) * 3 / 4 -
+                                                  30) /
+                                              2,
+                                          (mediaSize.width - 80) * 3 / 4 - 30),
+                                      child: Container(
+                                        width: ((mediaSize.width - 80) * 3 / 4 -
+                                                30) /
+                                            2,
+                                        height:
+                                            (mediaSize.width - 80) * 3 / 4 - 30,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: mediaSize.width -
+                                        80 -
+                                        ((mediaSize.width - 80) * 3 / 4 - 30) /
+                                            2,
+                                    height: (mediaSize.width - 80) * 3 / 4 - 30,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        Text(
+                                          "정수량",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle2,
+                                        ),
+                                        Text(
+                                          "${(usageDay / allDay * 100).toInt()}%",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle1,
+                                        ),
+                                        Text(
+                                          "사용",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle2,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Positioned(
+                                top: (1 - cos((usageDay / allDay) * pi)) *
+                                        ((mediaSize.width - 80) * 3 / 4 -
+                                            30 -
+                                            16) /
+                                        2 +
+                                    8 -
+                                    12,
+                                left: sin((usageDay / allDay) * pi) *
+                                        ((mediaSize.width - 80) * 3 / 4 -
+                                            30 -
+                                            16) /
+                                        2 -
+                                    12,
+                                child: Container(
+                                  width: 24,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: usageDay / allDay < 0.7
+                                        ? Colors.blue[400]!
+                                        : (usageDay / allDay < 0.9
+                                            ? Colors.orange[400]!
+                                            : Colors.red[700]!),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      width: 4,
+                                      color: usageDay / allDay < 0.7
+                                          ? Colors.blue[100]!
+                                          : (usageDay / allDay < 0.9
+                                              ? Colors.orange[100]!
+                                              : Colors.red[200]!),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          flex: allDay - usageDay,
-                          child: Container(
-                            height: ((mediaSize.width - 20) / 4 - 20) / 6,
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      width: mediaSize.width - 80,
+                      height: (mediaSize.width - 80) / 4,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                        color: Colors.deepPurple[300],
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  "사용시작일",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                                Text(
+                                  "${DateFormat("yyyy년 MM월 dd일").format(startDate)}",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                              ],
+                            ),
+                          ),
+                          VerticalDivider(
+                            thickness: 2,
+                            width: 2,
+                            indent: 4,
+                            endIndent: 4,
                             color: Colors.white,
                           ),
-                        ),
-                        Text("${(usageDay / allDay * 100).toInt()}%사용"),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ],
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  "필터교체일",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                                Text(
+                                  "${DateFormat("yyyy년 MM월 dd일").format(replaceDate)}",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SizedBox(
+              width: e.productName.length * 24,
+            ),
+            Container(
+              height: mediaSize.height -
+                  (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
+                  (68 + MediaQuery.of(context).padding.bottom) -
+                  (mediaSize.width) +
+                  30,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: filterImage,
+            ),
+          ],
+        ),
+      ],
     );
   }
 
-  _deleteFilter(int index) {
+  Future<void> _deleteFilter(int index) async {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
         _filters.removeAt(index);
@@ -379,12 +552,12 @@ class _MyFilterState extends State<MyFilter>
         _descTextController.removeAt(index);
         _focus.removeAt(index);
 
-        _saveToStorage();
+        _localStorageProv.saveData(_filters);
       });
     });
   }
 
-  _editFilter(BuildContext context, int index) {
+  Future<void> _editFilter(BuildContext context, int index) async {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
         _filters[index] =
@@ -393,7 +566,7 @@ class _MyFilterState extends State<MyFilter>
         _isEditable[index] = false;
         _focus[index].unfocus();
 
-        _saveToStorage();
+        _localStorageProv.saveData(_filters);
       });
     });
   }
@@ -405,93 +578,187 @@ class _MyFilterState extends State<MyFilter>
     return 0;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-
-    final Size mediaSize = MediaQuery.of(context).size;
-
-    return FutureBuilder<bool>(
-      future: storage.ready,
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (!_initialized) {
-            var filterDatas = storage.getItem("eins_filter");
-
-            if (filterDatas != null) {
-              _filters =
-                  List<Filter>.from((filterDatas as List).map((e) => Filter(
-                        id: e["id"],
-                        productName: e["product_name"],
-                        defaultDuration: e["default_duration"],
-                        startDate: DateTime.parse(e["start_date"]),
-                        replaceDate: DateTime.parse(e["replace_date"]),
-                        desc: e["desc"],
-                      )));
-
-              _isEditable =
-                  List<bool>.generate(_filters.length, (index) => false);
-
-              _filterWidgets = List<Widget>.from(
-                  _filters.map((e) => _makeFilterWidget(context, e)));
-
-              _descTextController = List<TextEditingController>.generate(
-                  _filters.length,
-                  (index) => TextEditingController(text: _filters[index].desc));
-
-              _focus = List<FocusNode>.generate(
-                  _filters.length, (index) => FocusNode());
-            }
-
-            _filterWidgets.add(Container(
-              width: mediaSize.width - 20,
-              height: (mediaSize.width - 20) * 3 / 4,
-              decoration: BoxDecoration(
+  Widget _bottomSheetButton(BuildContext context,
+      {required String text, required IconData icon, required int num}) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: InkWell(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.25,
+          height: MediaQuery.of(context).size.width * 0.25,
+          decoration: BoxDecoration(
+            color: Colors.indigo[200],
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                icon,
                 color: Colors.white,
-                border: Border.all(
-                  width: 10,
-                  color: Colors.indigo[300]!,
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
-                    "새로운 필터 추가하기",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    iconSize: 60,
-                    color: Colors.indigo[700],
-                    icon: Icon(Icons.add_circle_outline_outlined),
-                    onPressed: () {
-                      _addFilter(context);
-                    },
-                  ),
-                ],
+              Text(
+                text,
+                style: TextStyle(color: Colors.white),
               ),
-            ));
-
-            _initialized = true;
-          }
-
-          return Column(
-            children: _filterWidgets,
-          );
-        }
-
-        return const Center(child: CircularProgressIndicator());
-      },
+            ],
+          ),
+        ),
+        onTap: () {
+          Navigator.of(context).pop(num);
+        },
+      ),
     );
   }
 
   @override
-  bool get wantKeepAlive => true;
+  Widget build(BuildContext context) {
+    final Size mediaSize = MediaQuery.of(context).size;
+
+    return Stack(
+      children: <Widget>[
+        PageView(
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
+          children: <Widget>[
+            ..._filterWidgets,
+            Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: _filterWidgets.length == 0
+                      ? Text(
+                          "등록된 필터가 없습니다. 필터를 등록해주세요!",
+                          style: Theme.of(context).textTheme.bodyText1,
+                        )
+                      : Container(),
+                ),
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          width: mediaSize.width - 80,
+                          height: mediaSize.width - 80,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(15)),
+                            color: Colors.deepPurple[300],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "새로운 필터 추가하기",
+                                style: Theme.of(context).textTheme.subtitle2,
+                              ),
+                              IconButton(
+                                iconSize: 60,
+                                color: Colors.white,
+                                icon: Icon(Icons.add_circle_outline_outlined),
+                                onPressed: () {
+                                  _addFilter(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+        _filterWidgets.length == 0
+            ? Container()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:
+                        List<Widget>.generate(_filters.length * 2 + 1, (index) {
+                      if (index % 2 == 0) {
+                        return Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.deepPurple[900]!,
+                              width: 1,
+                            ),
+                            shape: BoxShape.circle,
+                            color: index / 2 == _currentPage
+                                ? Colors.deepPurple
+                                : Colors.deepPurple[100],
+                          ),
+                        );
+                      } else {
+                        return SizedBox(width: 10);
+                      }
+                    }),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                ],
+              ),
+      ],
+    );
+  }
+}
+
+class MyPainter extends CustomPainter {
+  final Color color;
+  final double radian;
+
+  MyPainter({required this.color, required this.radian});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 16;
+
+    canvas.drawArc(
+        Rect.fromLTWH(
+            0 - (size.width - 8), 8, size.width * 2 - 16, size.height - 16),
+        0 - pi / 2,
+        radian,
+        false,
+        paint);
+
+    paint.color = Colors.white;
+
+    canvas.drawArc(
+        Rect.fromLTWH(
+            0 - (size.width - 8), 8, size.width * 2 - 16, size.height - 16),
+        radian - pi / 2,
+        pi - radian,
+        false,
+        paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
 }
 
 class _AndroidSessionDialog extends StatefulWidget {
@@ -499,7 +766,7 @@ class _AndroidSessionDialog extends StatefulWidget {
 
   final String alertMessage;
 
-  final Future<String?> Function(NfcTag tag) handleTag;
+  final String Function(NfcTag tag) handleTag;
 
   @override
   State<StatefulWidget> createState() => _AndroidSessionDialogState();
@@ -516,8 +783,7 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
     NfcManager.instance.startSession(
       onDiscovered: (tag) async {
         try {
-          final result = await widget.handleTag(tag);
-          if (result == null) return;
+          final result = widget.handleTag(tag);
           await NfcManager.instance.stopSession();
           setState(() => _alertMessage = result);
         } catch (e) {

@@ -13,25 +13,24 @@ class EinsYoutubePlayer extends StatelessWidget {
     final YoutubeProvider youtubeProv = context.read<YoutubeProvider>();
 
     return Container(
-      color: Colors.indigo[200],
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          color: Colors.deepPurple[300]),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 5),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
             child: Container(
               width: mediaSize.width - 20,
               child: Text(
                 "${youtubeProv.titleList[index]}",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.subtitle2,
               ),
             ),
           ),
           Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: youtubeProv.youtubePlayerList[index]),
         ],
       ),

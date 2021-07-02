@@ -1,9 +1,10 @@
-import 'package:eins_client/providers/banner_provider.dart';
+import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:eins_client/screens/eins_client_screen.dart';
 import 'package:eins_client/screens/sales_web_view_screen.dart';
+import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,8 +21,9 @@ void main() {
     providers: [
       ChangeNotifierProvider<YoutubeProvider>(create: (_) => YoutubeProvider()),
       ChangeNotifierProvider<ProductProvider>(create: (_) => ProductProvider()),
-      ChangeNotifierProvider<BannerProvider>(create: (_) => BannerProvider()),
       ChangeNotifierProvider<SalesProvider>(create: (_) => SalesProvider()),
+      ChangeNotifierProvider<LocalStorageProvider>(
+          create: (_) => LocalStorageProvider()),
     ],
     child: MyApp(),
   ));
@@ -35,9 +37,9 @@ class MyApp extends StatelessWidget {
 
     await context.read<YoutubeProvider>().getYoutubeInfo();
 
-    await context.read<BannerProvider>().getBannerInfo();
-
     await context.read<SalesProvider>().getSalesInfo();
+
+    await context.read<LocalStorageProvider>().initLocalStorage();
   }
 
   @override
@@ -56,16 +58,21 @@ class MyApp extends StatelessWidget {
             },
             title: "EINS",
             theme: ThemeData(
-              primarySwatch: Colors.indigo,
+              primarySwatch: Colors.deepPurple,
               appBarTheme: AppBarTheme(
                 backgroundColor: Colors.white,
-                iconTheme: IconThemeData(
-                  color: Colors.indigo[900],
-                ),
               ),
-              tabBarTheme: TabBarTheme(
-                labelColor: Colors.indigo,
-                unselectedLabelColor: Colors.black,
+              textTheme: TextTheme(
+                headline1:
+                    TextStyle(color: Colors.white, fontSize: 48, height: 1),
+                subtitle1:
+                    TextStyle(color: Colors.white, fontSize: 36, height: 1),
+                subtitle2:
+                    TextStyle(color: Colors.white, fontSize: 24, height: 1),
+                bodyText1:
+                    TextStyle(color: Colors.white, fontSize: 18, height: 1),
+                bodyText2:
+                    TextStyle(color: Colors.white, fontSize: 16, height: 1),
               ),
             ),
             home: EinsClient(),
@@ -91,6 +98,12 @@ class MyApp extends StatelessWidget {
               }
             },
           );
+        }
+
+        if (snapshot.hasError) {
+          errorDialog(context, Exception(snapshot.error), afterDialog: (value) {
+            SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+          });
         }
 
         return MaterialApp(

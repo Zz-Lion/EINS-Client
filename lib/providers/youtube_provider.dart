@@ -79,7 +79,7 @@ class YoutubeProvider with ChangeNotifier {
           final controller = _youtubeControllerList[index];
 
           if (controller.value.isFullScreen) {
-            selectPlayer(index);
+            _toggleFullScreenMode(index);
 
             return false;
           }
@@ -103,7 +103,7 @@ class YoutubeProvider with ChangeNotifier {
                 color: Colors.white,
               ),
               onPressed: () {
-                selectPlayer(index);
+                _toggleFullScreenMode(index);
               },
             ),
           ],
@@ -112,9 +112,9 @@ class YoutubeProvider with ChangeNotifier {
     );
   }
 
-  void selectPlayer(int index) {
+  void _toggleFullScreenMode(int index) {
     if (!_youtubeControllerList[index].value.isPlaying) {
-      for (int i = 0; i < _length!; i++) {
+      for (int i = 0; i < (_length ?? 0); i++) {
         if (_youtubeControllerList[i].value.isPlaying) {
           _youtubeControllerList[i].pause();
         }
@@ -136,5 +136,13 @@ class YoutubeProvider with ChangeNotifier {
 
   void disposeController(int index) {
     _youtubeControllerList[index].dispose();
+  }
+
+  void pauseAllController() {
+    for (int i = 0; i < (_length ?? 0); i++) {
+      if (_youtubeControllerList[i].value.isPlaying) {
+        _youtubeControllerList[i].pause();
+      }
+    }
   }
 }

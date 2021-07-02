@@ -1,4 +1,5 @@
 import 'package:eins_client/widgets/app_bar.dart';
+import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class CustomerPage extends StatelessWidget {
@@ -9,10 +10,11 @@ class CustomerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(controller),
+      appBar: appBar(),
       body: SafeArea(
         child: Container(),
       ),
+      bottomNavigationBar: bottomNavigationBar(context, controller, 3),
     );
   }
 }

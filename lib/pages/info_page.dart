@@ -1,5 +1,6 @@
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:eins_client/widgets/app_bar.dart';
+import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/eins_youtube_player_widget.dart';
 import 'package:eins_client/widgets/product_view_widget.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,15 @@ class _InfoPageState extends State<InfoPage>
     }
 
     youtubePlayerList = List<Widget>.generate(
-        _youtubeProv.length, (index) => EinsYoutubePlayer(index: index));
+        _youtubeProv.length * 2 - 1,
+        (index) => index % 2 == 0
+            ? EinsYoutubePlayer(index: index ~/ 2)
+            : Divider(
+                thickness: 2,
+                color: Colors.deepPurple[300],
+                indent: 15,
+                endIndent: 15,
+              ));
   }
 
   @override
@@ -55,7 +64,7 @@ class _InfoPageState extends State<InfoPage>
 
     final Widget defaultWidget = Builder(
         builder: (context) => Scaffold(
-              appBar: appBar(widget.controller),
+              appBar: appBar(),
               body: SafeArea(
                 child: Builder(builder: (context) {
                   _scrollController =
@@ -64,7 +73,6 @@ class _InfoPageState extends State<InfoPage>
                   return SingleChildScrollView(
                     controller: _scrollController,
                     child: Container(
-                      color: Colors.indigo[100],
                       child: Column(
                         children: <Widget>[
                           ProductView(),
@@ -77,6 +85,8 @@ class _InfoPageState extends State<InfoPage>
                   );
                 }),
               ),
+              bottomNavigationBar:
+                  bottomNavigationBar(context, widget.controller, 1),
             )).build(context);
 
     return OrientationBuilder(builder: (context, orientation) {

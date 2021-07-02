@@ -1,9 +1,7 @@
-import 'package:eins_client/providers/banner_provider.dart';
 import 'package:eins_client/widgets/app_bar.dart';
-import 'package:eins_client/widgets/eins_banner_widget.dart';
+import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/my_filter_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key, required this.controller}) : super(key: key);
@@ -15,32 +13,22 @@ class HomePage extends StatelessWidget {
     final Size mediaSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: appBar(controller),
+      appBar: appBar(),
       body: SafeArea(
-        child: Builder(builder: (context) {
-          return SingleChildScrollView(
-            child: Container(
+        child: SingleChildScrollView(
+          child: Builder(builder: (context) {
+            return Container(
               width: mediaSize.width,
               height: mediaSize.height -
-                  (Scaffold.of(context).appBarMaxHeight ?? 0.0),
-              color: Colors.indigo[100],
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                      child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(10),
-                    child: MyFilter(),
-                  )),
-                  const SizedBox(height: 10),
-                  EinsBanner(
-                    einsBanners: context.read<BannerProvider>().bannerImages,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
+                  (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
+                  (68 + MediaQuery.of(context).padding.bottom),
+              color: Colors.deepPurple,
+              child: MyFilter(),
+            );
+          }),
+        ),
       ),
+      bottomNavigationBar: bottomNavigationBar(context, controller, 0),
     );
   }
 }

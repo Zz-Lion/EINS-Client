@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 
 class ProductProvider with ChangeNotifier {
   int? _length;
-  List<Product> _productList = <Product>[];
+  List<ProductModel> _productList = <ProductModel>[];
   List<CachedNetworkImage> _productImageList = <CachedNetworkImage>[];
 
   int get length => _length ?? 0;
-  List<Product> get productList => _productList;
+  List<ProductModel> get productList => _productList;
   List<CachedNetworkImage> get productImageList => _productImageList;
 
   Future<void> getProductInfo() async {
-    List<Product> tempProducts = <Product>[];
+    List<ProductModel> tempProducts = <ProductModel>[];
     List<CachedNetworkImage> tempImages = <CachedNetworkImage>[];
     try {
       final QuerySnapshot<Map<String, dynamic>> productsData =
@@ -23,7 +23,7 @@ class ProductProvider with ChangeNotifier {
       productsData.docs.forEach((element) {
         Map<String, dynamic> e = element.data();
 
-        tempProducts.add(Product.fromDoc(element));
+        tempProducts.add(ProductModel.fromDoc(element));
         tempImages.add(CachedNetworkImage(
             imageUrl: e["image_url"] as String, fit: BoxFit.fitHeight));
       });

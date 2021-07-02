@@ -46,7 +46,10 @@ Future<void> errorDialog(BuildContext context, Exception e,
         builder: (context) {
           return AlertDialog(
             title: Text(errorTitle),
-            content: Text(errorPlugin + "\n" + errorMessage),
+            content: Text(
+              /*errorPlugin + "\n" + */ errorMessage,
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),

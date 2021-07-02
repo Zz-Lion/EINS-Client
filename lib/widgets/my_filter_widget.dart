@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -21,11 +22,12 @@ class MyFilter extends StatefulWidget {
 
 class _MyFilterState extends State<MyFilter> {
   late final LocalStorageProvider _localStorageProv;
-  late List<Filter> _filters;
+  late List<FilterModel> _filters;
   late List<bool> _isEditable;
   late List<TextEditingController> _descTextController;
   late List<FocusNode> _focus;
   late List<Widget> _filterWidgets;
+  late PageController _controller;
   late int _currentPage;
 
   @override
@@ -39,6 +41,7 @@ class _MyFilterState extends State<MyFilter> {
     _descTextController = List<TextEditingController>.generate(_filters.length,
         (index) => TextEditingController(text: _filters[index].desc));
     _focus = List<FocusNode>.generate(_filters.length, (index) => FocusNode());
+    _controller = PageController();
     _currentPage = 0;
   }
 
@@ -79,43 +82,89 @@ class _MyFilterState extends State<MyFilter> {
   }
 
   Future<void> _addFilter(BuildContext context) async {
-    String? id = "4a81962323580";
+    String? id /* = "4a81962323580"*/;
+
     try {
+      if (!(await NfcManager.instance.isAvailable())) {
+        throw "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.";
+      }
+
+      try {
+        if (Platform.isIOS) {
+          await NfcManager.instance.startSession(
+            alertMessage: "기기를 필터 가까이에 가져다주세요.",
+            onDiscovered: (NfcTag tag) async {
+              try {
+                id = _handleTag(tag);
+                await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
+              } catch (e) {
+                id = null;
+
+                throw "NFC태그 정보를 불러올 수 없습니다.";
+              }
+            },
+          );
+        }
+
+        if (Platform.isAndroid) {
+          id = await showDialog(
+            context: context,
+            builder: (context) =>
+                _AndroidSessionDialog("기기를 필터 가까이에 가져다주세요.", _handleTag),
+          );
+        }
+      } catch (e) {
+        throw "NFC태그 정보를 불러올 수 없습니다.";
+      }
+
       if (id != null) {
+        print(id);
+
+        if (_findIndex(id!) != null) {
+          throw "이미 등록된 필터 입니다";
+        }
+
         DocumentSnapshot<Map<String, dynamic>> filterData =
             await filtersRef.doc(id).get();
 
         if (filterData.exists) {
           if (filterData.data()!["start_date"] == null) {
-            final int value = await showModalBottomSheet(
-              enableDrag: false,
-              context: context,
-              builder: (context) => Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Text(
-                      "필터를 사용하시는 환경을 설정해주세요.",
-                      style: TextStyle(fontSize: 18),
+            final int value;
+
+            try {
+              value = await showModalBottomSheet(
+                enableDrag: false,
+                context: context,
+                builder: (context) => Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        "필터를 사용하시는 환경을 설정해주세요.",
+                        style: TextStyle(color: Colors.black, fontSize: 18),
+                      ),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      _bottomSheetButton(context,
-                          text: "3인 이하 가정집", icon: Icons.home_filled, num: 1),
-                      _bottomSheetButton(context,
-                          text: "4인 이상 가정집", icon: Icons.home_filled, num: 2),
-                      _bottomSheetButton(context,
-                          text: "사무실", icon: Icons.home_filled, num: 2),
-                    ],
-                  ),
-                ],
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-              ),
-            );
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        _bottomSheetButton(context,
+                            text: "3인 이하 가정집", icon: Icons.home_filled, num: 1),
+                        _bottomSheetButton(context,
+                            text: "4인 이상 가정집", icon: Icons.home_filled, num: 2),
+                        _bottomSheetButton(context,
+                            text: "사무실", icon: Icons.home_filled, num: 2),
+                      ],
+                    ),
+                  ],
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(20.0)),
+                ),
+              );
+            } catch (e) {
+              throw "필터를 사용하시는 환경을 설정해주세요.";
+            }
 
             Map<String, dynamic> tempDoc = <String, dynamic>{};
             DateTime startDate = DateTime.now();
@@ -141,65 +190,37 @@ class _MyFilterState extends State<MyFilter> {
             filterData = newFilterData;
           }
 
-          WidgetsBinding.instance?.addPostFrameCallback((_) {
-            setState(() {
-              _filters.insert(0, Filter.fromDoc(filterData));
+          setState(() {
+            _filters.insert(0, FilterModel.fromDoc(filterData));
 
-              _isEditable.insert(0, false);
+            _isEditable.insert(0, false);
 
-              _filterWidgets.insert(0, _makeFilterWidget(context, _filters[0]));
+            _filterWidgets.insert(0, _makeFilterWidget(context, _filters[0]));
 
-              _descTextController.insert(
-                  0, TextEditingController(text: _filters[0].desc));
+            _descTextController.insert(
+                0, TextEditingController(text: _filters[0].desc));
 
-              _focus.insert(0, FocusNode());
+            _focus.insert(0, FocusNode());
 
-              _localStorageProv.saveData(_filters);
-            });
+            _currentPage = 0;
+
+            _controller.jumpToPage(0);
+
+            _localStorageProv.saveData(_filters);
           });
         } else {
-          throw Exception("등록되지 않은 필터입니다.");
+          print("씨11111111발");
+          throw "등록되지 않은 필터입니다.";
         }
       } else {
-        throw Exception("NFC태그 id를 확인할 수 없습니다.");
+        throw "NFC태그 id를 확인할 수 없습니다.";
       }
     } catch (e) {
-      errorDialog(context, Exception(e));
+      await errorDialog(context, Exception(e));
     }
-    // if (!(await NfcManager.instance.isAvailable())) {
-    //   throw Exception("NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.");
-    // }
-
-    // try {
-    //   if (Platform.isIOS) {
-    //     await NfcManager.instance.startSession(
-    //       alertMessage: "기기를 필터 가까이에 가져다주세요.",
-    //       onDiscovered: (NfcTag tag) async {
-    //         try {
-    //           id = _handleTag(tag);
-    //           await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
-    //         } catch (e) {
-    //           id = null;
-
-    //           throw Exception("NFC태그 정보를 불러올 수 없습니다.");
-    //         }
-    //       },
-    //     );
-    //   }
-
-    //   if (Platform.isAndroid) {
-    //     id = await showDialog(
-    //       context: context,
-    //       builder: (context) =>
-    //           _AndroidSessionDialog("기기를 필터 가까이에 가져다주세요.", _handleTag),
-    //     );
-    //   }
-    // } catch (e) {
-    //   throw Exception("NFC태그 정보를 불러올 수 없습니다.");
-    // }
   }
 
-  Widget _makeFilterWidget(BuildContext context, Filter e) {
+  Widget _makeFilterWidget(BuildContext context, FilterModel e) {
     final Size mediaSize = MediaQuery.of(context).size;
     final DateTime startDate = e.startDate;
     final DateTime replaceDate = e.replaceDate;
@@ -269,7 +290,7 @@ class _MyFilterState extends State<MyFilter> {
                         children: <Widget>[
                           StatefulBuilder(builder:
                               (BuildContext context, StateSetter setState) {
-                            final int filterIndex = _findIndex(e.id);
+                            final int filterIndex = _findIndex(e.id)!;
 
                             return Row(
                               children: <Widget>[
@@ -571,11 +592,11 @@ class _MyFilterState extends State<MyFilter> {
     });
   }
 
-  int _findIndex(String id) {
+  int? _findIndex(String id) {
     for (int i = 0; i < _filters.length; i++)
       if (_filters[i].id == id) return i;
 
-    return 0;
+    return null;
   }
 
   Widget _bottomSheetButton(BuildContext context,
@@ -599,7 +620,7 @@ class _MyFilterState extends State<MyFilter> {
               ),
               Text(
                 text,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(fontSize: 14, color: Colors.white),
               ),
             ],
           ),
@@ -613,11 +634,10 @@ class _MyFilterState extends State<MyFilter> {
 
   @override
   Widget build(BuildContext context) {
-    final Size mediaSize = MediaQuery.of(context).size;
-
     return Stack(
       children: <Widget>[
         PageView(
+          controller: _controller,
           onPageChanged: (index) {
             setState(() {
               _currentPage = index;
@@ -625,63 +645,7 @@ class _MyFilterState extends State<MyFilter> {
           },
           children: <Widget>[
             ..._filterWidgets,
-            Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: _filterWidgets.length == 0
-                      ? Text(
-                          "등록된 필터가 없습니다. 필터를 등록해주세요!",
-                          style: Theme.of(context).textTheme.bodyText1,
-                        )
-                      : Container(),
-                ),
-                Expanded(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          width: mediaSize.width - 80,
-                          height: mediaSize.width - 80,
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(15)),
-                            color: Colors.deepPurple[300],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                "새로운 필터 추가하기",
-                                style: Theme.of(context).textTheme.subtitle2,
-                              ),
-                              IconButton(
-                                iconSize: 60,
-                                color: Colors.white,
-                                icon: Icon(Icons.add_circle_outline_outlined),
-                                onPressed: () {
-                                  _addFilter(context);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
+            _registerFilter(context),
           ],
         ),
         _filterWidgets.length == 0
@@ -718,6 +682,67 @@ class _MyFilterState extends State<MyFilter> {
                   ),
                 ],
               ),
+      ],
+    );
+  }
+
+  Widget _registerFilter(BuildContext context) {
+    final Size mediaSize = MediaQuery.of(context).size;
+
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: _filterWidgets.length == 0
+              ? Text(
+                  "등록된 필터가 없습니다. 필터를 등록해주세요!",
+                  style: Theme.of(context).textTheme.bodyText1,
+                )
+              : Container(),
+        ),
+        Expanded(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: mediaSize.width - 80,
+                  height: mediaSize.width - 80,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(15)),
+                    color: Colors.deepPurple[300],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "새로운 필터 추가하기",
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+                      IconButton(
+                        iconSize: 60,
+                        color: Colors.white,
+                        icon: Icon(Icons.add_circle_outline_outlined),
+                        onPressed: () {
+                          _addFilter(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

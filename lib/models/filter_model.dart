@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Filter {
+class FilterModel {
   final String id;
   final String productName;
   final int defaultDuration;
@@ -8,7 +8,7 @@ class Filter {
   final DateTime replaceDate;
   final String desc;
 
-  Filter({
+  FilterModel({
     required this.id,
     required this.productName,
     required this.defaultDuration,
@@ -17,11 +17,12 @@ class Filter {
     required this.desc,
   });
 
-  factory Filter.fromDoc(DocumentSnapshot<Map<String, dynamic>> filterDoc) {
+  factory FilterModel.fromDoc(
+      DocumentSnapshot<Map<String, dynamic>> filterDoc) {
     final Map<String, dynamic> filterData =
         Map<String, dynamic>.from(filterDoc.data()!);
 
-    return Filter(
+    return FilterModel(
       id: filterDoc.id,
       productName: filterData["product_name"] as String,
       defaultDuration: filterData["default_duration"] as int,
@@ -44,9 +45,9 @@ class Filter {
     return m;
   }
 
-  Filter copyWith(
+  FilterModel copyWith(
       {id, productName, defaultDuration, startDate, replaceDate, desc}) {
-    return Filter(
+    return FilterModel(
       id: id ?? this.id,
       productName: productName ?? this.productName,
       defaultDuration: defaultDuration ?? this.defaultDuration,

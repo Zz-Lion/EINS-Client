@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Product {
+class ProductModel {
   final String productName;
   final String imageUrl;
   final DateTime releaseDate;
@@ -9,7 +9,7 @@ class Product {
   final String? certification;
   final String? performence;
 
-  Product({
+  ProductModel({
     required this.productName,
     required this.imageUrl,
     required this.releaseDate,
@@ -19,11 +19,12 @@ class Product {
     this.performence,
   });
 
-  factory Product.fromDoc(DocumentSnapshot<Map<String, dynamic>> productDoc) {
+  factory ProductModel.fromDoc(
+      DocumentSnapshot<Map<String, dynamic>> productDoc) {
     final Map<String, dynamic> productData =
         Map<String, dynamic>.from(productDoc.data()!);
 
-    return Product(
+    return ProductModel(
       productName: productData["product_name"] as String,
       imageUrl: productData["image_url"] as String,
       releaseDate: (productData["release_date"] as Timestamp).toDate(),
@@ -47,7 +48,7 @@ class Product {
     return m;
   }
 
-  Product copyWith({
+  ProductModel copyWith({
     productName,
     imageUrl,
     purchaseLink,
@@ -58,7 +59,7 @@ class Product {
     certification,
     performence,
   }) {
-    return Product(
+    return ProductModel(
       productName: productName ?? this.productName,
       imageUrl: imageUrl ?? this.imageUrl,
       releaseDate: releaseDate ?? this.releaseDate,

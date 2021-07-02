@@ -13,28 +13,29 @@ class LocalStorageProvider with ChangeNotifier {
     }
   }
 
-  List<Filter> fetchData() {
+  List<FilterModel> fetchData() {
     try {
       var filterDatas = _storage.getItem("eins_filter");
 
       if (filterDatas != null) {
-        return List<Filter>.from((filterDatas as List).map((e) => Filter(
-              id: e["id"],
-              productName: e["product_name"],
-              defaultDuration: e["default_duration"],
-              startDate: DateTime.parse(e["start_date"]),
-              replaceDate: DateTime.parse(e["replace_date"]),
-              desc: e["desc"],
-            )));
+        return List<FilterModel>.from(
+            (filterDatas as List).map((e) => FilterModel(
+                  id: e["id"],
+                  productName: e["product_name"],
+                  defaultDuration: e["default_duration"],
+                  startDate: DateTime.parse(e["start_date"]),
+                  replaceDate: DateTime.parse(e["replace_date"]),
+                  desc: e["desc"],
+                )));
       }
 
-      return <Filter>[];
+      return <FilterModel>[];
     } catch (e) {
       throw Exception("로컬 저장소에서 불러올 수 없습니다.");
     }
   }
 
-  Future<void> saveData(List<Filter> filters) async {
+  Future<void> saveData(List<FilterModel> filters) async {
     try {
       await _storage.setItem(
           'eins_filter', (filters.map((e) => e.toJson())).toList());

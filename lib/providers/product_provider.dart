@@ -4,7 +4,7 @@ import 'package:eins_client/constants/db_constants.dart';
 import 'package:eins_client/models/product_model.dart';
 import 'package:flutter/material.dart';
 
-class ProductProvider with ChangeNotifier {
+class ProductProvider {
   int? _length;
   List<ProductModel> _productList = <ProductModel>[];
   List<CachedNetworkImage> _productImageList = <CachedNetworkImage>[];
@@ -40,6 +40,14 @@ class ProductProvider with ChangeNotifier {
     for (int i = 0; i < (_length ?? 0); i++) {
       if (_productList[i].productName == productName) {
         return _productImageList[i];
+      }
+    }
+  }
+
+  List<double>? productDefaultDurationByName(String productName) {
+    for (int i = 0; i < (_length ?? 0); i++) {
+      if (_productList[i].productName == productName) {
+        return _productList[i].defaultDuration;
       }
     }
   }

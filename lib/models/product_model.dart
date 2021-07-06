@@ -8,6 +8,7 @@ class ProductModel {
   final String recommendedPeriod;
   final String? certification;
   final String? performence;
+  final List<double> defaultDuration;
 
   ProductModel({
     required this.productName,
@@ -17,6 +18,7 @@ class ProductModel {
     required this.recommendedPeriod,
     this.certification,
     this.performence,
+    required this.defaultDuration,
   });
 
   factory ProductModel.fromDoc(
@@ -32,6 +34,9 @@ class ProductModel {
       recommendedPeriod: productData["recommended_period"] as String,
       certification: productData["certification"] as String?,
       performence: productData["performence"] as String?,
+      defaultDuration: List<num>.from(productData["default_duration"])
+          .map((e) => e.toDouble())
+          .toList(),
     );
   }
 
@@ -44,6 +49,7 @@ class ProductModel {
     m["recommended_period"] = recommendedPeriod;
     m["certification"] = certification ?? null;
     m["performence"] = performence ?? null;
+    m["default_duration"] = defaultDuration;
 
     return m;
   }
@@ -58,6 +64,7 @@ class ProductModel {
     recommendedPeriod,
     certification,
     performence,
+    defaultDuration,
   }) {
     return ProductModel(
       productName: productName ?? this.productName,
@@ -67,6 +74,7 @@ class ProductModel {
       recommendedPeriod: recommendedPeriod ?? this.recommendedPeriod,
       certification: certification ?? this.certification,
       performence: performence ?? this.performence,
+      defaultDuration: defaultDuration ?? this.defaultDuration,
     );
   }
 }

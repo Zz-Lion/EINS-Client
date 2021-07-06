@@ -1,4 +1,5 @@
 import 'package:eins_client/providers/local_storage_provider.dart';
+import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
@@ -20,10 +21,21 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider<YoutubeProvider>(create: (_) => YoutubeProvider()),
-      ChangeNotifierProvider<ProductProvider>(create: (_) => ProductProvider()),
-      ChangeNotifierProvider<SalesProvider>(create: (_) => SalesProvider()),
-      ChangeNotifierProvider<LocalStorageProvider>(
-          create: (_) => LocalStorageProvider()),
+      Provider<ProductProvider>(create: (_) => ProductProvider()),
+      Provider<SalesProvider>(create: (_) => SalesProvider()),
+      Provider<LocalStorageProvider>(create: (_) => LocalStorageProvider()),
+      ChangeNotifierProxyProvider2<ProductProvider, LocalStorageProvider,
+          MyFilterProvider>(
+        create: (_) => MyFilterProvider(
+            productProv: ProductProvider(),
+            localStorageProv: LocalStorageProvider()),
+        update: (BuildContext context,
+                ProductProvider productProv,
+                LocalStorageProvider localStorageProv,
+                MyFilterProvider? myFilterProv) =>
+            MyFilterProvider(
+                productProv: productProv, localStorageProv: localStorageProv),
+      ),
     ],
     child: MyApp(),
   ));

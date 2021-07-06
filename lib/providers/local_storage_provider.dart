@@ -1,8 +1,7 @@
 import 'package:eins_client/models/filter_model.dart';
-import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
-class LocalStorageProvider with ChangeNotifier {
+class LocalStorageProvider {
   final LocalStorage _storage = LocalStorage('eins_filter');
 
   Future<void> initLocalStorage() async {
@@ -22,7 +21,6 @@ class LocalStorageProvider with ChangeNotifier {
             (filterDatas as List).map((e) => FilterModel(
                   id: e["id"],
                   productName: e["product_name"],
-                  defaultDuration: e["default_duration"],
                   startDate: DateTime.parse(e["start_date"]),
                   replaceDate: DateTime.parse(e["replace_date"]),
                   desc: e["desc"],

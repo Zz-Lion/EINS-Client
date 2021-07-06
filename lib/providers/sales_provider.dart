@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eins_client/constants/db_constants.dart';
 import 'package:flutter/cupertino.dart';
 
-class SalesProvider with ChangeNotifier {
+class SalesProvider {
   int? _length;
   List<String> _salesUrlList = <String>[];
   List<String> _titleList = <String>[];

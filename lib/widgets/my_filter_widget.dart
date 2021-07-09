@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
-import 'package:eins_client/widgets/filter_widget.dart';
+import 'package:eins_client/widgets/filter_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
@@ -50,9 +50,9 @@ class _MyFilterState extends State<MyFilter> {
   }
 
   Future<void> _addFilter(BuildContext context) async {
-    String? id /* = "4a81962323580"*/;
-
     try {
+      String? id /* = "4a81962323580"*/;
+
       if (!(await NfcManager.instance.isAvailable())) {
         throw "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.";
       }
@@ -97,12 +97,13 @@ class _MyFilterState extends State<MyFilter> {
         throw "NFC태그 id를 확인할 수 없습니다.";
       }
     } catch (e) {
-      await errorDialog(context, Exception(e));
+      errorDialog(context, Exception(e));
     }
   }
 
   Widget _registerFilter(BuildContext context, int length) {
     final Size mediaSize = MediaQuery.of(context).size;
+    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
 
     return Column(
       children: <Widget>[
@@ -177,8 +178,8 @@ class _MyFilterState extends State<MyFilter> {
                 });
               },
               children: <Widget>[
-                ...List<FilterWidget>.generate(
-                    length, (index) => FilterWidget(index: index)),
+                ...List<FilterItem>.generate(
+                    length, (index) => FilterItem(index: index)),
                 _registerFilter(context, length),
               ],
             ),

@@ -36,11 +36,11 @@ class _SalesWebViewState extends State<SalesWebView> {
               alignment: Alignment.topRight,
               child: InkWell(
                 child: Container(
-                  width: 45,
-                  height: 45,
+                  width: 40,
+                  height: 40,
                   margin: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.indigo),
+                      shape: BoxShape.circle, color: Colors.deepPurple),
                   child: Center(
                     child: Icon(
                       Icons.close,

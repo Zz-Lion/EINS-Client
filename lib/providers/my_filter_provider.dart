@@ -4,6 +4,10 @@ import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class MyFilterProvider with ChangeNotifier {
   MyFilterProvider({required this.productProv, required this.localStorageProv});
@@ -92,6 +96,8 @@ class MyFilterProvider with ChangeNotifier {
       newFilterData = await filtersRef.doc(id).get();
 
       filterData = newFilterData;
+
+      await dailyAtTimeNotification();
     }
 
     _filters.insert(0, FilterModel.fromDoc(filterData));
@@ -110,15 +116,19 @@ class MyFilterProvider with ChangeNotifier {
 
     localStorageProv.saveData(_filters);
 
+    await dailyAtTimeNotification();
+
     notifyListeners();
   }
 
-  void deleteFilter(int index) {
+  Future<void> deleteFilter(int index) async {
     _filters.removeAt(index);
 
     _length--;
 
     localStorageProv.saveData(_filters);
+
+    dailyAtTimeNotification();
 
     notifyListeners();
   }
@@ -128,6 +138,66 @@ class MyFilterProvider with ChangeNotifier {
       if (_filters[i].id == id) return i;
 
     return null;
+  }
+
+  Future<void> dailyAtTimeNotification() async {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    final bool? result = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
+    if (result == true) {
+      await deleteNotification();
+
+      final String notiTitle = "필터 교체 알림";
+      late String notiDesc;
+      for (int i = 0; i < _length; i++) {
+        notiDesc = "${_filters[i].desc} 교체일이 얼마 남지 않았습니다. 필터를 교체해주세요.";
+
+        var android = AndroidNotificationDetails('id', notiTitle, notiDesc,
+            importance: Importance.max, priority: Priority.max);
+        var ios = IOSNotificationDetails();
+        var detail = NotificationDetails(android: android, iOS: ios);
+
+        await flutterLocalNotificationsPlugin.zonedSchedule(
+          0,
+          notiTitle,
+          notiDesc,
+          _setNotiTime(),
+          detail,
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents: DateTimeComponents.time,
+        );
+      }
+    }
+  }
+
+  Future<void> deleteNotification() async {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.deleteNotificationChannelGroup('id');
+  }
+
+  tz.TZDateTime _setNotiTime() {
+    tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(
+        tz.local, now.year, now.month, now.day, now.hour, now.minute + 1);
+
+    return scheduledDate;
   }
 }
 

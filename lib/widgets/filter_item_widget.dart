@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,16 +10,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class FilterWidget extends StatefulWidget {
-  const FilterWidget({Key? key, required this.index}) : super(key: key);
+class FilterItem extends StatefulWidget {
+  const FilterItem({Key? key, required this.index}) : super(key: key);
 
   final int index;
 
   @override
-  _FilterWidgetState createState() => _FilterWidgetState();
+  _FilterItemState createState() => _FilterItemState();
 }
 
-class _FilterWidgetState extends State<FilterWidget> {
+class _FilterItemState extends State<FilterItem> {
   late final FilterModel e;
   late final DateTime startDate;
   late final DateTime replaceDate;
@@ -29,6 +30,8 @@ class _FilterWidgetState extends State<FilterWidget> {
   late bool _isEditable;
   late TextEditingController _descTextController;
   FocusNode _focus = FocusNode();
+  double _opacity = 1;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -44,6 +47,23 @@ class _FilterWidgetState extends State<FilterWidget> {
 
     _isEditable = false;
     _descTextController = TextEditingController(text: e.desc);
+
+    if (usageDay / allDay >= 0.9) {
+      _timer = Timer.periodic(Duration(seconds: 1), (_) {
+        setState(() {
+          _opacity = _opacity == 0 ? 1 : 0;
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _descTextController.dispose();
+    _focus.dispose();
+    _timer?.cancel();
+
+    super.dispose();
   }
 
   @override
@@ -263,17 +283,56 @@ class _FilterWidgetState extends State<FilterWidget> {
                                               .textTheme
                                               .subtitle2,
                                         ),
+                                        usageDay / allDay < 0.9
+                                            ? Text.rich(TextSpan(
+                                                children: <TextSpan>[
+                                                  TextSpan(
+                                                    text:
+                                                        "${(usageDay / allDay * 100).toInt()}%",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle1,
+                                                  ),
+                                                  TextSpan(
+                                                    text: "사용",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle2,
+                                                  ),
+                                                ],
+                                              ))
+                                            : AnimatedOpacity(
+                                                opacity: _opacity,
+                                                duration: Duration(seconds: 1),
+                                                child: Text.rich(TextSpan(
+                                                  children: <TextSpan>[
+                                                    TextSpan(
+                                                      text:
+                                                          "${(usageDay / allDay * 100).toInt()}%",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1,
+                                                    ),
+                                                    TextSpan(
+                                                      text: "사용",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle2,
+                                                    ),
+                                                  ],
+                                                )),
+                                              ),
                                         Text(
-                                          "${(usageDay / allDay * 100).toInt()}%",
+                                          "마지막 교체\n${usageDay ~/ 30}개월 전",
                                           style: Theme.of(context)
                                               .textTheme
-                                              .subtitle1,
+                                              .bodyText1,
                                         ),
                                         Text(
-                                          "사용",
+                                          "다음 교체\n${(allDay - usageDay) ~/ 30}개월 후",
                                           style: Theme.of(context)
                                               .textTheme
-                                              .subtitle2,
+                                              .bodyText1,
                                         ),
                                       ],
                                     ),

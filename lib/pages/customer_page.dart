@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:eins_client/providers/local_storage_provider.dart';
+import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/screens/chatting_screen.dart';
 import 'package:eins_client/screens/question_screen.dart';
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
@@ -79,9 +83,12 @@ class CustomerPage extends StatelessWidget {
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black)),
                         onChanged: (_) {
+                          // context
+                          //     .read<LocalStorageProvider>()
+                          //     .toggleNotification();
                           context
-                              .read<LocalStorageProvider>()
-                              .toggleNotification();
+                              .read<MyFilterProvider>()
+                              .dailyAtTimeNotification();
                         },
                         value:
                             context.watch<LocalStorageProvider>().isNotificated,
@@ -95,6 +102,35 @@ class CustomerPage extends StatelessWidget {
                         title: Text("사업자 정보",
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black)),
+                      ),
+                      Divider(height: 10),
+                      ListTile(
+                        leading: Icon(
+                          Platform.isIOS
+                              ? Icons.phone_iphone
+                              : Icons.phone_android,
+                          color: Colors.deepPurple[300],
+                        ),
+                        title: Text("버전 정보",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black)),
+                        trailing: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 70),
+                          child: FutureBuilder<PackageInfo>(
+                            future: PackageInfo.fromPlatform(),
+                            builder: (_, AsyncSnapshot<PackageInfo> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                return Text(
+                                  snapshot.data?.version ?? "",
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey),
+                                );
+                              }
+                              return Container();
+                            },
+                          ),
+                        ),
                       ),
                     ],
                   ),

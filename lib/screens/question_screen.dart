@@ -47,9 +47,19 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         _isOpen[index] = !_isOpen[index];
                       });
                     },
-                    title: Text(
-                      "Q. " + questionProv.questionList[index],
-                      style: TextStyle(fontSize: 18, color: Colors.black),
+                    title: Row(
+                      children: <Widget>[
+                        Text(
+                          "Q. ",
+                          style:
+                              TextStyle(fontSize: 18, color: Colors.deepPurple),
+                        ),
+                        Text(
+                          questionProv.questionList[index],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
+                      ],
                     ),
                     trailing: Icon(_isOpen[index]
                         ? Icons.keyboard_arrow_up
@@ -64,7 +74,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               Text(
                                 "A. ",
                                 style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
+                                    fontSize: 16, color: Colors.deepPurple),
                               ),
                               Flexible(
                                 child: Text(

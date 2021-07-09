@@ -25,7 +25,7 @@ class EinsYoutubePlayer extends StatelessWidget {
               width: mediaSize.width - 20,
               child: Text(
                 "${youtubeProv.titleList[index]}",
-                style: Theme.of(context).textTheme.subtitle2,
+                style: TextStyle(color: Colors.white, fontSize: 24, height: 1),
               ),
             ),
           ),

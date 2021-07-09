@@ -70,10 +70,8 @@ class SalesItem extends StatelessWidget {
               children: <Widget>[
                 Text(
                   salesProv.subTitleList[index],
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText2!
-                      .copyWith(fontSize: 12, color: Colors.black),
+                  style:
+                      TextStyle(fontSize: 12, color: Colors.black, height: 1),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -81,16 +79,17 @@ class SalesItem extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       cost,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText2!
-                          .copyWith(color: Colors.black),
+                      style: TextStyle(
+                          color: Colors.black, fontSize: 14, height: 1),
                     ),
                     Text(
                       originalCost,
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          color: Colors.grey,
-                          decoration: TextDecoration.lineThrough),
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        height: 1,
+                        decoration: TextDecoration.lineThrough,
+                      ),
                     ),
                   ],
                 ),
@@ -127,7 +126,8 @@ class SalesItem extends StatelessWidget {
                   ),
                   Text(
                     "구매하기",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style:
+                        TextStyle(color: Colors.white, fontSize: 18, height: 1),
                   ),
                 ],
               ),

@@ -24,6 +24,10 @@ class MyFilterProvider with ChangeNotifier {
   void initFilter() {
     _filters = localStorageProv.fetchData();
     _length = _filters.length;
+
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      notifyListeners();
+    });
   }
 
   Future<void> addFilter(BuildContext context, String id) async {

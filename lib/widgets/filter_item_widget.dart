@@ -29,7 +29,7 @@ class _FilterItemState extends State<FilterItem> {
 
   late bool _isEditable;
   late TextEditingController _descTextController;
-  FocusNode _focus = FocusNode();
+  late FocusNode _focus;
   double _opacity = 1;
   Timer? _timer;
 
@@ -47,6 +47,7 @@ class _FilterItemState extends State<FilterItem> {
 
     _isEditable = false;
     _descTextController = TextEditingController(text: e.desc);
+    _focus = FocusNode();
 
     if (usageDay / allDay >= 0.9) {
       _timer = Timer.periodic(Duration(seconds: 1), (_) {
@@ -87,10 +88,11 @@ class _FilterItemState extends State<FilterItem> {
                       fit: BoxFit.fill,
                       child: Text(
                         e.productName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline1!
-                            .copyWith(fontWeight: FontWeight.bold, height: 1),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 48,
+                            height: 1,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -124,8 +126,10 @@ class _FilterItemState extends State<FilterItem> {
                       width: mediaSize.width - 80,
                       height: (mediaSize.width - 80) * 3 / 4,
                       decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(15),
+                            topRight: Radius.circular(15),
+                            bottomRight: Radius.circular(15)),
                         color: Colors.deepPurple[300],
                       ),
                       child: Column(
@@ -156,18 +160,18 @@ class _FilterItemState extends State<FilterItem> {
                                           scrollPadding:
                                               const EdgeInsets.all(0),
                                           controller: _descTextController,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2!
-                                              .copyWith(
-                                                  color: Colors.grey[400]),
+                                          style: TextStyle(
+                                              color: Colors.grey[400],
+                                              fontSize: 24,
+                                              height: 1),
                                         )
                                       : Text(
                                           "${_descTextController.text}",
                                           overflow: TextOverflow.ellipsis,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24,
+                                              height: 1),
                                         ),
                                 ),
                               ),
@@ -235,143 +239,135 @@ class _FilterItemState extends State<FilterItem> {
                               ),
                             ],
                           ),
-                          Stack(
+                          Row(
                             children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    width:
-                                        ((mediaSize.width - 80) * 3 / 4 - 30) /
-                                            2,
-                                    height: (mediaSize.width - 80) * 3 / 4 - 30,
-                                    child: CustomPaint(
-                                      painter: MyPainter(
-                                        color: usageDay / allDay < 0.7
-                                            ? Colors.blue[400]!
-                                            : (usageDay / allDay < 0.9
-                                                ? Colors.orange[400]!
-                                                : Colors.red[700]!),
-                                        radian: (usageDay / allDay) * pi,
-                                      ),
-                                      size: Size(
-                                          ((mediaSize.width - 80) * 3 / 4 -
-                                                  30) /
-                                              2,
-                                          (mediaSize.width - 80) * 3 / 4 - 30),
-                                      child: Container(
-                                        width: ((mediaSize.width - 80) * 3 / 4 -
-                                                30) /
-                                            2,
-                                        height:
-                                            (mediaSize.width - 80) * 3 / 4 - 30,
+                              AnimatedOpacity(
+                                opacity: usageDay / allDay < 0.9 ? 1 : _opacity,
+                                duration: usageDay / allDay < 0.9
+                                    ? Duration.zero
+                                    : Duration(seconds: 1),
+                                child: Stack(
+                                  children: <Widget>[
+                                    Container(
+                                      width: ((mediaSize.width - 80) * 3 / 4 -
+                                              30) /
+                                          2,
+                                      height:
+                                          (mediaSize.width - 80) * 3 / 4 - 30,
+                                      child: CustomPaint(
+                                        painter: MyPainter(
+                                          color: usageDay / allDay < 0.7
+                                              ? Colors.blue[400]!
+                                              : (usageDay / allDay < 0.9
+                                                  ? Colors.orange[400]!
+                                                  : Colors.red[700]!),
+                                          radian: (usageDay / allDay) * pi,
+                                        ),
+                                        size: Size(
+                                            ((mediaSize.width - 80) * 3 / 4 -
+                                                    30) /
+                                                2,
+                                            (mediaSize.width - 80) * 3 / 4 -
+                                                30),
+                                        child: Container(
+                                          width:
+                                              ((mediaSize.width - 80) * 3 / 4 -
+                                                      30) /
+                                                  2,
+                                          height:
+                                              (mediaSize.width - 80) * 3 / 4 -
+                                                  30,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    width: mediaSize.width -
-                                        80 -
-                                        ((mediaSize.width - 80) * 3 / 4 - 30) /
-                                            2,
-                                    height: (mediaSize.width - 80) * 3 / 4 - 30,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: <Widget>[
-                                        Text(
-                                          "정수량",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2,
+                                    Positioned(
+                                      top: (1 - cos((usageDay / allDay) * pi)) *
+                                              ((mediaSize.width - 80) * 3 / 4 -
+                                                  30 -
+                                                  16) /
+                                              2 +
+                                          8 -
+                                          12,
+                                      left: sin((usageDay / allDay) * pi) *
+                                              ((mediaSize.width - 80) * 3 / 4 -
+                                                  30 -
+                                                  16) /
+                                              2 -
+                                          12,
+                                      child: Container(
+                                        width: 24,
+                                        height: 24,
+                                        decoration: BoxDecoration(
+                                          color: usageDay / allDay < 0.7
+                                              ? Colors.blue[400]!
+                                              : (usageDay / allDay < 0.9
+                                                  ? Colors.orange[400]!
+                                                  : Colors.red[700]!),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            width: 4,
+                                            color: usageDay / allDay < 0.7
+                                                ? Colors.blue[100]!
+                                                : (usageDay / allDay < 0.9
+                                                    ? Colors.orange[100]!
+                                                    : Colors.red[200]!),
+                                          ),
                                         ),
-                                        usageDay / allDay < 0.9
-                                            ? Text.rich(TextSpan(
-                                                children: <TextSpan>[
-                                                  TextSpan(
-                                                    text:
-                                                        "${(usageDay / allDay * 100).toInt()}%",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1,
-                                                  ),
-                                                  TextSpan(
-                                                    text: "사용",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle2,
-                                                  ),
-                                                ],
-                                              ))
-                                            : AnimatedOpacity(
-                                                opacity: _opacity,
-                                                duration: Duration(seconds: 1),
-                                                child: Text.rich(TextSpan(
-                                                  children: <TextSpan>[
-                                                    TextSpan(
-                                                      text:
-                                                          "${(usageDay / allDay * 100).toInt()}%",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .subtitle1,
-                                                    ),
-                                                    TextSpan(
-                                                      text: "사용",
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .subtitle2,
-                                                    ),
-                                                  ],
-                                                )),
-                                              ),
-                                        Text(
-                                          "마지막 교체\n${usageDay ~/ 30}개월 전",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: mediaSize.width -
+                                    80 -
+                                    ((mediaSize.width - 80) * 3 / 4 - 30) / 2,
+                                height: (mediaSize.width - 80) * 3 / 4 - 30,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "정수량",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          height: 1),
+                                    ),
+                                    Text.rich(TextSpan(
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text:
+                                              "${(usageDay / allDay * 100).toInt()}%",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 36,
+                                              height: 1),
                                         ),
-                                        Text(
-                                          "다음 교체\n${(allDay - usageDay) ~/ 30}개월 후",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1,
+                                        TextSpan(
+                                          text: "사용",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24,
+                                              height: 1),
                                         ),
                                       ],
+                                    )),
+                                    Text(
+                                      "마지막 교체\n${usageDay ~/ 30}개월 전",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          height: 1),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Positioned(
-                                top: (1 - cos((usageDay / allDay) * pi)) *
-                                        ((mediaSize.width - 80) * 3 / 4 -
-                                            30 -
-                                            16) /
-                                        2 +
-                                    8 -
-                                    12,
-                                left: sin((usageDay / allDay) * pi) *
-                                        ((mediaSize.width - 80) * 3 / 4 -
-                                            30 -
-                                            16) /
-                                        2 -
-                                    12,
-                                child: Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    color: usageDay / allDay < 0.7
-                                        ? Colors.blue[400]!
-                                        : (usageDay / allDay < 0.9
-                                            ? Colors.orange[400]!
-                                            : Colors.red[700]!),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      width: 4,
-                                      color: usageDay / allDay < 0.7
-                                          ? Colors.blue[100]!
-                                          : (usageDay / allDay < 0.9
-                                              ? Colors.orange[100]!
-                                              : Colors.red[200]!),
+                                    Text(
+                                      "다음 교체\n${(allDay - usageDay) ~/ 30}개월 후",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          height: 1),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -398,11 +394,17 @@ class _FilterItemState extends State<FilterItem> {
                               children: <Widget>[
                                 Text(
                                   "사용시작일",
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      height: 1),
                                 ),
                                 Text(
                                   "${DateFormat("yyyy년 MM월 dd일").format(startDate)}",
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      height: 1),
                                 ),
                               ],
                             ),
@@ -420,11 +422,17 @@ class _FilterItemState extends State<FilterItem> {
                               children: <Widget>[
                                 Text(
                                   "필터교체일",
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      height: 1),
                                 ),
                                 Text(
                                   "${DateFormat("yyyy년 MM월 dd일").format(replaceDate)}",
-                                  style: Theme.of(context).textTheme.bodyText2,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      height: 1),
                                 ),
                               ],
                             ),

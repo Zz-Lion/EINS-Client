@@ -20,10 +20,11 @@ class ProductView extends StatelessWidget {
               width: mediaSize.width - 20,
               child: Text(
                 "아인스 필터 소개",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    height: 1),
               ),
             ),
           ),

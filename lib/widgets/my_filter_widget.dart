@@ -51,7 +51,7 @@ class _MyFilterState extends State<MyFilter> {
 
   Future<void> _addFilter(BuildContext context) async {
     try {
-      String? id /* = "4a81962323580"*/;
+      String? id;
 
       if (!(await NfcManager.instance.isAvailable())) {
         throw "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.";
@@ -86,8 +86,6 @@ class _MyFilterState extends State<MyFilter> {
       }
 
       if (id != null) {
-        print(id);
-
         if (context.read<MyFilterProvider>().findIndex(id!) != null) {
           throw "이미 등록된 필터 입니다";
         }
@@ -103,7 +101,6 @@ class _MyFilterState extends State<MyFilter> {
 
   Widget _registerFilter(BuildContext context, int length) {
     final Size mediaSize = MediaQuery.of(context).size;
-    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
 
     return Column(
       children: <Widget>[
@@ -112,7 +109,8 @@ class _MyFilterState extends State<MyFilter> {
           child: length == 0
               ? Text(
                   "등록된 필터가 없습니다. 필터를 등록해주세요!",
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style:
+                      TextStyle(color: Colors.white, fontSize: 18, height: 1),
                 )
               : Container(),
         ),
@@ -142,7 +140,8 @@ class _MyFilterState extends State<MyFilter> {
                     children: <Widget>[
                       Text(
                         "새로운 필터 추가하기",
-                        style: Theme.of(context).textTheme.subtitle2,
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 24, height: 1),
                       ),
                       IconButton(
                         iconSize: 60,
@@ -165,61 +164,58 @@ class _MyFilterState extends State<MyFilter> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<MyFilterProvider, int>(
-      selector: (_, MyFilterProvider myFilterProv) => myFilterProv.length,
-      builder: (BuildContext context, length, __) {
-        return Stack(
+    final int length = context
+        .select<MyFilterProvider, int>((myFilterProv) => myFilterProv.length);
+
+    return Stack(
+      children: <Widget>[
+        PageView(
+          controller: _controller,
+          onPageChanged: (index) {
+            setState(() {
+              _currentPage = index;
+            });
+          },
           children: <Widget>[
-            PageView(
-              controller: _controller,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentPage = index;
-                });
-              },
-              children: <Widget>[
-                ...List<FilterItem>.generate(
-                    length, (index) => FilterItem(index: index)),
-                _registerFilter(context, length),
-              ],
-            ),
-            length == 0
-                ? Container()
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children:
-                            List<Widget>.generate(length * 2 + 1, (index) {
-                          if (index % 2 == 0) {
-                            return Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.deepPurple[900]!,
-                                  width: 1,
-                                ),
-                                shape: BoxShape.circle,
-                                color: index / 2 == _currentPage
-                                    ? Colors.deepPurple
-                                    : Colors.deepPurple[100],
-                              ),
-                            );
-                          } else {
-                            return SizedBox(width: 10);
-                          }
-                        }),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                    ],
-                  ),
+            ...List<FilterItem>.generate(
+                length, (index) => FilterItem(index: index)),
+            _registerFilter(context, length),
           ],
-        );
-      },
+        ),
+        length == 0
+            ? Container()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List<Widget>.generate(length * 2 + 1, (index) {
+                      if (index % 2 == 0) {
+                        return Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.deepPurple[900]!,
+                              width: 1,
+                            ),
+                            shape: BoxShape.circle,
+                            color: index / 2 == _currentPage
+                                ? Colors.deepPurple
+                                : Colors.deepPurple[100],
+                          ),
+                        );
+                      } else {
+                        return SizedBox(width: 10);
+                      }
+                    }),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                ],
+              ),
+      ],
     );
   }
 }

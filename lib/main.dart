@@ -122,18 +122,6 @@ class MyApp extends StatelessWidget {
               appBarTheme: AppBarTheme(
                 backgroundColor: Colors.white,
               ),
-              textTheme: TextTheme(
-                headline1:
-                    TextStyle(color: Colors.white, fontSize: 48, height: 1),
-                subtitle1:
-                    TextStyle(color: Colors.white, fontSize: 36, height: 1),
-                subtitle2:
-                    TextStyle(color: Colors.white, fontSize: 24, height: 1),
-                bodyText1:
-                    TextStyle(color: Colors.white, fontSize: 18, height: 1),
-                bodyText2:
-                    TextStyle(color: Colors.white, fontSize: 14, height: 1),
-              ),
             ),
             home: EinsClient(),
             onGenerateRoute: (RouteSettings settings) {

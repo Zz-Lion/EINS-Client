@@ -16,9 +16,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   @override
   void initState() {
+    super.initState();
+
     _isOpen = List<bool>.generate(
         context.read<QuestionProvider>().length, (index) => false);
-    super.initState();
   }
 
   @override

@@ -26,6 +26,8 @@ class _ChattingScreenState extends State<ChattingScreen> {
 
   @override
   void initState() {
+    super.initState();
+
     final ChattingProvider chattingProv = context.read<ChattingProvider>();
 
     _controller = TextEditingController();
@@ -51,8 +53,6 @@ class _ChattingScreenState extends State<ChattingScreen> {
       chattingProv.loadChatting();
     });
     _focus = FocusNode();
-
-    super.initState();
   }
 
   @override

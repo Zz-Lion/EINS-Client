@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eins_client/constants/db_constants.dart';
 import 'package:eins_client/models/filter_model.dart';
@@ -25,7 +27,7 @@ class MyFilterProvider with ChangeNotifier {
     _filters = localStorageProv.fetchData();
     _length = _filters.length;
 
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       notifyListeners();
     });
   }
@@ -100,13 +102,11 @@ class MyFilterProvider with ChangeNotifier {
       newFilterData = await filtersRef.doc(id).get();
 
       filterData = newFilterData;
-
-      await dailyAtTimeNotification();
     }
 
     _filters.insert(0, FilterModel.fromDoc(filterData));
     _length++;
-    localStorageProv.saveData(_filters);
+    await localStorageProv.saveData(_filters);
 
     notifyListeners();
   }
@@ -156,30 +156,55 @@ class MyFilterProvider with ChangeNotifier {
           sound: true,
         );
 
-    if (result == true) {
+    if (result == true || Platform.isAndroid) {
       await deleteNotification();
 
       final String notiTitle = "필터 교체 알림";
       late String notiDesc;
       for (int i = 0; i < _length; i++) {
-        notiDesc = "${_filters[i].desc} 교체일이 얼마 남지 않았습니다. 필터를 교체해주세요.";
+        notiDesc = "${_filters[i].desc} 교체일 입니다. 필터를 교체해주세요!";
 
-        var android = AndroidNotificationDetails('id', notiTitle, notiDesc,
+        AndroidNotificationDetails android = AndroidNotificationDetails(
+            "eins", notiTitle, notiDesc,
             importance: Importance.max, priority: Priority.max);
-        var ios = IOSNotificationDetails();
-        var detail = NotificationDetails(android: android, iOS: ios);
+        IOSNotificationDetails ios = IOSNotificationDetails();
+        NotificationDetails detail =
+            NotificationDetails(android: android, iOS: ios);
 
         await flutterLocalNotificationsPlugin.zonedSchedule(
           0,
           notiTitle,
           notiDesc,
-          _setNotiTime(),
+          _setNotiTime(i, 0),
           detail,
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
           matchDateTimeComponents: DateTimeComponents.time,
         );
+
+        if (DateTime.now().compareTo(_filters[i].replaceDate) < 0) {
+          notiDesc = "${_filters[i].desc} 교체일이 7일 남았습니다.";
+
+          AndroidNotificationDetails android = AndroidNotificationDetails(
+              "eins", notiTitle, notiDesc,
+              importance: Importance.max, priority: Priority.max);
+          IOSNotificationDetails ios = IOSNotificationDetails();
+          NotificationDetails detail =
+              NotificationDetails(android: android, iOS: ios);
+
+          await flutterLocalNotificationsPlugin.zonedSchedule(
+            0,
+            notiTitle,
+            notiDesc,
+            _setNotiTime(i, 7),
+            detail,
+            androidAllowWhileIdle: true,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+            matchDateTimeComponents: DateTimeComponents.time,
+          );
+        }
       }
     }
   }
@@ -190,16 +215,20 @@ class MyFilterProvider with ChangeNotifier {
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.deleteNotificationChannelGroup('id');
+        ?.deleteNotificationChannelGroup("eins");
   }
 
-  tz.TZDateTime _setNotiTime() {
+  tz.TZDateTime _setNotiTime(int index, int day) {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
 
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(
-        tz.local, now.year, now.month, now.day, now.hour, now.minute + 1);
+    tz.TZDateTime scheduledDate = tz.TZDateTime(
+        tz.local,
+        _filters[index].replaceDate.year,
+        _filters[index].replaceDate.month,
+        _filters[index].replaceDate.day - day,
+        _filters[index].replaceDate.hour,
+        _filters[index].replaceDate.minute);
 
     return scheduledDate;
   }

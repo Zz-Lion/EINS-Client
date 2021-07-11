@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/screens/sales_web_view_screen.dart';
 import 'package:flutter/material.dart';

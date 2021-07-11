@@ -25,7 +25,7 @@ class CustomerPage extends StatelessWidget {
       if (await canLaunch(url)) {
         await launch(url);
       } else {
-        throw "Could not launch $url";
+        throw "전화할 수 없습니다.";
       }
     }
 
@@ -62,7 +62,7 @@ class CustomerPage extends StatelessWidget {
                           try {
                             _makePhoneCall("tel:01055085350");
                           } catch (e) {
-                            errorDialog(context, e as Exception);
+                            errorDialog(context, Exception(e));
                           }
                         },
                         leading: Icon(
@@ -83,12 +83,21 @@ class CustomerPage extends StatelessWidget {
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black)),
                         onChanged: (_) {
-                          // context
-                          //     .read<LocalStorageProvider>()
-                          //     .toggleNotification();
+                          if (context
+                              .read<LocalStorageProvider>()
+                              .isNotificated) {
+                            context
+                                .read<MyFilterProvider>()
+                                .deleteNotification();
+                          } else {
+                            context
+                                .read<MyFilterProvider>()
+                                .dailyAtTimeNotification();
+                          }
+
                           context
-                              .read<MyFilterProvider>()
-                              .dailyAtTimeNotification();
+                              .read<LocalStorageProvider>()
+                              .toggleNotification();
                         },
                         value:
                             context.watch<LocalStorageProvider>().isNotificated,

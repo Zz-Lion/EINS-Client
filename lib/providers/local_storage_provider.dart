@@ -34,7 +34,7 @@ class LocalStorageProvider with ChangeNotifier {
     var notificationData = _notificationStorage.getItem('eins_notification');
 
     _isNotificated = notificationData ?? false;
-    await _uidStorage.setItem('eis_notification', _isNotificated);
+    await _notificationStorage.setItem('eins_notification', _isNotificated);
   }
 
   List<FilterModel> fetchData() {
@@ -69,9 +69,7 @@ class LocalStorageProvider with ChangeNotifier {
 
   Future<void> toggleNotification() async {
     _isNotificated = !_isNotificated;
-    await _uidStorage.setItem('eis_notification', _isNotificated);
-
-    print(_isNotificated);
+    await _notificationStorage.setItem('eis_notification', _isNotificated);
 
     notifyListeners();
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:eins_client/widgets/filter_item_widget.dart';
@@ -96,6 +97,10 @@ class _MyFilterState extends State<MyFilter> {
       }
     } catch (e) {
       errorDialog(context, Exception(e));
+    }
+
+    if (context.read<LocalStorageProvider>().isNotificated) {
+      context.read<MyFilterProvider>().dailyAtTimeNotification();
     }
   }
 

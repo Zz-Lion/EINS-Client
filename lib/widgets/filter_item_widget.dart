@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eins_client/models/filter_model.dart';
+import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
@@ -201,6 +202,13 @@ class _FilterItemState extends State<FilterItem> {
                                                   originalText;
                                               _isEditable = false;
                                               _focus.unfocus();
+                                              if (context
+                                                  .read<LocalStorageProvider>()
+                                                  .isNotificated) {
+                                                context
+                                                    .read<MyFilterProvider>()
+                                                    .dailyAtTimeNotification();
+                                              }
                                             });
                                           });
                                         });
@@ -231,6 +239,13 @@ class _FilterItemState extends State<FilterItem> {
                                 ),
                                 onTap: () {
                                   myFilterProv.deleteFilter(widget.index);
+                                  if (context
+                                      .read<LocalStorageProvider>()
+                                      .isNotificated) {
+                                    context
+                                        .read<MyFilterProvider>()
+                                        .dailyAtTimeNotification();
+                                  }
                                 },
                               ),
                               const SizedBox(

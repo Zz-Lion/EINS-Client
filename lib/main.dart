@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:async/async.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eins_client/providers/chatting_provider.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
@@ -52,26 +55,6 @@ void main() {
   ));
 }
 
-Future<bool?> _initNotiSetting() async {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  final AndroidInitializationSettings initSettingsAndroid =
-      AndroidInitializationSettings('app_icon');
-  final IOSInitializationSettings initSettingsIOS = IOSInitializationSettings(
-    requestSoundPermission: true,
-    requestBadgePermission: true,
-    requestAlertPermission: true,
-  );
-  final InitializationSettings initSettings = InitializationSettings(
-    android: initSettingsAndroid,
-    iOS: initSettingsIOS,
-  );
-
-  return await flutterLocalNotificationsPlugin.initialize(
-    initSettings,
-  );
-}
-
 class MyApp extends StatelessWidget {
   final AsyncMemoizer _memoizer = AsyncMemoizer();
 
@@ -81,24 +64,49 @@ class MyApp extends StatelessWidget {
     });
   }
 
+  Future<bool?> _initNotiSetting() async {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    final AndroidInitializationSettings initSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    final IOSInitializationSettings initSettingsIOS = IOSInitializationSettings(
+      requestSoundPermission: false,
+      requestBadgePermission: false,
+      requestAlertPermission: false,
+    );
+    final InitializationSettings initSettings = InitializationSettings(
+      android: initSettingsAndroid,
+      iOS: initSettingsIOS,
+    );
+
+    return await flutterLocalNotificationsPlugin.initialize(
+      initSettings,
+    );
+  }
+
   Future<void> _initializeEins(BuildContext context) async {
-    await Firebase.initializeApp();
+    try {
+      ConnectivityResult result = await Connectivity().checkConnectivity();
 
-    await context.read<ProductProvider>().getProductInfo();
+      if (result == ConnectivityResult.none) {
+        throw "와이파이, 모바일 데이터 혹은 비행기모드 설정을 확인해 주시기 바랍니다.";
+      }
 
-    await context.read<YoutubeProvider>().getYoutubeInfo();
+      await Firebase.initializeApp();
 
-    await context.read<SalesProvider>().getSalesInfo();
+      await context.read<ProductProvider>().getProductInfo();
 
-    await context.read<LocalStorageProvider>().initLocalStorage();
+      await context.read<YoutubeProvider>().getYoutubeInfo();
 
-    await context.read<QuestionProvider>().getQuestionInfo();
+      await context.read<SalesProvider>().getSalesInfo();
 
-    bool? result = await _initNotiSetting();
+      await context.read<LocalStorageProvider>().initLocalStorage();
 
-    if (result == true &&
-        context.read<LocalStorageProvider>().isNotificated == false) {
-      context.read<LocalStorageProvider>().toggleNotification();
+      await context.read<QuestionProvider>().getQuestionInfo();
+
+      await _initNotiSetting();
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -107,6 +115,22 @@ class MyApp extends StatelessWidget {
     return FutureBuilder<void>(
       future: _fetchData(context),
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.hasError) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+            ),
+            home: Builder(builder: (context) {
+              errorDialog(context, Exception(snapshot.error),
+                  afterDialog: (value) {
+                SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+              });
+              return Splash();
+            }),
+          );
+        }
+
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -150,12 +174,6 @@ class MyApp extends StatelessWidget {
               }
             },
           );
-        }
-
-        if (snapshot.hasError) {
-          errorDialog(context, Exception(snapshot.error), afterDialog: (value) {
-            SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-          });
         }
 
         return MaterialApp(

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 
 Future<void> errorDialog(BuildContext context, Exception e,
     {void Function(dynamic)? afterDialog}) async {
-  String errorTitle;
-  String errorPlugin;
-  String errorMessage;
+  late String errorTitle;
+  late String errorPlugin;
+  late String errorMessage;
 
   if (e is FirebaseException) {
     errorTitle = e.code;

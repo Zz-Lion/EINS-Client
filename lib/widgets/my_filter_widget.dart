@@ -244,6 +244,7 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
   @override
   void initState() {
     super.initState();
+
     NfcManager.instance.startSession(
       onDiscovered: (tag) async {
         try {

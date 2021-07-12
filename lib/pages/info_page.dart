@@ -60,8 +60,6 @@ class _InfoPageState extends State<InfoPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final Size mediaSize = MediaQuery.of(context).size;
-
     final Widget defaultWidget = Builder(
         builder: (context) => Scaffold(
               appBar: appBar(),
@@ -90,28 +88,15 @@ class _InfoPageState extends State<InfoPage>
             )).build(context);
 
     return OrientationBuilder(builder: (context, orientation) {
-      final ScrollController scrollController = ScrollController(
-        initialScrollOffset:
-            (_youtubeProv.selectedIndex ?? 0) * mediaSize.height,
-      );
-
       if (orientation == Orientation.portrait) {
         return defaultWidget;
       } else {
         _scrollOffset = _scrollController.offset;
         _scrollController.dispose();
 
-        return ListView.builder(
-          controller: scrollController,
-          itemCount: _youtubeProv.length,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            return Container(
-              width: mediaSize.width,
-              height: mediaSize.height,
-              child: _youtubeProv.youtubePlayerList[index],
-            );
-          },
+        return IndexedStack(
+          index: _youtubeProv.selectedIndex ?? 0,
+          children: _youtubeProv.youtubePlayerList,
         );
       }
     });

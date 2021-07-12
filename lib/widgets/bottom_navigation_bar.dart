@@ -1,5 +1,4 @@
 import 'package:eins_client/providers/youtube_provider.dart';
-import 'package:eins_client/screens/chatting_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

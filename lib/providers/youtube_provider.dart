@@ -16,7 +16,7 @@ class YoutubeProvider with ChangeNotifier {
   int get length => _length ?? 0;
   int? get selectedIndex => _selectedIndex;
   List<String> get titleList => _titleList;
-  List<Container?> get youtubePlayerList => _youtubePlayerList;
+  List<Container> get youtubePlayerList => _youtubePlayerList;
 
   Future<void> getYoutubeInfo() async {
     List<Container> tempPlayerList = <Container>[];

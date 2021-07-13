@@ -19,6 +19,20 @@ class ChattingItem extends StatelessWidget {
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          chattingModel.isClient
+              ? Container()
+              : Container(
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      color: Colors.white),
+                  child: Image.asset(
+                    'assets/images/EINS_title.png',
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
           Column(
             crossAxisAlignment: chattingModel.isClient
                 ? CrossAxisAlignment.end
@@ -34,7 +48,9 @@ class ChattingItem extends StatelessWidget {
                       ),
                     ),
               Container(
-                constraints: BoxConstraints(maxWidth: mediaSize.width - 90),
+                constraints: BoxConstraints(
+                    maxWidth:
+                        mediaSize.width - (chattingModel.isClient ? 90 : 140)),
                 margin: EdgeInsets.symmetric(horizontal: 5),
                 padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                 decoration: BoxDecoration(

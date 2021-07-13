@@ -69,7 +69,7 @@ class LocalStorageProvider with ChangeNotifier {
 
   Future<void> toggleNotification() async {
     _isNotificated = !_isNotificated;
-    await _notificationStorage.setItem('eis_notification', _isNotificated);
+    await _notificationStorage.setItem('eins_notification', _isNotificated);
 
     notifyListeners();
   }

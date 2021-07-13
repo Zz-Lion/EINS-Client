@@ -50,7 +50,7 @@ Future<void> errorDialog(BuildContext context, Exception e,
               /*errorPlugin + "\n" + */ errorMessage,
               style: TextStyle(color: Colors.black, fontSize: 16),
             ),
-            actions: [
+            actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text("확인"),

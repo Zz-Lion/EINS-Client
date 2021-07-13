@@ -1,4 +1,5 @@
 import 'package:eins_client/providers/product_provider.dart';
+import 'package:eins_client/widgets/image_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
@@ -42,17 +43,21 @@ class ProductView extends StatelessWidget {
                 mainAxisExtent: 120,
               ),
               itemBuilder: (context, index) {
-                return Container(
-                  width: 120,
-                  height: 180,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                      color: Colors.deepPurple[100]),
-                  child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: productProv.productImageList[index]),
+                return GestureDetector(
+                  onTap: () =>
+                      imageDialog(context, productProv.descImageList[index]),
+                  child: Container(
+                    width: 120,
+                    height: 180,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        color: Colors.deepPurple[100]),
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: productProv.productImageList[index]),
+                  ),
                 );
               },
             ),

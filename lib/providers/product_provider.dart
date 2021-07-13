@@ -8,14 +8,18 @@ class ProductProvider {
   int? _length;
   List<ProductModel> _productList = <ProductModel>[];
   List<CachedNetworkImage> _productImageList = <CachedNetworkImage>[];
+  List<CachedNetworkImage> _descImageList = <CachedNetworkImage>[];
 
   int get length => _length ?? 0;
   List<ProductModel> get productList => _productList;
   List<CachedNetworkImage> get productImageList => _productImageList;
+  List<CachedNetworkImage> get descImageList => _descImageList;
 
   Future<void> getProductInfo() async {
     List<ProductModel> tempProducts = <ProductModel>[];
     List<CachedNetworkImage> tempImages = <CachedNetworkImage>[];
+    List<CachedNetworkImage> tempDescImages = <CachedNetworkImage>[];
+
     try {
       final QuerySnapshot<Map<String, dynamic>> productsData =
           await productsRef.orderBy("release_date", descending: true).get();
@@ -26,6 +30,8 @@ class ProductProvider {
         tempProducts.add(ProductModel.fromDoc(element));
         tempImages.add(CachedNetworkImage(
             imageUrl: e["image_url"] as String, fit: BoxFit.fitHeight));
+        tempDescImages.add(CachedNetworkImage(
+            imageUrl: e["desc_image_url"] as String, fit: BoxFit.fill));
       });
     } catch (e) {
       rethrow;
@@ -33,6 +39,7 @@ class ProductProvider {
 
     _productList = tempProducts;
     _productImageList = tempImages;
+    _descImageList = tempDescImages;
     _length = tempProducts.length;
   }
 

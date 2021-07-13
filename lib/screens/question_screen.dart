@@ -33,7 +33,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
               Navigator.of(context).pop();
             },
             child: Icon(Icons.arrow_back_ios_rounded, color: Colors.black)),
-        title: Text("자주 묻는 질문", style: TextStyle(color: Colors.black)),
+        title: Text("자주 묻는 질문",
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         elevation: 0,
       ),
       body: SafeArea(

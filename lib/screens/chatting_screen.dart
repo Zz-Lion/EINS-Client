@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eins_client/models/chatting_model.dart';
 import 'package:eins_client/providers/chatting_provider.dart';
+import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/widgets/chatting_item_widget.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,8 @@ class _ChattingScreenState extends State<ChattingScreen> {
       chattingProv.loadChatting();
     });
     _focus = FocusNode();
+
+    chattingProv.updateCustomerInfo(context.read<MyFilterProvider>().filters);
   }
 
   @override

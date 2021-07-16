@@ -29,10 +29,14 @@ class _CustomerPageState extends State<CustomerPage> {
     final Size mediaSize = MediaQuery.of(context).size;
 
     Future<void> _makePhoneCall(String url) async {
-      if (await canLaunch(url)) {
-        await launch(url);
-      } else {
-        throw "전화할 수 없습니다.";
+      try {
+        if (await canLaunch(url)) {
+          await launch(url);
+        } else {
+          throw "전화할 수 없습니다.";
+        }
+      } catch (e) {
+        errorDialog(context, Exception(e));
       }
     }
 
@@ -66,11 +70,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       Divider(height: 10),
                       ListTile(
                         onTap: () {
-                          try {
-                            _makePhoneCall("tel:01055085350");
-                          } catch (e) {
-                            errorDialog(context, Exception(e));
-                          }
+                          _makePhoneCall("tel:01055085350");
                         },
                         leading: Icon(
                           Icons.call,

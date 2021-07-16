@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Future<void> errorDialog(BuildContext context, Exception e,
-    {void Function(dynamic)? afterDialog}) async {
+void errorDialog(BuildContext context, Exception e,
+    {void Function(dynamic)? afterDialog}) {
   late String errorTitle;
   late String errorPlugin;
   late String errorMessage;

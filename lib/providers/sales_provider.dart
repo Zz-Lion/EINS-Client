@@ -7,29 +7,23 @@ class SalesProvider {
   int? _length;
   List<String> _salesUrlList = <String>[];
   List<String> _titleList = <String>[];
-  List<String> _subTitleList = <String>[];
   List<int> _costList = <int>[];
   List<int> _originalCostList = <int>[];
-  List<CachedNetworkImage> _mainImageList = <CachedNetworkImage>[];
-  List<CachedNetworkImage> _infoImageList = <CachedNetworkImage>[];
+  List<CachedNetworkImage> _imageList = <CachedNetworkImage>[];
 
   int get length => _length ?? 0;
   List<String> get salesUrlList => _salesUrlList;
   List<String> get titleList => _titleList;
-  List<String> get subTitleList => _subTitleList;
   List<int> get costList => _costList;
   List<int> get originalCostList => _originalCostList;
-  List<CachedNetworkImage> get mainImageList => _mainImageList;
-  List<CachedNetworkImage> get infoImageList => _infoImageList;
+  List<CachedNetworkImage> get imageList => _imageList;
 
   Future<void> getSalesInfo() async {
     List<String> tempSalesUrlList = <String>[];
     List<String> tempTitleList = <String>[];
-    List<String> tempSubTitleList = <String>[];
     List<int> tempCostList = <int>[];
     List<int> tempOriginalCostList = <int>[];
-    List<CachedNetworkImage> tempMainImageList = <CachedNetworkImage>[];
-    List<CachedNetworkImage> tempInfoImageList = <CachedNetworkImage>[];
+    List<CachedNetworkImage> tempImageList = <CachedNetworkImage>[];
 
     try {
       final DocumentSnapshot<Map<String, dynamic>> einsSales =
@@ -37,33 +31,21 @@ class SalesProvider {
 
       tempSalesUrlList = List<String>.from(einsSales.data()!["sales_url"]);
       tempTitleList = List<String>.from(einsSales.data()!["title"]);
-      tempSubTitleList = List<String>.from(einsSales.data()!["sub_title"]);
       tempCostList = List<int>.from(einsSales.data()!["cost"]);
       tempOriginalCostList = List<int>.from(einsSales.data()!["original_cost"]);
-      tempMainImageList = List<CachedNetworkImage>.from(
-          List<String>.from(einsSales.data()!["main_image_url"])
+      tempImageList = List<CachedNetworkImage>.from(
+          List<String>.from(einsSales.data()!["image_url"])
               .map((e) => CachedNetworkImage(
                     imageUrl: e,
                     fit: BoxFit.fill,
                   )));
-      tempInfoImageList = List<CachedNetworkImage>.from(
-          List<String>.from(einsSales.data()!["info_image_url"])
-              .map((e) => CachedNetworkImage(
-                    imageUrl: e,
-                    fit: BoxFit.fitWidth,
-                  )));
-    } catch (e) {
-      print("씨1111발");
-      print(e);
-    }
+    } catch (e) {}
 
     _length = tempSalesUrlList.length;
     _salesUrlList = tempSalesUrlList;
     _titleList = tempTitleList;
-    _subTitleList = tempSubTitleList;
     _costList = tempCostList;
     _originalCostList = tempOriginalCostList;
-    _mainImageList = tempMainImageList;
-    _infoImageList = tempInfoImageList;
+    _imageList = tempImageList;
   }
 }

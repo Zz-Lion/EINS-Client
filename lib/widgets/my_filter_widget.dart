@@ -6,6 +6,7 @@ import 'package:eins_client/widgets/filter_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:app_settings/app_settings.dart';
 
 class MyFilter extends StatefulWidget {
   const MyFilter({Key? key}) : super(key: key);
@@ -55,6 +56,35 @@ class _MyFilterState extends State<MyFilter> {
       String? id;
 
       if (!(await NfcManager.instance.isAvailable())) {
+        if (Platform.isAndroid) {
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("오류"),
+              content: Text(
+                "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.",
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                    AppSettings.openNFCSettings();
+                  },
+                  child: Text("설정"),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("확인"),
+                ),
+              ],
+            ),
+          );
+
+          return;
+        }
+
         throw "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.";
       }
 

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eins_client/constants/db_constants.dart';
 import 'package:eins_client/models/chatting_model.dart';
+import 'package:eins_client/models/filter_model.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChattingProvider with ChangeNotifier {
@@ -73,5 +74,15 @@ class ChattingProvider with ChangeNotifier {
     } catch (e) {
       throw "전송에 실패하였습니다. 다시 시도해주세요.";
     }
+  }
+
+  Future<void> updateCustomerInfo(List<FilterModel> filters) async {
+    List<String> temp = <String>[];
+
+    filters.forEach((element) {
+      temp.add(element.productName);
+    });
+
+    await customerRef.doc(uid).set({"products": temp});
   }
 }

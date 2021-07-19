@@ -127,43 +127,44 @@ class _CustomerPageState extends State<CustomerPage> {
                             ? Icons.keyboard_arrow_up
                             : Icons.keyboard_arrow_down),
                       ),
-                      _isOpen
-                          ? Padding(
-                              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    "아인스코리아(주)",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text("사업자등록번호 761-81-01229",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      )),
-                                  Text("통신판매업신고번호 2018-용인수지-0551호",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      )),
-                                  Text("대표이사 김영수 경기도 용인시 수지구 풍덕천로 30번길 19",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      )),
-                                  Text("전화 1670-3692 이메일 eins3692@naver.com",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      )),
-                                ],
+                      Visibility(
+                        visible: _isOpen,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "아인스코리아(주)",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
                               ),
-                            )
-                          : Container(),
+                              Text("사업자등록번호 761-81-01229",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  )),
+                              Text("통신판매업신고번호 2018-용인수지-0551호",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  )),
+                              Text("대표이사 김영수 경기도 용인시 수지구 풍덕천로 30번길 19",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  )),
+                              Text("전화 1670-3692 이메일 eins3692@naver.com",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
                       Divider(height: 10),
                       ListTile(
                         leading: Icon(
@@ -188,7 +189,7 @@ class _CustomerPageState extends State<CustomerPage> {
                                       fontSize: 16, color: Colors.grey),
                                 );
                               }
-                              return Container();
+                              return CircularProgressIndicator();
                             },
                           ),
                         ),

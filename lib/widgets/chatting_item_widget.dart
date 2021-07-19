@@ -19,34 +19,36 @@ class ChattingItem extends StatelessWidget {
             : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          chattingModel.isClient
-              ? Container()
-              : Container(
-                  width: 44,
-                  height: 44,
-                  margin: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Colors.white),
-                  child: Image.asset(
-                    'assets/images/EINS_title.png',
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
+          Visibility(
+            visible: !chattingModel.isClient,
+            child: Container(
+              width: 44,
+              height: 44,
+              margin: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  color: Colors.white),
+              child: Image.asset(
+                'assets/images/EINS_title.png',
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+          ),
           Column(
             crossAxisAlignment: chattingModel.isClient
                 ? CrossAxisAlignment.end
                 : CrossAxisAlignment.start,
             children: <Widget>[
-              chattingModel.isClient
-                  ? Container()
-                  : Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 13),
-                      child: Text(
-                        "EINS 고객센터",
-                        style: TextStyle(fontSize: 17, color: Colors.grey[600]),
-                      ),
-                    ),
+              Visibility(
+                visible: !chattingModel.isClient,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 13),
+                  child: Text(
+                    "EINS 고객센터",
+                    style: TextStyle(fontSize: 17, color: Colors.grey[600]),
+                  ),
+                ),
+              ),
               Container(
                 constraints: BoxConstraints(
                     maxWidth:

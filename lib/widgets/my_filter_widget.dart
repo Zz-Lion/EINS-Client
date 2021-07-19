@@ -141,13 +141,13 @@ class _MyFilterState extends State<MyFilter> {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(20.0),
-          child: length == 0
-              ? Text(
-                  "등록된 필터가 없습니다. 필터를 등록해주세요!",
-                  style:
-                      TextStyle(color: Colors.white, fontSize: 18, height: 1),
-                )
-              : Container(),
+          child: Visibility(
+            visible: length == 0,
+            child: Text(
+              "등록된 필터가 없습니다. 필터를 등록해주세요!",
+              style: TextStyle(color: Colors.white, fontSize: 18, height: 1),
+            ),
+          ),
         ),
         Expanded(
           child: Container(

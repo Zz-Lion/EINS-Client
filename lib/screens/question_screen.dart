@@ -67,29 +67,30 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down),
                   ),
-                  _isOpen[index]
-                      ? Container(
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "A. ",
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.deepPurple),
-                              ),
-                              Flexible(
-                                child: Text(
-                                  questionProv.answerList[index]
-                                      .replaceAll("\\n", "\n"),
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.black),
-                                ),
-                              ),
-                            ],
+                  Visibility(
+                    visible: _isOpen[index],
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "A. ",
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.deepPurple),
                           ),
-                        )
-                      : Container(),
+                          Flexible(
+                            child: Text(
+                              questionProv.answerList[index]
+                                  .replaceAll("\\n", "\n"),
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   Divider(),
                 ],
               );

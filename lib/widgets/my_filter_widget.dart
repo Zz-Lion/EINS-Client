@@ -217,39 +217,38 @@ class _MyFilterState extends State<MyFilter> {
             _registerFilter(context, length),
           ],
         ),
-        length == 0
-            ? Container()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List<Widget>.generate(length * 2 + 1, (index) {
-                      if (index % 2 == 0) {
-                        return Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.deepPurple[900]!,
-                              width: 1,
-                            ),
-                            shape: BoxShape.circle,
-                            color: index / 2 == _currentPage
-                                ? Colors.deepPurple
-                                : Colors.deepPurple[100],
-                          ),
-                        );
-                      } else {
-                        return SizedBox(width: 10);
-                      }
-                    }),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                ],
+        Visibility(
+          visible: !(length == 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List<Widget>.generate(length * 2 + 1, (index) {
+                  if (index % 2 == 0) {
+                    return Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.deepPurple[900]!,
+                          width: 1,
+                        ),
+                        shape: BoxShape.circle,
+                        color: index / 2 == _currentPage
+                            ? Colors.deepPurple
+                            : Colors.deepPurple[100],
+                      ),
+                    );
+                  } else {
+                    return const SizedBox(width: 10);
+                  }
+                }),
               ),
+              const SizedBox(height: 5),
+            ],
+          ),
+        ),
       ],
     );
   }

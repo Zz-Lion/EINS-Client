@@ -390,9 +390,7 @@ class _FilterItemState extends State<FilterItem> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     Container(
                       width: mediaSize.width - 80,
                       height: (mediaSize.width - 80) / 4,
@@ -463,10 +461,8 @@ class _FilterItemState extends State<FilterItem> {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SizedBox(
-              width: e.productName.length * 24,
-            ),
+          children: <Widget>[
+            SizedBox(width: e.productName.length * 24),
             Container(
               height: mediaSize.height -
                   (Scaffold.of(context).appBarMaxHeight ?? 0.0) -

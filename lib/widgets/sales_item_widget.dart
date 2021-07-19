@@ -119,9 +119,7 @@ class SalesItem extends StatelessWidget {
                       fit: BoxFit.fill,
                     ),
                   ),
-                  SizedBox(
-                    width: 5,
-                  ),
+                  const SizedBox(width: 5),
                   Text(
                     "구매하기",
                     style:

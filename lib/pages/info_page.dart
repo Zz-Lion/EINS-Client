@@ -2,6 +2,7 @@ import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/eins_youtube_player_widget.dart';
+import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:eins_client/widgets/product_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +31,9 @@ class _InfoPageState extends State<InfoPage>
     for (int i = 0; i < _youtubeProv.length; i++) {
       try {
         _youtubeProv.initController(i);
-      } catch (e) {}
+      } on Exception catch (e) {
+        errorDialog(context, e);
+      }
     }
 
     youtubePlayerList = List<Widget>.generate(

@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/my_filter_widget.dart';
@@ -22,7 +23,6 @@ class HomePage extends StatelessWidget {
               height: mediaSize.height -
                   (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
                   (68 + MediaQuery.of(context).padding.bottom),
-              color: Colors.deepPurple,
               child: MyFilter(),
             );
           }),

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eins_client/constants/db_constants.dart';
+import 'package:eins_client/constants/db_constant.dart';
 import 'package:flutter/cupertino.dart';
 
 class SalesProvider {
@@ -39,7 +39,9 @@ class SalesProvider {
                     imageUrl: e,
                     fit: BoxFit.fill,
                   )));
-    } catch (e) {}
+    } catch (e) {
+      throw "판매정보를 불러오지 못 하였습니다.";
+    }
 
     _length = tempSalesUrlList.length;
     _salesUrlList = tempSalesUrlList;

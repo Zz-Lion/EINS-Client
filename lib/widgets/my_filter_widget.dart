@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
@@ -23,7 +24,6 @@ class _MyFilterState extends State<MyFilter> {
   void initState() {
     super.initState();
 
-    context.read<MyFilterProvider>().initFilter();
     _controller = PageController();
     _currentPage = 0;
   }
@@ -53,9 +53,9 @@ class _MyFilterState extends State<MyFilter> {
 
   Future<void> _addFilter(BuildContext context) async {
     try {
-      String? id;
+      String? id = "4a81962323580";
 
-      if (!(await NfcManager.instance.isAvailable())) {
+      /*if (!(await NfcManager.instance.isAvailable())) {
         if (Platform.isAndroid) {
           await showDialog(
             context: context,
@@ -114,7 +114,7 @@ class _MyFilterState extends State<MyFilter> {
         }
       } catch (e) {
         throw "NFC태그 정보를 불러올 수 없습니다.";
-      }
+      }*/
 
       if (id != null) {
         if (context.read<MyFilterProvider>().findIndex(id!) != null) {
@@ -151,8 +151,9 @@ class _MyFilterState extends State<MyFilter> {
         ),
         Expanded(
           child: Container(
+            width: mediaSize.width,
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: kPrimaryColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30),
                 topRight: Radius.circular(30),
@@ -160,35 +161,49 @@ class _MyFilterState extends State<MyFilter> {
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  width: mediaSize.width - 80,
-                  height: mediaSize.width - 80,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(15)),
-                    color: Colors.deepPurple[300],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "새로운 필터 추가하기",
+                    style:
+                        TextStyle(color: Colors.white, fontSize: 24, height: 1),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "새로운 필터 추가하기",
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 24, height: 1),
-                      ),
-                      IconButton(
-                        iconSize: 60,
-                        color: Colors.white,
-                        icon: Icon(Icons.add_circle_outline_outlined),
-                        onPressed: () {
-                          _addFilter(context);
-                        },
-                      ),
-                    ],
+                  Spacer(),
+                  IconButton(
+                    iconSize: 54,
+                    color: Colors.white,
+                    icon: Icon(Icons.add_circle),
+                    onPressed: () {
+                      _addFilter(context);
+                    },
                   ),
-                ),
+                  Spacer(),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.white),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.7)),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    width: 5,
+                    height: 5,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.3)),
+                  ),
+                ],
               ),
             ),
           ),
@@ -201,6 +216,9 @@ class _MyFilterState extends State<MyFilter> {
   Widget build(BuildContext context) {
     final int length = context
         .select<MyFilterProvider, int>((myFilterProv) => myFilterProv.length);
+
+    print(
+        "개씨1111111111111발 $length      ${context.read<MyFilterProvider>().filters}");
 
     return Stack(
       children: <Widget>[
@@ -217,7 +235,7 @@ class _MyFilterState extends State<MyFilter> {
             _registerFilter(context, length),
           ],
         ),
-        Visibility(
+        /*Visibility(
           visible: !(length == 0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -248,7 +266,7 @@ class _MyFilterState extends State<MyFilter> {
               const SizedBox(height: 5),
             ],
           ),
-        ),
+        ),*/
       ],
     );
   }

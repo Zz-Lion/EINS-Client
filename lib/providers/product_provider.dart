@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eins_client/constants/db_constants.dart';
+import 'package:eins_client/constants/db_constant.dart';
 import 'package:eins_client/models/product_model.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +34,7 @@ class ProductProvider {
             imageUrl: e["desc_image_url"] as String, fit: BoxFit.fill));
       });
     } catch (e) {
-      rethrow;
+      throw "상품 정보를 불러오지 못 하였습니다.";
     }
 
     _productList = tempProducts;

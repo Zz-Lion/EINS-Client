@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eins_client/constants/db_constants.dart';
+import 'package:eins_client/constants/db_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -38,7 +38,7 @@ class YoutubeProvider with ChangeNotifier {
         tempControllerList.add(YoutubePlayerController(initialVideoId: ""));
       });
     } catch (e) {
-      rethrow;
+      throw "유튜브 영상 정보를 불러오지 못 하였습니다.";
     }
 
     _length = tempUrlList.length;
@@ -60,7 +60,7 @@ class YoutubeProvider with ChangeNotifier {
       _youtubePlayerList[index] =
           Container(child: AspectRatio(aspectRatio: 16 / 9));
 
-      throw Exception("receive wrong url");
+      throw "receive wrong url";
     }
 
     _youtubeControllerList[index] = YoutubePlayerController(

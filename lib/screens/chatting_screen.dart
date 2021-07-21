@@ -70,6 +70,8 @@ class _ChattingScreenState extends State<ChattingScreen> {
   @override
   Widget build(BuildContext context) {
     final ChattingProvider chattingProv = context.watch<ChattingProvider>();
+    final ChattingProgressState chattingState =
+        context.watch<ChattingProvider>().state;
 
     return Scaffold(
       appBar: AppBar(
@@ -107,10 +109,10 @@ class _ChattingScreenState extends State<ChattingScreen> {
               margin: EdgeInsets.only(
                   bottom: MediaQuery.of(context).padding.bottom),
               child: Row(
-                children: [
+                children: <Widget>[
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
+                      padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
                       child: TextField(
                         focusNode: _focus,
                         controller: _controller,
@@ -124,11 +126,13 @@ class _ChattingScreenState extends State<ChattingScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      chattingProv.sendChatting(_controller.text);
+                    onTap: chattingState.loading
+                        ? null
+                        : () {
+                            chattingProv.sendChatting(_controller.text);
 
-                      _controller.text = '';
-                    },
+                            _controller.text = "";
+                          },
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(15, 5, 15, 5),
                       child: Icon(

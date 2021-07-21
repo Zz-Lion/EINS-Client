@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/chatting_provider.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
@@ -85,29 +86,27 @@ class MyApp extends StatelessWidget {
   }
 
   Future<void> _initializeEins(BuildContext context) async {
-    try {
-      ConnectivityResult result = await Connectivity().checkConnectivity();
+    ConnectivityResult result = await Connectivity().checkConnectivity();
 
-      if (result == ConnectivityResult.none) {
-        throw "와이파이, 모바일 데이터 혹은 비행기모드 설정을 확인해 주시기 바랍니다.";
-      }
-
-      await Firebase.initializeApp();
-
-      await context.read<ProductProvider>().getProductInfo();
-
-      await context.read<YoutubeProvider>().getYoutubeInfo();
-
-      await context.read<SalesProvider>().getSalesInfo();
-
-      await context.read<LocalStorageProvider>().initLocalStorage();
-
-      await context.read<QuestionProvider>().getQuestionInfo();
-
-      await _initNotiSetting();
-    } catch (e) {
-      rethrow;
+    if (result == ConnectivityResult.none) {
+      throw "와이파이, 모바일 데이터 혹은 비행기모드 설정을 확인해 주시기 바랍니다.";
     }
+
+    await Firebase.initializeApp();
+
+    await context.read<ProductProvider>().getProductInfo();
+
+    await context.read<YoutubeProvider>().getYoutubeInfo();
+
+    await context.read<SalesProvider>().getSalesInfo();
+
+    await context.read<LocalStorageProvider>().initLocalStorage();
+
+    await context.read<QuestionProvider>().getQuestionInfo();
+
+    context.read<MyFilterProvider>().initFilter();
+
+    await _initNotiSetting();
   }
 
   @override
@@ -142,10 +141,12 @@ class MyApp extends StatelessWidget {
             },
             title: "EINS",
             theme: ThemeData(
-              primarySwatch: Colors.deepPurple,
-              appBarTheme: AppBarTheme(
-                backgroundColor: Colors.white,
-              ),
+              scaffoldBackgroundColor: kBackgroundColor,
+              appBarTheme: AppBarTheme(color: Colors.white),
+              primaryColor: kPrimaryColor,
+              textTheme:
+                  Theme.of(context).textTheme.apply(bodyColor: kTextColor),
+              visualDensity: VisualDensity.adaptivePlatformDensity,
             ),
             home: EinsClient(),
             onGenerateRoute: (RouteSettings settings) {

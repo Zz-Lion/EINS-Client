@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
@@ -76,10 +77,25 @@ class _FilterItemState extends State<FilterItem> {
 
     return Stack(
       children: <Widget>[
+        Align(
+          alignment: Alignment.topRight,
+          child: Opacity(
+            opacity: 0.5,
+            child: Container(
+              height: (mediaSize.height -
+                      (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
+                      (68 + MediaQuery.of(context).padding.bottom)) *
+                  0.7,
+              padding: const EdgeInsets.only(right: 40),
+              child: filterImage,
+            ),
+          ),
+        ),
         Column(
           children: <Widget>[
             Expanded(
-              child: Row(
+              child: Container(),
+              /*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Container(
@@ -101,376 +117,400 @@ class _FilterItemState extends State<FilterItem> {
                     opacity: 0,
                     child: Container(
                       height: (mediaSize.height -
-                          (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
-                          (68 + MediaQuery.of(context).padding.bottom) -
-                          (mediaSize.width) +
-                          10),
+                              (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
+                              (68 + MediaQuery.of(context).padding.bottom)) *
+                          0.7,
                       child: filterImage,
                     ),
                   ),
                 ],
-              ),
+              ),*/
             ),
             Container(
+              width: mediaSize.width,
+              height: mediaSize.width * 4 / 5,
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: kPrimaryColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(40, 40, 40, 20),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      width: mediaSize.width - 80,
-                      height: (mediaSize.width - 80) * 3 / 4,
+              padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  PhysicalModel(
+                    color: Colors.black,
+                    shape: BoxShape.circle,
+                    elevation: 10,
+                    child: Container(
+                      width: 150,
+                      height: 150,
                       decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(15),
-                            topRight: Radius.circular(15),
-                            bottomRight: Radius.circular(15)),
-                        color: Colors.deepPurple[300],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              const SizedBox(
-                                width: 10,
-                                height: 30,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  height: 30,
-                                  padding: const EdgeInsets.only(top: 5),
-                                  child: _isEditable
-                                      ? TextField(
-                                          focusNode: _focus,
-                                          maxLength: 15,
-                                          decoration: const InputDecoration(
-                                            isDense: true,
-                                            contentPadding: EdgeInsets.all(0),
-                                            focusedBorder: UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.white)),
-                                            counterText: "",
-                                          ),
-                                          scrollPadding:
-                                              const EdgeInsets.all(0),
-                                          controller: _descTextController,
-                                          style: TextStyle(
-                                              color: Colors.grey[400],
-                                              fontSize: 24,
-                                              height: 1),
-                                        )
-                                      : Text(
-                                          "${_descTextController.text}",
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 24,
-                                              height: 1),
-                                        ),
+                          shape: BoxShape.circle, color: Colors.white),
+                      child: Center(
+                        child: CustomPaint(
+                          painter: MyPainter(
+                            radian: (usageDay / allDay) * pi * 2,
+                          ),
+                          child: PhysicalModel(
+                            color: Colors.black,
+                            shape: BoxShape.circle,
+                            elevation: 2,
+                            child: Container(
+                              width: 90,
+                              height: 90,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle, color: Colors.white),
+                              child: Center(
+                                child: Text(
+                                  "${(usageDay / allDay * 100).toInt()}%",
+                                  style: TextStyle(
+                                    color: kPrimaryColor,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                              _isEditable
-                                  ? InkWell(
-                                      child: Icon(
-                                        Icons.check,
-                                        size: 24,
-                                        color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  /*Container(
+                    width: mediaSize.width - 80,
+                    height: (mediaSize.width - 80) * 3 / 4,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(15),
+                          topRight: Radius.circular(15),
+                          bottomRight: Radius.circular(15)),
+                      color: Colors.deepPurple[300],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            const SizedBox(
+                              width: 10,
+                              height: 30,
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 30,
+                                padding: const EdgeInsets.only(top: 5),
+                                child: _isEditable
+                                    ? TextField(
+                                        focusNode: _focus,
+                                        maxLength: 15,
+                                        decoration: const InputDecoration(
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.all(0),
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.white)),
+                                          counterText: "",
+                                        ),
+                                        scrollPadding:
+                                            const EdgeInsets.all(0),
+                                        controller: _descTextController,
+                                        style: TextStyle(
+                                            color: Colors.grey[400],
+                                            fontSize: 24,
+                                            height: 1),
+                                      )
+                                    : Text(
+                                        "${_descTextController.text}",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            height: 1),
                                       ),
-                                      onTap: () {
-                                        setState(() {
-                                          myFilterProv
-                                              .editFilter(widget.index,
-                                                  _descTextController.text)
-                                              .then((_) {
-                                            setState(() {
-                                              _isEditable = false;
-                                              _focus.unfocus();
-                                            });
-                                          }, onError: (e) {
-                                            errorDialog(context,
-                                                Exception("필터 이름을 다시 설정해주세요."));
+                              ),
+                            ),
+                            _isEditable
+                                ? InkWell(
+                                    child: Icon(
+                                      Icons.check,
+                                      size: 24,
+                                      color: Colors.white,
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        myFilterProv
+                                            .editFilter(widget.index,
+                                                _descTextController.text)
+                                            .then((_) {
+                                          setState(() {
+                                            _isEditable = false;
+                                            _focus.unfocus();
+                                          });
+                                        }, onError: (e) {
+                                          errorDialog(context,
+                                              Exception("필터 이름을 다시 설정해주세요."));
 
-                                            setState(() {
-                                              _descTextController.text =
-                                                  originalText;
-                                              _isEditable = false;
-                                              _focus.unfocus();
-                                              if (context
-                                                  .read<LocalStorageProvider>()
-                                                  .isNotificated) {
-                                                context
-                                                    .read<MyFilterProvider>()
-                                                    .dailyAtTimeNotification();
-                                              }
-                                            });
+                                          setState(() {
+                                            _descTextController.text =
+                                                originalText;
+                                            _isEditable = false;
+                                            _focus.unfocus();
+                                            if (context
+                                                .read<LocalStorageProvider>()
+                                                .isNotificated) {
+                                              context
+                                                  .read<MyFilterProvider>()
+                                                  .dailyAtTimeNotification();
+                                            }
                                           });
                                         });
-                                      },
-                                    )
-                                  : InkWell(
-                                      child: Icon(
-                                        Icons.edit,
-                                        size: 24,
-                                        color: Colors.white,
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _isEditable = true;
-                                          _focus.requestFocus();
-                                        });
-                                      },
+                                      });
+                                    },
+                                  )
+                                : InkWell(
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 24,
+                                      color: Colors.white,
                                     ),
-                              const SizedBox(
-                                width: 10,
-                                height: 30,
+                                    onTap: () {
+                                      setState(() {
+                                        _isEditable = true;
+                                        _focus.requestFocus();
+                                      });
+                                    },
+                                  ),
+                            const SizedBox(
+                              width: 10,
+                              height: 30,
+                            ),
+                            InkWell(
+                              child: Icon(
+                                Icons.delete,
+                                size: 24,
+                                color: Colors.white,
                               ),
-                              InkWell(
-                                child: Icon(
-                                  Icons.delete,
-                                  size: 24,
-                                  color: Colors.white,
-                                ),
-                                onTap: () {
-                                  myFilterProv.deleteFilter(widget.index);
-                                  if (context
-                                      .read<LocalStorageProvider>()
-                                      .isNotificated) {
-                                    context
-                                        .read<MyFilterProvider>()
-                                        .dailyAtTimeNotification();
-                                  }
-                                },
-                              ),
-                              const SizedBox(
-                                width: 10,
-                                height: 30,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-                              AnimatedOpacity(
-                                opacity: usageDay / allDay < 0.9 ? 1 : _opacity,
-                                duration: usageDay / allDay < 0.9
-                                    ? Duration.zero
-                                    : Duration(seconds: 1),
-                                child: Stack(
-                                  children: <Widget>[
-                                    Container(
-                                      width: ((mediaSize.width - 80) * 3 / 4 -
-                                              30) /
-                                          2,
-                                      height:
-                                          (mediaSize.width - 80) * 3 / 4 - 30,
-                                      child: CustomPaint(
-                                        painter: MyPainter(
-                                          color: usageDay / allDay < 0.7
-                                              ? Colors.blue[400]!
-                                              : (usageDay / allDay < 0.9
-                                                  ? Colors.orange[400]!
-                                                  : Colors.red[700]!),
-                                          radian: (usageDay / allDay) * pi,
-                                        ),
-                                        size: Size(
+                              onTap: () {
+                                myFilterProv.deleteFilter(widget.index);
+                                if (context
+                                    .read<LocalStorageProvider>()
+                                    .isNotificated) {
+                                  context
+                                      .read<MyFilterProvider>()
+                                      .dailyAtTimeNotification();
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              width: 10,
+                              height: 30,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            AnimatedOpacity(
+                              opacity: usageDay / allDay < 0.9 ? 1 : _opacity,
+                              duration: usageDay / allDay < 0.9
+                                  ? Duration.zero
+                                  : Duration(seconds: 1),
+                              child: Stack(
+                                children: <Widget>[
+                                  Container(
+                                    width: ((mediaSize.width - 80) * 3 / 4 -
+                                            30) /
+                                        2,
+                                    height:
+                                        (mediaSize.width - 80) * 3 / 4 - 30,
+                                    child: CustomPaint(
+                                      painter: MyPainter(
+                                        color: usageDay / allDay < 0.7
+                                            ? Colors.blue[400]!
+                                            : (usageDay / allDay < 0.9
+                                                ? Colors.orange[400]!
+                                                : Colors.red[700]!),
+                                        radian: (usageDay / allDay) * pi,
+                                      ),
+                                      size: Size(
+                                          ((mediaSize.width - 80) * 3 / 4 -
+                                                  30) /
+                                              2,
+                                          (mediaSize.width - 80) * 3 / 4 -
+                                              30),
+                                      child: Container(
+                                        width:
                                             ((mediaSize.width - 80) * 3 / 4 -
                                                     30) /
                                                 2,
+                                        height:
                                             (mediaSize.width - 80) * 3 / 4 -
-                                                30),
-                                        child: Container(
-                                          width:
-                                              ((mediaSize.width - 80) * 3 / 4 -
-                                                      30) /
-                                                  2,
-                                          height:
-                                              (mediaSize.width - 80) * 3 / 4 -
-                                                  30,
-                                        ),
+                                                30,
                                       ),
                                     ),
-                                    Positioned(
-                                      top: (1 - cos((usageDay / allDay) * pi)) *
-                                              ((mediaSize.width - 80) * 3 / 4 -
-                                                  30 -
-                                                  16) /
-                                              2 +
-                                          8 -
-                                          12,
-                                      left: sin((usageDay / allDay) * pi) *
-                                              ((mediaSize.width - 80) * 3 / 4 -
-                                                  30 -
-                                                  16) /
-                                              2 -
-                                          12,
-                                      child: Container(
-                                        width: 24,
-                                        height: 24,
-                                        decoration: BoxDecoration(
+                                  ),
+                                  Positioned(
+                                    top: (1 - cos((usageDay / allDay) * pi)) *
+                                            ((mediaSize.width - 80) * 3 / 4 -
+                                                30 -
+                                                16) /
+                                            2 +
+                                        8 -
+                                        12,
+                                    left: sin((usageDay / allDay) * pi) *
+                                            ((mediaSize.width - 80) * 3 / 4 -
+                                                30 -
+                                                16) /
+                                            2 -
+                                        12,
+                                    child: Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: BoxDecoration(
+                                        color: usageDay / allDay < 0.7
+                                            ? Colors.blue[400]!
+                                            : (usageDay / allDay < 0.9
+                                                ? Colors.orange[400]!
+                                                : Colors.red[700]!),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          width: 4,
                                           color: usageDay / allDay < 0.7
-                                              ? Colors.blue[400]!
+                                              ? Colors.blue[100]!
                                               : (usageDay / allDay < 0.9
-                                                  ? Colors.orange[400]!
-                                                  : Colors.red[700]!),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            width: 4,
-                                            color: usageDay / allDay < 0.7
-                                                ? Colors.blue[100]!
-                                                : (usageDay / allDay < 0.9
-                                                    ? Colors.orange[100]!
-                                                    : Colors.red[200]!),
-                                          ),
+                                                  ? Colors.orange[100]!
+                                                  : Colors.red[200]!),
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Container(
-                                width: mediaSize.width -
-                                    80 -
-                                    ((mediaSize.width - 80) * 3 / 4 - 30) / 2,
-                                height: (mediaSize.width - 80) * 3 / 4 - 30,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Text(
-                                      "정수량",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          height: 1),
-                                    ),
-                                    Text.rich(TextSpan(
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text:
-                                              "${(usageDay / allDay * 100).toInt()}%",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 36,
-                                              height: 1),
-                                        ),
-                                        TextSpan(
-                                          text: "사용",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 24,
-                                              height: 1),
-                                        ),
-                                      ],
-                                    )),
-                                    Text(
-                                      "마지막 교체\n${usageDay ~/ 30}개월 전",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          height: 1),
-                                    ),
-                                    Text(
-                                      "다음 교체\n${(allDay - usageDay) ~/ 30}개월 후",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          height: 1),
-                                    ),
-                                  ],
-                                ),
+                            ),
+                            Container(
+                              width: mediaSize.width -
+                                  80 -
+                                  ((mediaSize.width - 80) * 3 / 4 - 30) / 2,
+                              height: (mediaSize.width - 80) * 3 / 4 - 30,
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  Text(
+                                    "정수량",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        height: 1),
+                                  ),
+                                  Text.rich(TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text:
+                                            "${(usageDay / allDay * 100).toInt()}%",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 36,
+                                            height: 1),
+                                      ),
+                                      TextSpan(
+                                        text: "사용",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            height: 1),
+                                      ),
+                                    ],
+                                  )),
+                                  Text(
+                                    "마지막 교체\n${usageDay ~/ 30}개월 전",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        height: 1),
+                                  ),
+                                  Text(
+                                    "다음 교체\n${(allDay - usageDay) ~/ 30}개월 후",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        height: 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    width: mediaSize.width - 80,
+                    height: (mediaSize.width - 80) / 4,
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(15)),
+                      color: Colors.deepPurple[300],
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "사용시작일",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    height: 1),
+                              ),
+                              Text(
+                                "${DateFormat("yyyy년 MM월 dd일").format(startDate)}",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    height: 1),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        VerticalDivider(
+                          thickness: 2,
+                          width: 2,
+                          indent: 4,
+                          endIndent: 4,
+                          color: Colors.white,
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                "필터교체일",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    height: 1),
+                              ),
+                              Text(
+                                "${DateFormat("yyyy년 MM월 dd일").format(replaceDate)}",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    height: 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: mediaSize.width - 80,
-                      height: (mediaSize.width - 80) / 4,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                        color: Colors.deepPurple[300],
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  "사용시작일",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      height: 1),
-                                ),
-                                Text(
-                                  "${DateFormat("yyyy년 MM월 dd일").format(startDate)}",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      height: 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                          VerticalDivider(
-                            thickness: 2,
-                            width: 2,
-                            indent: 4,
-                            endIndent: 4,
-                            color: Colors.white,
-                          ),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  "필터교체일",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      height: 1),
-                                ),
-                                Text(
-                                  "${DateFormat("yyyy년 MM월 dd일").format(replaceDate)}",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      height: 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),*/
+                ],
               ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(width: e.productName.length * 24),
-            Container(
-              height: mediaSize.height -
-                  (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
-                  (68 + MediaQuery.of(context).padding.bottom) -
-                  (mediaSize.width) +
-                  30,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: filterImage,
             ),
           ],
         ),
@@ -480,35 +520,19 @@ class _FilterItemState extends State<FilterItem> {
 }
 
 class MyPainter extends CustomPainter {
-  final Color color;
   final double radian;
 
-  MyPainter({required this.color, required this.radian});
+  MyPainter({required this.radian});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = color
+      ..color = kPrimaryColor.withOpacity(0.6)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 16;
+      ..strokeWidth = 30;
 
     canvas.drawArc(
-        Rect.fromLTWH(
-            0 - (size.width - 8), 8, size.width * 2 - 16, size.height - 16),
-        0 - pi / 2,
-        radian,
-        false,
-        paint);
-
-    paint.color = Colors.white;
-
-    canvas.drawArc(
-        Rect.fromLTWH(
-            0 - (size.width - 8), 8, size.width * 2 - 16, size.height - 16),
-        radian - pi / 2,
-        pi - radian,
-        false,
-        paint);
+        Rect.fromLTWH(-15, -15, 120, 120), 0 - pi / 2, radian, false, paint);
   }
 
   @override

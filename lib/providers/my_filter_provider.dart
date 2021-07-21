@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eins_client/constants/db_constants.dart';
+import 'package:eins_client/constants/db_constant.dart';
 import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
@@ -27,9 +27,7 @@ class MyFilterProvider with ChangeNotifier {
     _filters = localStorageProv.fetchData();
     _length = _filters.length;
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      notifyListeners();
-    });
+    notifyListeners();
   }
 
   Future<void> addFilter(BuildContext context, String id) async {

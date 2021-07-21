@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eins_client/constants/db_constants.dart';
+import 'package:eins_client/constants/db_constant.dart';
 
 class QuestionProvider {
   late final List<String> questionList;
@@ -20,7 +20,9 @@ class QuestionProvider {
         tempQuestionList.add(element.data()["question"]);
         tempAnswerList.add(element.data()["answer"]);
       });
-    } catch (e) {}
+    } catch (e) {
+      throw "Q&A를 불러오지 못 하였습니다.";
+    }
 
     questionList = tempQuestionList;
     answerList = tempAnswerList;

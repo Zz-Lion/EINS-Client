@@ -2,6 +2,7 @@ import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 Widget bottomNavigationBar(
@@ -20,10 +21,26 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Icon(
-                Icons.home_outlined,
-                size: 48,
-                color: page == 0 ? kPrimaryColor : Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 4),
+                  SvgPicture.asset(
+                    'assets/icons/home.svg',
+                    width: 24,
+                    height: 24,
+                    color: page == 0 ? kPrimaryColor : Colors.grey,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "홈",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      height: 1.0,
+                      color: page == 0 ? kPrimaryColor : Colors.grey,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -36,10 +53,26 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Icon(
-                Icons.info_outline,
-                size: 48,
-                color: page == 1 ? kPrimaryColor : Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 4),
+                  SvgPicture.asset(
+                    'assets/icons/info.svg',
+                    width: 24,
+                    height: 24,
+                    color: page == 1 ? kPrimaryColor : Colors.grey,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "제품",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      height: 1.0,
+                      color: page == 1 ? kPrimaryColor : Colors.grey,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -53,10 +86,26 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Icon(
-                Icons.shopping_cart_outlined,
-                size: 48,
-                color: page == 2 ? kPrimaryColor : Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 4),
+                  SvgPicture.asset(
+                    'assets/icons/sale.svg',
+                    width: 24,
+                    height: 24,
+                    color: page == 2 ? kPrimaryColor : Colors.grey,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "필터구입",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      height: 1.0,
+                      color: page == 2 ? kPrimaryColor : Colors.grey,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -70,10 +119,26 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Icon(
-                Icons.perm_phone_msg_outlined,
-                size: 48,
-                color: page == 3 ? kPrimaryColor : Colors.grey,
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 4),
+                  SvgPicture.asset(
+                    'assets/icons/customer.svg',
+                    width: 24,
+                    height: 24,
+                    color: page == 3 ? kPrimaryColor : Colors.grey,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "고객센터",
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      height: 1.0,
+                      color: page == 3 ? kPrimaryColor : Colors.grey,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

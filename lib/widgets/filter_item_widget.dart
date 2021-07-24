@@ -7,6 +7,7 @@ import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
+import 'package:eins_client/widgets/custom_dotted_line.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -77,20 +78,22 @@ class _FilterItemState extends State<FilterItem> {
 
     return Stack(
       children: <Widget>[
-        Align(
-          alignment: Alignment.topRight,
-          child: Opacity(
-            opacity: 0.5,
-            child: Container(
-              height: (mediaSize.height -
-                      (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
-                      (68 + MediaQuery.of(context).padding.bottom)) *
-                  0.7,
-              padding: const EdgeInsets.only(right: 40),
-              child: filterImage,
-            ),
-          ),
-        ),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(width: 5),
+              Opacity(
+                opacity: 0.5,
+                child: Container(
+                  height: (mediaSize.height -
+                          (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
+                          (68 + MediaQuery.of(context).padding.bottom)) *
+                      0.7,
+                  child: filterImage,
+                ),
+              ),
+            ]),
         Column(
           children: <Widget>[
             Expanded(
@@ -138,38 +141,45 @@ class _FilterItemState extends State<FilterItem> {
               ),
               padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  PhysicalModel(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                    elevation: 10,
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.white),
-                      child: Center(
-                        child: CustomPaint(
-                          painter: MyPainter(
-                            radian: (usageDay / allDay) * pi * 2,
-                          ),
-                          child: PhysicalModel(
-                            color: Colors.black,
-                            shape: BoxShape.circle,
-                            elevation: 2,
-                            child: Container(
-                              width: 90,
-                              height: 90,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle, color: Colors.white),
-                              child: Center(
-                                child: Text(
-                                  "${(usageDay / allDay * 100).toInt()}%",
-                                  style: TextStyle(
-                                    color: kPrimaryColor,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Spacer(),
+                      PhysicalModel(
+                        color: Colors.black,
+                        shape: BoxShape.circle,
+                        elevation: 10,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle, color: Colors.white),
+                          child: Center(
+                            child: CustomPaint(
+                              painter: MyPainter(
+                                radian: (usageDay / allDay) * pi * 2,
+                              ),
+                              child: PhysicalModel(
+                                color: Colors.black,
+                                shape: BoxShape.circle,
+                                elevation: 2,
+                                child: Container(
+                                  width: 90,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white),
+                                  child: Center(
+                                    child: Text(
+                                      "${(usageDay / allDay * 100).toInt()}%",
+                                      style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -177,7 +187,107 @@ class _FilterItemState extends State<FilterItem> {
                           ),
                         ),
                       ),
-                    ),
+                      Expanded(
+                        child: RotatedBox(
+                          quarterTurns: 2,
+                          child: customDottedLine(CustomAxis.row),
+                        ), /*),*/
+                      ),
+                      const SizedBox(width: 5),
+                      Container(
+                        width: 150,
+                        height: 150,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Container(
+                              height: 2,
+                              child: customDottedLine(CustomAxis.row),
+                            ),
+                            Expanded(
+                              child: customDottedLine(CustomAxis.column),
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  "정수량",
+                                  style: TextStyle(
+                                      color: kBackgroundColor,
+                                      fontSize: 20,
+                                      height: 1.8),
+                                ),
+                                Text.rich(
+                                  TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text:
+                                            "${(usageDay / allDay * 100).toInt()}%  ",
+                                        style: TextStyle(
+                                            color: kBackgroundColor,
+                                            fontSize: 32,
+                                            height: 1.2),
+                                      ),
+                                      TextSpan(
+                                        text: "사용",
+                                        style: TextStyle(
+                                            color: kBackgroundColor,
+                                            fontSize: 20,
+                                            height: 1.2),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text.rich(
+                                  TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "마지막 교체    ",
+                                        style: TextStyle(
+                                            color: kBackgroundColor,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            height: 2),
+                                      ),
+                                      TextSpan(
+                                        text: "${usageDay ~/ 30}개월 전",
+                                        style: TextStyle(
+                                            color: kBackgroundColor,
+                                            fontSize: 12,
+                                            height: 2),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                Text.rich(
+                                  TextSpan(
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "다음 교체        ",
+                                        style: TextStyle(
+                                            color: kBackgroundColor,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            height: 2),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            "${(allDay - usageDay) ~/ 30}개월 후",
+                                        style: TextStyle(
+                                            color: kBackgroundColor,
+                                            fontSize: 12,
+                                            height: 2),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Spacer(),
+                    ],
                   ),
                   /*Container(
                     width: mediaSize.width - 80,

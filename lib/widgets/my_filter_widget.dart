@@ -53,9 +53,9 @@ class _MyFilterState extends State<MyFilter> {
 
   Future<void> _addFilter(BuildContext context) async {
     try {
-      String? id = "4a81962323580";
+      String? id;
 
-      /*if (!(await NfcManager.instance.isAvailable())) {
+      if (!(await NfcManager.instance.isAvailable())) {
         if (Platform.isAndroid) {
           await showDialog(
             context: context,
@@ -114,7 +114,7 @@ class _MyFilterState extends State<MyFilter> {
         }
       } catch (e) {
         throw "NFC태그 정보를 불러올 수 없습니다.";
-      }*/
+      }
 
       if (id != null) {
         if (context.read<MyFilterProvider>().findIndex(id!) != null) {
@@ -216,9 +216,6 @@ class _MyFilterState extends State<MyFilter> {
   Widget build(BuildContext context) {
     final int length = context
         .select<MyFilterProvider, int>((myFilterProv) => myFilterProv.length);
-
-    print(
-        "개씨1111111111111발 $length      ${context.read<MyFilterProvider>().filters}");
 
     return Stack(
       children: <Widget>[

@@ -4,7 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eins_client/pages/customer_page.dart';
 import 'package:eins_client/pages/home_page.dart';
 import 'package:eins_client/pages/info_page.dart';
-import 'package:eins_client/pages/sales_page.dart';
+import 'package:eins_client/pages/sale_page.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +61,7 @@ class _EinsClientState extends State<EinsClient> {
       children: <Widget>[
         HomePage(controller: _pageController),
         InfoPage(controller: _pageController),
-        SalesPage(controller: _pageController),
+        SalePage(controller: _pageController),
         CustomerPage(controller: _pageController),
       ],
     );

@@ -1,12 +1,12 @@
 import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
-import 'package:eins_client/widgets/sales_item_widget.dart';
+import 'package:eins_client/widgets/sale_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SalesPage extends StatelessWidget {
-  const SalesPage({Key? key, required this.controller}) : super(key: key);
+class SalePage extends StatelessWidget {
+  const SalePage({Key? key, required this.controller}) : super(key: key);
 
   final PageController controller;
 
@@ -34,7 +34,7 @@ class SalesPage extends StatelessWidget {
                 mainAxisExtent: (mediaSize.width - 80) / 2 * 8 / 5,
               ),
               itemCount: context.read<SalesProvider>().length,
-              itemBuilder: (context, index) => SalesItem(index: index),
+              itemBuilder: (context, index) => SaleItem(index: index),
             ),
           );
         }),

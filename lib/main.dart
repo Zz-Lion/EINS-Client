@@ -118,7 +118,8 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-              appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+              scaffoldBackgroundColor: kBackgroundColor,
+              appBarTheme: AppBarTheme(backgroundColor: kBackgroundColor),
             ),
             home: Builder(builder: (context) {
               errorDialog(context, Exception(snapshot.error),
@@ -142,7 +143,7 @@ class MyApp extends StatelessWidget {
             title: "EINS",
             theme: ThemeData(
               scaffoldBackgroundColor: kBackgroundColor,
-              appBarTheme: AppBarTheme(color: Colors.white),
+              appBarTheme: AppBarTheme(color: kBackgroundColor),
               primaryColor: kPrimaryColor,
               textTheme:
                   Theme.of(context).textTheme.apply(bodyColor: kTextColor),
@@ -180,7 +181,8 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            appBarTheme: AppBarTheme(backgroundColor: Colors.white),
+            scaffoldBackgroundColor: kBackgroundColor,
+            appBarTheme: AppBarTheme(backgroundColor: kBackgroundColor),
           ),
           home: Splash(),
         );

@@ -3,8 +3,8 @@ import 'package:eins_client/screens/sales_web_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SalesItem extends StatelessWidget {
-  const SalesItem({Key? key, required this.index}) : super(key: key);
+class SaleItem extends StatelessWidget {
+  const SaleItem({Key? key, required this.index}) : super(key: key);
 
   final int index;
 

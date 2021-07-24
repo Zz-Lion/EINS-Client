@@ -10,6 +10,7 @@ import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/widgets/custom_dotted_line.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -82,7 +83,7 @@ class _FilterItemState extends State<FilterItem> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const SizedBox(width: 5),
+              const SizedBox(width: 20),
               Opacity(
                 opacity: 0.5,
                 child: Container(
@@ -97,7 +98,102 @@ class _FilterItemState extends State<FilterItem> {
         Column(
           children: <Widget>[
             Expanded(
-              child: Container(),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(30, 0, 30, 10),
+                child: Stack(
+                  children: <Widget>[
+                    SizedBox.expand(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Container(
+                                width:
+                                    (mediaSize.width - 60) * usageDay / allDay,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: kPrimaryColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(3)),
+                                ),
+                              ),
+                              Container(
+                                width: (mediaSize.width - 60) *
+                                    (allDay - usageDay) /
+                                    allDay,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[350],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(3)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 27),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                "${DateFormat("yyyy.MM.dd").format(startDate)}",
+                                style: TextStyle(
+                                    color: kPrimaryColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1),
+                              ),
+                              Text(
+                                "${DateFormat("yyyy.MM.dd").format(replaceDate)}",
+                                style: TextStyle(
+                                    color: kPrimaryColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 22,
+                      left: (mediaSize.width - 60) * usageDay / allDay - 20,
+                      child: Column(
+                        children: <Widget>[
+                          SvgPicture.asset(
+                            "assets/icons/checkbox.svg",
+                            width: 12,
+                            height: 12,
+                            color: kPrimaryColor,
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: kBackgroundColor,
+                              border:
+                                  Border.all(color: kPrimaryColor, width: 2),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "${(usageDay / allDay * 100).toInt()}%",
+                                style: TextStyle(
+                                  color: kPrimaryColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               /*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -155,7 +251,7 @@ class _FilterItemState extends State<FilterItem> {
                           width: 150,
                           height: 150,
                           decoration: BoxDecoration(
-                              shape: BoxShape.circle, color: Colors.white),
+                              shape: BoxShape.circle, color: kBackgroundColor),
                           child: Center(
                             child: CustomPaint(
                               painter: MyPainter(
@@ -170,7 +266,7 @@ class _FilterItemState extends State<FilterItem> {
                                   height: 90,
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.white),
+                                      color: kBackgroundColor),
                                   child: Center(
                                     child: Text(
                                       "${(usageDay / allDay * 100).toInt()}%",

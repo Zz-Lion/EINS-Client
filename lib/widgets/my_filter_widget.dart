@@ -5,6 +5,7 @@ import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:eins_client/widgets/filter_item_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:app_settings/app_settings.dart';
@@ -121,6 +122,8 @@ class _MyFilterState extends State<MyFilter> {
           throw "이미 등록된 필터 입니다";
         }
 
+        _currentPage = 0;
+        _controller.jumpToPage(0);
         context.read<MyFilterProvider>().addFilter(context, id!);
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
@@ -139,72 +142,80 @@ class _MyFilterState extends State<MyFilter> {
 
     return Column(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(20.0),
+        Expanded(
           child: Visibility(
             visible: length == 0,
-            child: Text(
-              "등록된 필터가 없습니다. 필터를 등록해주세요!",
-              style: TextStyle(color: Colors.white, fontSize: 18, height: 1),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(
+                  "assets/images/1.svg",
+                  height: 36,
+                ),
+                const SizedBox(height: 20),
+                SvgPicture.asset(
+                  "assets/images/2.svg",
+                  height: 40,
+                ),
+              ],
             ),
           ),
         ),
-        Expanded(
-          child: Container(
-            width: mediaSize.width,
-            decoration: const BoxDecoration(
-              color: kPrimaryColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
+        Container(
+          width: mediaSize.width,
+          height: mediaSize.width * 4 / 5,
+          decoration: const BoxDecoration(
+            color: kPrimaryColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
             ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "새로운 필터 추가하기",
-                    style:
-                        TextStyle(color: Colors.white, fontSize: 24, height: 1),
-                  ),
-                  Spacer(),
-                  IconButton(
-                    iconSize: 54,
-                    color: Colors.white,
-                    icon: Icon(Icons.add_circle),
-                    onPressed: () {
-                      _addFilter(context);
-                    },
-                  ),
-                  Spacer(),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.white),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.7)),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.3)),
-                  ),
-                ],
-              ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "새로운 필터 추가하기",
+                  style:
+                      TextStyle(color: Colors.white, fontSize: 24, height: 1),
+                ),
+                Spacer(),
+                IconButton(
+                  iconSize: 54,
+                  color: Colors.white,
+                  icon: Icon(Icons.add_circle),
+                  onPressed: () {
+                    _addFilter(context);
+                  },
+                ),
+                Spacer(),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  width: 5,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle, color: Colors.white),
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  width: 5,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.7)),
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  width: 5,
+                  height: 5,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.3)),
+                ),
+              ],
             ),
           ),
         ),
@@ -214,6 +225,7 @@ class _MyFilterState extends State<MyFilter> {
 
   @override
   Widget build(BuildContext context) {
+    final Size mediaSize = MediaQuery.of(context).size;
     final int length = context
         .select<MyFilterProvider, int>((myFilterProv) => myFilterProv.length);
 
@@ -228,9 +240,38 @@ class _MyFilterState extends State<MyFilter> {
           },
           children: <Widget>[
             ...List<FilterItem>.generate(
-                length, (index) => FilterItem(index: index)),
+                length, (index) => FilterItem(key: UniqueKey(), index: index)),
             _registerFilter(context, length),
           ],
+        ),
+        Positioned(
+          bottom: mediaSize.width * 4 / 5 - 15,
+          child: Container(
+            width: mediaSize.width,
+            child: Visibility(
+              visible: !(length == 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List<Widget>.generate(length * 2 + 1, (index) {
+                  if (index % 2 == 0) {
+                    return AnimatedContainer(
+                      duration: Duration(microseconds: 800),
+                      width: index / 2 == _currentPage ? 18 : 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(3)),
+                        color: index / 2 == _currentPage
+                            ? kBackgroundColor
+                            : kBackgroundColor.withOpacity(0.4),
+                      ),
+                    );
+                  } else {
+                    return const SizedBox(width: 6);
+                  }
+                }),
+              ),
+            ),
+          ),
         ),
         /*Visibility(
           visible: !(length == 0),

@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/widgets/image_dialog.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class ProductView extends StatelessWidget {
             child: Container(
               width: mediaSize.width - 20,
               child: Text(
-                "아인스 필터 소개",
+                "아인스 필터",
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -53,7 +54,7 @@ class ProductView extends StatelessWidget {
                         borderRadius: BorderRadius.all(
                           Radius.circular(10),
                         ),
-                        color: Colors.deepPurple[100]),
+                        color: kPrimaryColor.withOpacity(0.1)),
                     child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         child: productProv.productImageList[index]),

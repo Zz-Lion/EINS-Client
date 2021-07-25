@@ -10,6 +10,15 @@ Widget bottomNavigationBar(
   return Container(
     margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
     height: 68,
+    decoration: BoxDecoration(
+      color: kBackgroundColor,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.5),
+          blurRadius: 10,
+        ),
+      ],
+    ),
     child: Row(
       children: <Widget>[
         Expanded(

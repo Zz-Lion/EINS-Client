@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/constants/db_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -89,11 +90,24 @@ class YoutubeProvider with ChangeNotifier {
           aspectRatio: 16 / 9,
           controller: _youtubeControllerList[index],
           showVideoProgressIndicator: true,
-          bottomActions: [
+          progressIndicatorColor: kPrimaryColor,
+          progressColors: ProgressBarColors(
+              backgroundColor: kBackgroundColor,
+              playedColor: kPrimaryColor,
+              bufferedColor: kPrimaryColor,
+              handleColor: kPrimaryColor),
+          bottomActions: <Widget>[
             const SizedBox(width: 14.0),
             CurrentPosition(),
             const SizedBox(width: 8.0),
-            ProgressBar(isExpanded: true),
+            ProgressBar(
+              isExpanded: true,
+              colors: ProgressBarColors(
+                  backgroundColor: kBackgroundColor,
+                  playedColor: kPrimaryColor,
+                  bufferedColor: kPrimaryColor,
+                  handleColor: kPrimaryColor),
+            ),
             RemainingDuration(),
             IconButton(
               icon: Icon(

@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,10 +14,10 @@ class EinsYoutubePlayer extends StatelessWidget {
     final YoutubeProvider youtubeProv = context.read<YoutubeProvider>();
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          color: Colors.deepPurple[300]),
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          color: kPrimaryColor),
       child: Column(
         children: [
           Padding(

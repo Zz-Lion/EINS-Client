@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/youtube_provider.dart';
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
@@ -42,7 +43,7 @@ class _InfoPageState extends State<InfoPage>
             ? EinsYoutubePlayer(index: index ~/ 2)
             : Divider(
                 thickness: 2,
-                color: Colors.deepPurple[300],
+                color: kPrimaryColor.withOpacity(0.4),
                 indent: 15,
                 endIndent: 15,
               ));

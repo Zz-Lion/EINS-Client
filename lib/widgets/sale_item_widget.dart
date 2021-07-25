@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/sales_provider.dart';
 import 'package:eins_client/screens/sales_web_view_screen.dart';
 import 'package:flutter/material.dart';
@@ -48,10 +49,10 @@ class SaleItem extends StatelessWidget {
       height: (mediaSize.width - 80) / 2 * 8 / 5,
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(30)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
         border: Border.all(
           width: 2,
-          color: Colors.deepPurple[300]!,
+          color: kPrimaryColor,
         ),
       ),
       child: Column(
@@ -105,8 +106,8 @@ class SaleItem extends StatelessWidget {
             child: Container(
               height: 30,
               decoration: BoxDecoration(
-                color: Colors.deepPurple[300],
-                borderRadius: BorderRadius.all(Radius.circular(15)),
+                color: kPrimaryColor,
+                borderRadius: BorderRadius.all(Radius.circular(5)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/screens/chatting_screen.dart';
@@ -61,7 +62,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         },
                         leading: Icon(
                           Icons.help_outline,
-                          color: Colors.deepPurple[300],
+                          color: kPrimaryColor,
                         ),
                         title: Text("자주 묻는 질문",
                             style:
@@ -74,7 +75,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         },
                         leading: Icon(
                           Icons.call,
-                          color: Colors.deepPurple[300],
+                          color: kPrimaryColor,
                         ),
                         title: Text("담당자 전화 연결",
                             style:
@@ -82,9 +83,10 @@ class _CustomerPageState extends State<CustomerPage> {
                       ),
                       Divider(height: 10),
                       SwitchListTile(
+                        activeColor: kPrimaryColor,
                         secondary: Icon(
                           Icons.alarm,
-                          color: Colors.deepPurple[300],
+                          color: kPrimaryColor,
                         ),
                         title: Text("푸시 알람 ON/OFF",
                             style:
@@ -118,7 +120,7 @@ class _CustomerPageState extends State<CustomerPage> {
                         },
                         leading: Icon(
                           Icons.info_outlined,
-                          color: Colors.deepPurple[300],
+                          color: kPrimaryColor,
                         ),
                         title: Text("사업자 정보",
                             style:
@@ -138,28 +140,28 @@ class _CustomerPageState extends State<CustomerPage> {
                                 "아인스코리아(주)",
                                 style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.black,
+                                    color: kTextColor,
                                     fontWeight: FontWeight.bold),
                               ),
                               Text("사업자등록번호 761-81-01229",
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.black,
+                                    color: kTextColor,
                                   )),
                               Text("통신판매업신고번호 2018-용인수지-0551호",
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.black,
+                                    color: kTextColor,
                                   )),
                               Text("대표이사 김영수 경기도 용인시 수지구 풍덕천로 30번길 19",
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.black,
+                                    color: kTextColor,
                                   )),
                               Text("전화 1670-3692 이메일 eins3692@naver.com",
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.black,
+                                    color: kTextColor,
                                   )),
                             ],
                           ),
@@ -171,7 +173,7 @@ class _CustomerPageState extends State<CustomerPage> {
                           Platform.isIOS
                               ? Icons.phone_iphone
                               : Icons.phone_android,
-                          color: Colors.deepPurple[300],
+                          color: kPrimaryColor,
                         ),
                         title: Text("버전 정보",
                             style:
@@ -210,13 +212,13 @@ class _CustomerPageState extends State<CustomerPage> {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(15)),
-                      color: Colors.deepPurple,
+                      color: kPrimaryColor,
                     ),
                     child: Center(
                       child: Text(
                         "1:1 문의하기",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: kBackgroundColor,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),

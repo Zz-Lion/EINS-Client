@@ -12,7 +12,7 @@ Widget bottomNavigationBar(
     height: 68,
     decoration: BoxDecoration(
       color: kBackgroundColor,
-      boxShadow: [
+      boxShadow: <BoxShadow>[
         BoxShadow(
           color: Colors.black.withOpacity(0.5),
           blurRadius: 10,
@@ -30,7 +30,10 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
+              color: kBackgroundColor,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 4),
                   SvgPicture.asset(
@@ -62,7 +65,10 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
+              color: kBackgroundColor,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 4),
                   SvgPicture.asset(
@@ -95,7 +101,10 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
+              color: kBackgroundColor,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 4),
                   SvgPicture.asset(
@@ -128,7 +137,10 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
+              color: kBackgroundColor,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 4),
                   SvgPicture.asset(

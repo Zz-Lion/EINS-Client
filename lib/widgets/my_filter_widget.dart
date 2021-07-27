@@ -73,11 +73,11 @@ class _MyFilterState extends State<MyFilter> {
 
                     AppSettings.openNFCSettings();
                   },
-                  child: Text("설정"),
+                  child: Text("설정", style: TextStyle(color: kPrimaryColor)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text("확인"),
+                  child: Text("확인", style: TextStyle(color: kPrimaryColor)),
                 ),
               ],
             ),
@@ -326,6 +326,8 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
 
   String? _errorMessage;
 
+  String? _result;
+
   @override
   void initState() {
     super.initState();
@@ -333,9 +335,9 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
     NfcManager.instance.startSession(
       onDiscovered: (tag) async {
         try {
-          final result = widget.handleTag(tag);
+          _result = widget.handleTag(tag);
           await NfcManager.instance.stopSession();
-          setState(() => _alertMessage = result);
+          setState(() => _alertMessage = "NFC 태그를 인식하였습니다.");
         } catch (e) {
           await NfcManager.instance.stopSession().catchError((_) {/* no op */});
           setState(() => _errorMessage = '$e');
@@ -355,10 +357,10 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
     return AlertDialog(
       title: Text(
         _errorMessage?.isNotEmpty == true
-            ? 'Error'
+            ? "오류"
             : _alertMessage?.isNotEmpty == true
-                ? 'Success'
-                : 'Ready to scan',
+                ? "성공"
+                : "준비",
       ),
       content: Text(
         _errorMessage?.isNotEmpty == true
@@ -367,16 +369,16 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
                 ? _alertMessage!
                 : widget.alertMessage,
       ),
-      actions: [
+      actions: <Widget>[
         TextButton(
           child: Text(
-            _errorMessage?.isNotEmpty == true
-                ? 'GOT IT'
-                : _alertMessage?.isNotEmpty == true
-                    ? 'OK'
-                    : 'CANCEL',
-          ),
-          onPressed: () => Navigator.pop(context, _alertMessage),
+              _errorMessage?.isNotEmpty == true
+                  ? "확인"
+                  : _alertMessage?.isNotEmpty == true
+                      ? "완료"
+                      : "취소",
+              style: TextStyle(color: kPrimaryColor)),
+          onPressed: () => Navigator.pop(context, _result),
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,8 +54,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       children: <Widget>[
                         Text(
                           "Q. ",
-                          style:
-                              TextStyle(fontSize: 18, color: Colors.deepPurple),
+                          style: TextStyle(fontSize: 18, color: kPrimaryColor),
                         ),
                         Text(
                           questionProv.questionList[index],
@@ -76,8 +76,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         children: <Widget>[
                           Text(
                             "A. ",
-                            style: TextStyle(
-                                fontSize: 16, color: Colors.deepPurple),
+                            style:
+                                TextStyle(fontSize: 16, color: kPrimaryColor),
                           ),
                           Flexible(
                             child: Text(

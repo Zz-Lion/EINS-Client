@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/models/chatting_model.dart';
 import 'package:eins_client/providers/chatting_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
@@ -92,7 +93,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
                   _focus.unfocus();
                 },
                 child: Container(
-                  color: Colors.deepPurple[100],
+                  color: kPrimaryColor.withOpacity(0.2),
                   child: ListView(
                     reverse: true,
                     children: chattingProv.chattingList
@@ -108,6 +109,15 @@ class _ChattingScreenState extends State<ChattingScreen> {
                   maxHeight: MediaQuery.of(context).size.height * 0.3),
               margin: EdgeInsets.only(
                   bottom: MediaQuery.of(context).padding.bottom),
+              decoration: BoxDecoration(
+                color: kBackgroundColor,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -138,7 +148,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
                       child: Icon(
                         Icons.send,
                         size: 33,
-                        color: Colors.deepPurple,
+                        color: kPrimaryColor,
                       ),
                     ),
                   )

@@ -1,3 +1,4 @@
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/models/chatting_model.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +28,7 @@ class ChattingItem extends StatelessWidget {
               margin: const EdgeInsets.all(3),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
-                  color: Colors.white),
+                  color: kBackgroundColor),
               child: Image.asset(
                 'assets/images/EINS_title.png',
                 fit: BoxFit.fitWidth,
@@ -57,8 +58,8 @@ class ChattingItem extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                 decoration: BoxDecoration(
                     color: chattingModel.isClient
-                        ? Colors.deepPurple[400]
-                        : Colors.white,
+                        ? kPrimaryColor
+                        : kBackgroundColor,
                     borderRadius: BorderRadius.only(
                         topLeft:
                             Radius.circular(chattingModel.isClient ? 30 : 0),

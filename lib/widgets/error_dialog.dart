@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +31,7 @@ void errorDialog(BuildContext context, Exception e,
             content: Text(errorPlugin + "\n" + errorMessage),
             actions: [
               CupertinoDialogAction(
-                child: Text("확인"),
+                child: Text("확인", style: TextStyle(color: kPrimaryColor)),
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -47,13 +48,13 @@ void errorDialog(BuildContext context, Exception e,
           return AlertDialog(
             title: Text(errorTitle),
             content: Text(
-              /*errorPlugin + "\n" + */ errorMessage,
+              errorMessage,
               style: TextStyle(color: Colors.black, fontSize: 16),
             ),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text("확인"),
+                child: Text("확인", style: TextStyle(color: kPrimaryColor)),
               ),
             ],
           );

@@ -23,18 +23,12 @@ class SalePage extends StatelessWidget {
             height: mediaSize.height -
                 (Scaffold.of(context).appBarMaxHeight ?? 0.0) -
                 (68 + MediaQuery.of(context).padding.bottom),
-            child: GridView.builder(
-              padding: const EdgeInsets.all(20),
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
               scrollDirection: Axis.vertical,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 20,
-                childAspectRatio: (5 / 8),
-                mainAxisExtent: (mediaSize.width - 80) / 2 * 8 / 5,
-              ),
               itemCount: context.read<SalesProvider>().length,
               itemBuilder: (context, index) => SaleItem(index: index),
+              separatorBuilder: (_, __) => const SizedBox(height: 20),
             ),
           );
         }),

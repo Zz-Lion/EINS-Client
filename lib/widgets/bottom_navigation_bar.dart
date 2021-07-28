@@ -11,10 +11,10 @@ Widget bottomNavigationBar(
     margin: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
     height: 68,
     decoration: BoxDecoration(
-      color: kBackgroundColor,
+      color: Colors.grey[300],
       boxShadow: <BoxShadow>[
         BoxShadow(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withOpacity(0.3),
           blurRadius: 10,
         ),
       ],
@@ -30,7 +30,7 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              color: kBackgroundColor,
+              color: Colors.grey[300],
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -65,7 +65,7 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              color: kBackgroundColor,
+              color: Colors.grey[300],
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -101,7 +101,7 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              color: kBackgroundColor,
+              color: Colors.grey[300],
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -137,7 +137,7 @@ Widget bottomNavigationBar(
             child: Container(
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.symmetric(vertical: 5),
-              color: kBackgroundColor,
+              color: Colors.grey[300],
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

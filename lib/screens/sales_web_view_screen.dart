@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -40,7 +41,7 @@ class _SalesWebViewState extends State<SalesWebView> {
                   height: 40,
                   margin: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.deepPurple),
+                      shape: BoxShape.circle, color: kPrimaryColor),
                   child: Center(
                     child: Icon(
                       Icons.close,

@@ -16,23 +16,38 @@ class EinsYoutubePlayer extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
           color: kPrimaryColor),
       child: Column(
-        children: [
+        children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 5),
-            child: Container(
-              width: mediaSize.width - 20,
-              child: Text(
-                "${youtubeProv.titleList[index]}",
-                style: TextStyle(color: Colors.white, fontSize: 24, height: 1),
-              ),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 5,
+                  height: 24,
+                  color: kBackgroundColor,
+                ),
+                const SizedBox(width: 5),
+                Container(
+                  width: mediaSize.width - 90,
+                  child: Text(
+                    "${youtubeProv.titleList[index]}",
+                    style: TextStyle(
+                        color: kBackgroundColor, fontSize: 20, height: 1),
+                  ),
+                ),
+              ],
             ),
           ),
           Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: youtubeProv.youtubePlayerList[index]),
+            padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              child: youtubeProv.youtubePlayerList[index],
+            ),
+          ),
         ],
       ),
     );

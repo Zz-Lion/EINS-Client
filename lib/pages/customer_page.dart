@@ -25,21 +25,21 @@ class CustomerPage extends StatefulWidget {
 class _CustomerPageState extends State<CustomerPage> {
   bool _isOpen = false;
 
+  Future<void> _makePhoneCall(BuildContext context, String url) async {
+    try {
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw "전화할 수 없습니다.";
+      }
+    } on Exception catch (e) {
+      errorDialog(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size mediaSize = MediaQuery.of(context).size;
-
-    Future<void> _makePhoneCall(String url) async {
-      try {
-        if (await canLaunch(url)) {
-          await launch(url);
-        } else {
-          throw "전화할 수 없습니다.";
-        }
-      } catch (e) {
-        errorDialog(context, Exception(e));
-      }
-    }
 
     return Scaffold(
       appBar: appBar(),
@@ -71,7 +71,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       Divider(height: 10),
                       ListTile(
                         onTap: () {
-                          _makePhoneCall("tel:01055085350");
+                          _makePhoneCall(context, "tel:01055085350");
                         },
                         leading: Icon(
                           Icons.call,

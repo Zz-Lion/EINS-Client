@@ -7,6 +7,7 @@ class SalesProvider {
   int? _length;
   List<String> _salesUrlList = <String>[];
   List<String> _titleList = <String>[];
+  List<String> _subTitleList = <String>[];
   List<int> _costList = <int>[];
   List<int> _originalCostList = <int>[];
   List<CachedNetworkImage> _imageList = <CachedNetworkImage>[];
@@ -14,6 +15,7 @@ class SalesProvider {
   int get length => _length ?? 0;
   List<String> get salesUrlList => _salesUrlList;
   List<String> get titleList => _titleList;
+  List<String> get subTitleList => _subTitleList;
   List<int> get costList => _costList;
   List<int> get originalCostList => _originalCostList;
   List<CachedNetworkImage> get imageList => _imageList;
@@ -21,6 +23,7 @@ class SalesProvider {
   Future<void> getSalesInfo() async {
     List<String> tempSalesUrlList = <String>[];
     List<String> tempTitleList = <String>[];
+    List<String> tempSubTitleList = <String>[];
     List<int> tempCostList = <int>[];
     List<int> tempOriginalCostList = <int>[];
     List<CachedNetworkImage> tempImageList = <CachedNetworkImage>[];
@@ -31,6 +34,7 @@ class SalesProvider {
 
       tempSalesUrlList = List<String>.from(einsSales.data()!["sales_url"]);
       tempTitleList = List<String>.from(einsSales.data()!["title"]);
+      tempSubTitleList = List<String>.from(einsSales.data()!["sub_title"]);
       tempCostList = List<int>.from(einsSales.data()!["cost"]);
       tempOriginalCostList = List<int>.from(einsSales.data()!["original_cost"]);
       tempImageList = List<CachedNetworkImage>.from(
@@ -46,6 +50,7 @@ class SalesProvider {
     _length = tempSalesUrlList.length;
     _salesUrlList = tempSalesUrlList;
     _titleList = tempTitleList;
+    _subTitleList = tempSubTitleList;
     _costList = tempCostList;
     _originalCostList = tempOriginalCostList;
     _imageList = tempImageList;

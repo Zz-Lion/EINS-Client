@@ -23,7 +23,7 @@ class ProductView extends StatelessWidget {
               child: Text(
                 "아인스 필터",
                 style: TextStyle(
-                    color: Colors.black,
+                    color: kPrimaryColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     height: 1),

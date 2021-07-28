@@ -48,7 +48,7 @@ class _MyFilterState extends State<MyFilter> {
 
       return id;
     } catch (e) {
-      throw Exception("NFC 데이터를 가져올 수 없습니다.");
+      throw "NFC 데이터를 가져올 수 없습니다.";
     }
   }
 
@@ -128,8 +128,8 @@ class _MyFilterState extends State<MyFilter> {
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
       }
-    } catch (e) {
-      errorDialog(context, Exception(e));
+    } on Exception catch (e) {
+      errorDialog(context, e);
     }
 
     if (context.read<LocalStorageProvider>().isNotificated) {
@@ -273,38 +273,6 @@ class _MyFilterState extends State<MyFilter> {
             ),
           ),
         ),
-        /*Visibility(
-          visible: !(length == 0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List<Widget>.generate(length * 2 + 1, (index) {
-                  if (index % 2 == 0) {
-                    return Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.deepPurple[900]!,
-                          width: 1,
-                        ),
-                        shape: BoxShape.circle,
-                        color: index / 2 == _currentPage
-                            ? Colors.deepPurple
-                            : Colors.deepPurple[100],
-                      ),
-                    );
-                  } else {
-                    return const SizedBox(width: 10);
-                  }
-                }),
-              ),
-              const SizedBox(height: 5),
-            ],
-          ),
-        ),*/
       ],
     );
   }
@@ -324,8 +292,6 @@ class _AndroidSessionDialog extends StatefulWidget {
 class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
   String? _alertMessage;
 
-  String? _errorMessage;
-
   String? _result;
 
   @override
@@ -339,16 +305,17 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
           await NfcManager.instance.stopSession();
           setState(() => _alertMessage = "NFC 태그를 인식하였습니다.");
         } catch (e) {
-          await NfcManager.instance.stopSession().catchError((_) {/* no op */});
-          setState(() => _errorMessage = '$e');
+          await NfcManager.instance.stopSession();
+          Navigator.of(context).pop();
+          rethrow;
         }
       },
-    ).catchError((e) => setState(() => _errorMessage = '$e'));
+    );
   }
 
   @override
   void dispose() {
-    NfcManager.instance.stopSession().catchError((_) {/* no op */});
+    NfcManager.instance.stopSession();
     super.dispose();
   }
 
@@ -356,27 +323,16 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        _errorMessage?.isNotEmpty == true
-            ? "오류"
-            : _alertMessage?.isNotEmpty == true
-                ? "성공"
-                : "준비",
+        _alertMessage?.isNotEmpty == true ? "성공" : "준비",
       ),
       content: Text(
-        _errorMessage?.isNotEmpty == true
-            ? _errorMessage!
-            : _alertMessage?.isNotEmpty == true
-                ? _alertMessage!
-                : widget.alertMessage,
+        _alertMessage?.isNotEmpty == true
+            ? _alertMessage!
+            : widget.alertMessage,
       ),
       actions: <Widget>[
         TextButton(
-          child: Text(
-              _errorMessage?.isNotEmpty == true
-                  ? "확인"
-                  : _alertMessage?.isNotEmpty == true
-                      ? "완료"
-                      : "취소",
+          child: Text(_alertMessage?.isNotEmpty == true ? "완료" : "취소",
               style: TextStyle(color: kPrimaryColor)),
           onPressed: () => Navigator.pop(context, _result),
         ),

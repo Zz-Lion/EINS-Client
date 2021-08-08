@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -34,8 +33,6 @@ class _FilterItemState extends State<FilterItem> {
   late bool _isEditable;
   late TextEditingController _descTextController;
   late FocusNode _focus;
-  double _opacity = 1;
-  Timer? _timer;
 
   @override
   void initState() {
@@ -45,28 +42,24 @@ class _FilterItemState extends State<FilterItem> {
     startDate = e.startDate;
     replaceDate = e.replaceDate;
     allDay = replaceDate.difference(startDate).inDays;
-    usageDay = DateTime.now().difference(startDate).inDays;
+    if (DateTime.now().isBefore(replaceDate)) {
+      usageDay = DateTime.now().difference(startDate).inDays;
+    } else {
+      usageDay = allDay;
+    }
+
     filterImage =
         context.read<ProductProvider>().productImageByName(e.productName);
 
     _isEditable = false;
     _descTextController = TextEditingController(text: e.desc);
     _focus = FocusNode();
-
-    if (usageDay / allDay >= 0.9) {
-      _timer = Timer.periodic(Duration(seconds: 1), (_) {
-        setState(() {
-          _opacity = _opacity == 0 ? 1 : 0;
-        });
-      });
-    }
   }
 
   @override
   void dispose() {
     _descTextController.dispose();
     _focus.dispose();
-    _timer?.cancel();
 
     super.dispose();
   }
@@ -256,31 +249,28 @@ class _FilterItemState extends State<FilterItem> {
                                 color: kBackgroundColor,
                               ),
                               onTap: () {
-                                setState(() {
-                                  myFilterProv
-                                      .editFilter(widget.index,
-                                          _descTextController.text)
-                                      .then((_) {
-                                    setState(() {
-                                      _isEditable = false;
-                                      _focus.unfocus();
-                                    });
-                                  }, onError: (e) {
-                                    errorDialog(context,
-                                        Exception("필터 이름을 다시 설정해주세요."));
+                                myFilterProv
+                                    .editFilter(
+                                        widget.index, _descTextController.text)
+                                    .then((_) {
+                                  setState(() {
+                                    _isEditable = false;
+                                    _focus.unfocus();
+                                  });
+                                }, onError: (e) {
+                                  errorDialog(context, "필터 이름을 다시 설정해주세요.");
 
-                                    setState(() {
-                                      _descTextController.text = originalText;
-                                      _isEditable = false;
-                                      _focus.unfocus();
-                                      if (context
-                                          .read<LocalStorageProvider>()
-                                          .isNotificated) {
-                                        context
-                                            .read<MyFilterProvider>()
-                                            .dailyAtTimeNotification();
-                                      }
-                                    });
+                                  setState(() {
+                                    _descTextController.text = originalText;
+                                    _isEditable = false;
+                                    _focus.unfocus();
+                                    if (context
+                                        .read<LocalStorageProvider>()
+                                        .isNotificated) {
+                                      context
+                                          .read<MyFilterProvider>()
+                                          .dailyAtTimeNotification();
+                                    }
                                   });
                                 });
                               },

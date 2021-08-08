@@ -43,10 +43,7 @@ class EinsYoutubePlayer extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(30, 0, 30, 30),
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              child: youtubeProv.youtubePlayerList[index],
-            ),
+            child: youtubeProv.youtubePlayerList[index],
           ),
         ],
       ),

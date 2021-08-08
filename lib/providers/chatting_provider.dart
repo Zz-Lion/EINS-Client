@@ -51,7 +51,7 @@ class ChattingProvider with ChangeNotifier {
       state = state.copyWith(loading: false);
       notifyListeners();
 
-      throw "고객센터 정보를 불러올 수 없습니다.";
+      throw "채팅 정보를 불러올 수 없습니다.";
     }
 
     _chattingList = tempChattingList;
@@ -98,6 +98,8 @@ class ChattingProvider with ChangeNotifier {
             text: text,
             uploadTime: Timestamp.fromDate(now),
           ).toDoc());
+
+      await customerRef.doc(uid).set({"isUpdate": true});
 
       state = state.copyWith(loading: false);
       notifyListeners();

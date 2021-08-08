@@ -128,7 +128,7 @@ class _MyFilterState extends State<MyFilter> {
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
       }
-    } on Exception catch (e) {
+    } catch (e) {
       errorDialog(context, e);
     }
 
@@ -162,6 +162,7 @@ class _MyFilterState extends State<MyFilter> {
           ),
         ),
         Container(
+          padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
           width: mediaSize.width,
           height: mediaSize.width * 4 / 5,
           decoration: const BoxDecoration(
@@ -171,52 +172,48 @@ class _MyFilterState extends State<MyFilter> {
               topRight: Radius.circular(30),
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(40, 40, 40, 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "새로운 필터 추가하기",
-                  style:
-                      TextStyle(color: Colors.white, fontSize: 24, height: 1),
-                ),
-                Spacer(),
-                IconButton(
-                  iconSize: 54,
-                  color: Colors.white,
-                  icon: Icon(Icons.add_circle),
-                  onPressed: () {
-                    _addFilter(context);
-                  },
-                ),
-                Spacer(),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  width: 5,
-                  height: 5,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.white),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  width: 5,
-                  height: 5,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.7)),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  width: 5,
-                  height: 5,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.3)),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "새로운 필터 추가하기",
+                style: TextStyle(color: Colors.white, fontSize: 24, height: 1),
+              ),
+              Spacer(),
+              IconButton(
+                iconSize: 54,
+                color: Colors.white,
+                icon: Icon(Icons.add_circle),
+                onPressed: () {
+                  _addFilter(context);
+                },
+              ),
+              Spacer(),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                width: 5,
+                height: 5,
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.7)),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.3)),
+              ),
+            ],
           ),
         ),
       ],
@@ -291,6 +288,7 @@ class _AndroidSessionDialog extends StatefulWidget {
 
 class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
   String? _alertMessage;
+  String? _errorMessage;
 
   String? _result;
 
@@ -299,18 +297,20 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
     super.initState();
 
     NfcManager.instance.startSession(
-      onDiscovered: (tag) async {
+      onDiscovered: (NfcTag tag) async {
         try {
           _result = widget.handleTag(tag);
+
           await NfcManager.instance.stopSession();
+
           setState(() => _alertMessage = "NFC 태그를 인식하였습니다.");
         } catch (e) {
           await NfcManager.instance.stopSession();
-          Navigator.of(context).pop();
-          rethrow;
+
+          setState(() => _errorMessage = '$e');
         }
       },
-    );
+    ).catchError((e) => setState(() => _errorMessage = '$e'));
   }
 
   @override
@@ -323,18 +323,29 @@ class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        _alertMessage?.isNotEmpty == true ? "성공" : "준비",
+        _errorMessage?.isNotEmpty == true
+            ? "오류"
+            : _alertMessage?.isNotEmpty == true
+                ? "성공"
+                : "준비",
       ),
       content: Text(
-        _alertMessage?.isNotEmpty == true
-            ? _alertMessage!
-            : widget.alertMessage,
+        _errorMessage?.isNotEmpty == true
+            ? _errorMessage!
+            : _alertMessage?.isNotEmpty == true
+                ? _alertMessage!
+                : widget.alertMessage,
       ),
       actions: <Widget>[
         TextButton(
-          child: Text(_alertMessage?.isNotEmpty == true ? "완료" : "취소",
+          child: Text(
+              _errorMessage?.isNotEmpty == true
+                  ? "확인"
+                  : _alertMessage?.isNotEmpty == true
+                      ? "완료"
+                      : "취소",
               style: TextStyle(color: kPrimaryColor)),
-          onPressed: () => Navigator.pop(context, _result),
+          onPressed: () => Navigator.of(context).pop(_result),
         ),
       ],
     );

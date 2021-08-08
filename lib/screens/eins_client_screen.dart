@@ -35,8 +35,7 @@ class _EinsClientState extends State<EinsClient> {
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
       if (result == ConnectivityResult.none) {
-        errorDialog(
-            context, Exception("와이파이, 모바일 데이터 혹은 비행기모드 설정을 확인해 주시기 바랍니다."),
+        errorDialog(context, "와이파이, 모바일 데이터 혹은 비행기모드 설정을 확인해 주시기 바랍니다.",
             afterDialog: (value) {
           SystemChannels.platform.invokeMethod("SystemNavigator.pop");
         });

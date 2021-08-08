@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/constants/db_constant.dart';
 import 'package:eins_client/models/filter_model.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
@@ -241,7 +242,7 @@ Widget _bottomSheetButton(BuildContext context,
         width: MediaQuery.of(context).size.width * 0.25,
         height: MediaQuery.of(context).size.width * 0.25,
         decoration: BoxDecoration(
-          color: Colors.indigo[200],
+          color: kPrimaryColor,
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         child: Column(

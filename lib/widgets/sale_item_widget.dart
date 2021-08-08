@@ -18,12 +18,11 @@ class SaleItem extends StatelessWidget {
           url,
           forceSafariVC: false,
           forceWebView: false,
-          headers: <String, String>{'my_header_key': 'my_header_value'},
         );
       } else {
-        throw 'Could not launch $url';
+        throw "$url을 실행할 수 없습니다.";
       }
-    } on Exception catch (e) {
+    } catch (e) {
       errorDialog(context, e);
     }
   }
@@ -67,7 +66,7 @@ class SaleItem extends StatelessWidget {
       children: <Widget>[
         Container(
           width: mediaSize.width - 40,
-          height: 164,
+          height: 144,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -79,8 +78,8 @@ class SaleItem extends StatelessWidget {
           child: Row(
             children: <Widget>[
               Container(
-                width: 120,
-                height: 120,
+                width: 100,
+                height: 100,
                 child: salesProv.imageList[index],
               ),
               const SizedBox(width: 10),
@@ -91,7 +90,7 @@ class SaleItem extends StatelessWidget {
                     Text(
                       salesProv.titleList[index],
                       style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           color: kPrimaryColor,
                           height: 1,
                           fontWeight: FontWeight.bold),
@@ -152,7 +151,7 @@ class SaleItem extends StatelessWidget {
                 );
               },
               child: Container(
-                height: 50,
+                height: 40,
                 width: (mediaSize.width - 40) / 2 - 40,
                 margin: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -177,7 +176,7 @@ class SaleItem extends StatelessWidget {
                 _launchInBrowser(context, salesProv.salesUrlList[index]);
               },
               child: Container(
-                height: 50,
+                height: 40,
                 width: (mediaSize.width - 40) / 2 - 40,
                 margin: const EdgeInsets.all(20),
                 decoration: BoxDecoration(

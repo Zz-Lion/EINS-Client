@@ -44,7 +44,7 @@ class _ChattingScreenState extends State<ChattingScreen> {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         errorDialog(
           context,
-          Exception("정보를 불러올 수 없습니다."),
+          "정보를 불러올 수 없습니다.",
           afterDialog: (value) {
             Navigator.pop(context);
           },

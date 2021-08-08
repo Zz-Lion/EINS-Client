@@ -28,7 +28,7 @@ class _SalesWebViewState extends State<SalesWebView> {
     return Scaffold(
       body: SafeArea(
         child: Stack(
-          children: [
+          children: <Widget>[
             WebView(
               initialUrl: widget.url,
               javascriptMode: JavascriptMode.unrestricted,

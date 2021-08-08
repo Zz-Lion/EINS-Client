@@ -32,7 +32,7 @@ class _CustomerPageState extends State<CustomerPage> {
       } else {
         throw "전화할 수 없습니다.";
       }
-    } on Exception catch (e) {
+    } catch (e) {
       errorDialog(context, e);
     }
   }

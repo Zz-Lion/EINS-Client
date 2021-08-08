@@ -121,13 +121,14 @@ class MyApp extends StatelessWidget {
               scaffoldBackgroundColor: kBackgroundColor,
               appBarTheme: AppBarTheme(backgroundColor: kBackgroundColor),
             ),
-            home: Builder(builder: (context) {
-              errorDialog(context, Exception(snapshot.error),
-                  afterDialog: (value) {
-                SystemChannels.platform.invokeMethod("SystemNavigator.pop");
-              });
-              return Splash();
-            }),
+            home: Builder(
+              builder: (BuildContext context) {
+                errorDialog(context, snapshot.error, afterDialog: (_) {
+                  SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+                });
+                return Splash();
+              },
+            ),
           );
         }
 

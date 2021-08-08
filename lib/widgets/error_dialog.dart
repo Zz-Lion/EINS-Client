@@ -5,7 +5,7 @@ import 'package:eins_client/constants/color_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-void errorDialog(BuildContext context, Exception e,
+void errorDialog(BuildContext context, dynamic e,
     {void Function(dynamic)? afterDialog}) {
   late String errorTitle;
   late String errorPlugin;

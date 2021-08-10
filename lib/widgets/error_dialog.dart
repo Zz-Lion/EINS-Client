@@ -29,10 +29,10 @@ void errorDialog(BuildContext context, dynamic e,
           return CupertinoAlertDialog(
             title: Text(errorTitle),
             content: Text(errorPlugin + "\n" + errorMessage),
-            actions: [
+            actions: <Widget>[
               CupertinoDialogAction(
                 child: Text("확인", style: TextStyle(color: kPrimaryColor)),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           );
@@ -48,12 +48,12 @@ void errorDialog(BuildContext context, dynamic e,
           return AlertDialog(
             title: Text(errorTitle),
             content: Text(
-              errorMessage,
+              errorPlugin + "\n" + errorMessage,
               style: TextStyle(color: Colors.black, fontSize: 16),
             ),
             actions: <Widget>[
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.of(context).pop(),
                 child: Text("확인", style: TextStyle(color: kPrimaryColor)),
               ),
             ],

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,6 +9,7 @@ import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/providers/product_provider.dart';
 import 'package:eins_client/widgets/custom_dotted_line.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -38,8 +40,6 @@ class _FilterItemState extends State<FilterItem> {
   void initState() {
     super.initState();
 
-    print("씨22222222222222222발");
-
     e = context.read<MyFilterProvider>().filters[widget.index];
     startDate = e.startDate;
     replaceDate = e.replaceDate;
@@ -64,6 +64,64 @@ class _FilterItemState extends State<FilterItem> {
     _focus.dispose();
 
     super.dispose();
+  }
+
+  Future<void> _deleteFilter(BuildContext context) async {
+    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
+    late final bool result;
+
+    if (Platform.isIOS) {
+      result = await showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text("필터를 삭제하시겠습니까?"),
+            content: Text("필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다."),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text("취소", style: TextStyle(color: kPrimaryColor)),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              CupertinoDialogAction(
+                child: Text("삭제", style: TextStyle(color: Colors.red)),
+                onPressed: () => Navigator.of(context).pop(true),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      result = await showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("필터를 삭제하시겠습니까?"),
+            content: Text(
+              "필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다.",
+              style: TextStyle(color: Colors.black, fontSize: 16),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text("삭제", style: TextStyle(color: kPrimaryColor)),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text("취소", style: TextStyle(color: kPrimaryColor)),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    if (result == true) {
+      myFilterProv.deleteFilter(widget.index);
+      if (context.read<LocalStorageProvider>().isNotificated) {
+        context.read<MyFilterProvider>().dailyAtTimeNotification();
+      }
+    }
   }
 
   @override
@@ -301,14 +359,7 @@ class _FilterItemState extends State<FilterItem> {
                           color: kBackgroundColor,
                         ),
                         onTap: () {
-                          myFilterProv.deleteFilter(widget.index);
-                          if (context
-                              .read<LocalStorageProvider>()
-                              .isNotificated) {
-                            context
-                                .read<MyFilterProvider>()
-                                .dailyAtTimeNotification();
-                          }
+                          _deleteFilter(context);
                         },
                       ),
                       const SizedBox(

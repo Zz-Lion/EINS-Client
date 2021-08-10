@@ -227,8 +227,6 @@ class _MyFilterState extends State<MyFilter> {
         .select<MyFilterProvider, int>((myFilterProv) => myFilterProv.length);
     final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
 
-    print("씨333333333333333333333333발");
-
     return Stack(
       children: <Widget>[
         PageView(

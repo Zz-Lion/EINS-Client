@@ -178,12 +178,13 @@ class _MyFilterState extends State<MyFilter> {
             children: <Widget>[
               Text(
                 "새로운 필터 추가하기",
-                style: TextStyle(color: Colors.white, fontSize: 24, height: 1),
+                style:
+                    TextStyle(color: kBackgroundColor, fontSize: 24, height: 1),
               ),
               Spacer(),
               IconButton(
                 iconSize: 54,
-                color: Colors.white,
+                color: kBackgroundColor,
                 icon: Icon(Icons.add_circle),
                 onPressed: () {
                   _addFilter(context);
@@ -194,8 +195,8 @@ class _MyFilterState extends State<MyFilter> {
                 margin: const EdgeInsets.symmetric(vertical: 5),
                 width: 5,
                 height: 5,
-                decoration:
-                    BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle, color: kBackgroundColor),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 5),
@@ -203,7 +204,7 @@ class _MyFilterState extends State<MyFilter> {
                 height: 5,
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.7)),
+                    color: kBackgroundColor.withOpacity(0.7)),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 5),
@@ -211,7 +212,7 @@ class _MyFilterState extends State<MyFilter> {
                 height: 5,
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.3)),
+                    color: kBackgroundColor.withOpacity(0.3)),
               ),
             ],
           ),

@@ -123,14 +123,24 @@ class _ChattingScreenState extends State<ChattingScreen> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-                      child: TextField(
-                        focusNode: _focus,
-                        controller: _controller,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
+                      child: Theme(
+                        data: ThemeData(
+                          primaryColor: kPrimaryColor,
+                          accentColor: kPrimaryColor,
+                          textSelectionTheme: TextSelectionThemeData(
+                              cursorColor: kPrimaryColor,
+                              selectionColor: kPrimaryColor,
+                              selectionHandleColor: kPrimaryColor),
+                        ),
+                        child: TextField(
+                          focusNode: _focus,
+                          controller: _controller,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          style: TextStyle(fontSize: 20, color: kTextColor),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),
@@ -139,7 +149,9 @@ class _ChattingScreenState extends State<ChattingScreen> {
                     onTap: chattingState.loading
                         ? null
                         : () {
-                            chattingProv.sendChatting(_controller.text);
+                            if (_controller.text != "") {
+                              chattingProv.sendChatting(_controller.text);
+                            }
 
                             _controller.text = "";
                           },

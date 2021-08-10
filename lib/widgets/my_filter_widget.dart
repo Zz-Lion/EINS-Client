@@ -225,6 +225,9 @@ class _MyFilterState extends State<MyFilter> {
     final Size mediaSize = MediaQuery.of(context).size;
     final int length = context
         .select<MyFilterProvider, int>((myFilterProv) => myFilterProv.length);
+    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
+
+    print("씨333333333333333333333333발");
 
     return Stack(
       children: <Widget>[
@@ -237,7 +240,10 @@ class _MyFilterState extends State<MyFilter> {
           },
           children: <Widget>[
             ...List<FilterItem>.generate(
-                length, (index) => FilterItem(key: UniqueKey(), index: index)),
+                length,
+                (index) => FilterItem(
+                    key: ValueKey(myFilterProv.filters[index].id),
+                    index: index)),
             _registerFilter(context, length),
           ],
         ),

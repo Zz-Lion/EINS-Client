@@ -147,19 +147,23 @@ class MyApp extends StatelessWidget {
               appBarTheme: AppBarTheme(color: kBackgroundColor),
               primaryColor: kPrimaryColor,
               accentColor: kPrimaryColor,
+              textSelectionTheme: TextSelectionThemeData(
+                  cursorColor: kBackgroundColor,
+                  selectionColor: kBackgroundColor,
+                  selectionHandleColor: kBackgroundColor),
               textTheme:
                   Theme.of(context).textTheme.apply(bodyColor: kTextColor),
               visualDensity: VisualDensity.adaptivePlatformDensity,
             ),
-            home: EinsClient(),
+            home: EinsClientScreen(),
             onGenerateRoute: (RouteSettings settings) {
               switch (settings.name) {
-                case EinsClient.routeName:
-                  return MaterialPageRoute(builder: (_) => EinsClient());
-                case SalesWebView.routeName:
+                case EinsClientScreen.routeName:
+                  return MaterialPageRoute(builder: (_) => EinsClientScreen());
+                case SalesWebViewScreen.routeName:
                   return PageRouteBuilder(
                     pageBuilder: (_, __, ___) =>
-                        SalesWebView(url: settings.arguments as String),
+                        SalesWebViewScreen(url: settings.arguments as String),
                     transitionsBuilder:
                         (_, Animation animation, __, Widget child) =>
                             SlideTransition(

@@ -146,7 +146,7 @@ class SaleItem extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  SalesWebView.routeName,
+                  SalesWebViewScreen.routeName,
                   arguments: salesProv.salesUrlList[index],
                 );
               },

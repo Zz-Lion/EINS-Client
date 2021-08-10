@@ -191,7 +191,8 @@ class _CustomerPageState extends State<CustomerPage> {
                                       fontSize: 16, color: Colors.grey),
                                 );
                               }
-                              return CircularProgressIndicator();
+                              return CircularProgressIndicator(
+                                  color: kPrimaryColor);
                             },
                           ),
                         ),

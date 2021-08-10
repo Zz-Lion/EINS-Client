@@ -38,6 +38,8 @@ class _FilterItemState extends State<FilterItem> {
   void initState() {
     super.initState();
 
+    print("씨22222222222222222발");
+
     e = context.read<MyFilterProvider>().filters[widget.index];
     startDate = e.startDate;
     replaceDate = e.replaceDate;

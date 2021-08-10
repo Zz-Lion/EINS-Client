@@ -11,18 +11,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class EinsClient extends StatefulWidget {
+class EinsClientScreen extends StatefulWidget {
   static const String routeName = '/home';
 
-  const EinsClient({
+  const EinsClientScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  _EinsClientState createState() => _EinsClientState();
+  _EinsClientScreenState createState() => _EinsClientScreenState();
 }
 
-class _EinsClientState extends State<EinsClient> {
+class _EinsClientScreenState extends State<EinsClientScreen> {
   late PageController _pageController;
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 

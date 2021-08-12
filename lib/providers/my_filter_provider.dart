@@ -161,7 +161,7 @@ class MyFilterProvider with ChangeNotifier {
       final String notiTitle = "필터 교체 알림";
       late String notiDesc;
       for (int i = 0; i < _length; i++) {
-        notiDesc = "${_filters[i].desc} 교체일 입니다. 필터를 교체해주세요!";
+        notiDesc = "${_filters[i].desc} 교체일입니다. 필터를 교체해주세요!";
 
         AndroidNotificationDetails android = AndroidNotificationDetails(
             "eins", notiTitle, notiDesc,
@@ -179,29 +179,44 @@ class MyFilterProvider with ChangeNotifier {
           androidAllowWhileIdle: true,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
-          matchDateTimeComponents: DateTimeComponents.time,
         );
 
-        if (DateTime.now().compareTo(_filters[i].replaceDate) < 0) {
+        if (_filters[i].replaceDate.difference(DateTime.now()).inDays >= 7) {
           notiDesc = "${_filters[i].desc} 교체일이 7일 남았습니다.";
 
-          AndroidNotificationDetails android = AndroidNotificationDetails(
-              "eins", notiTitle, notiDesc,
+          android = AndroidNotificationDetails("eins", notiTitle, notiDesc,
               importance: Importance.max, priority: Priority.max);
-          IOSNotificationDetails ios = IOSNotificationDetails();
-          NotificationDetails detail =
-              NotificationDetails(android: android, iOS: ios);
+          ios = IOSNotificationDetails();
+          detail = NotificationDetails(android: android, iOS: ios);
 
           await flutterLocalNotificationsPlugin.zonedSchedule(
             0,
             notiTitle,
             notiDesc,
-            _setNotiTime(i, 7),
+            _setNotiTime(i, -7),
             detail,
             androidAllowWhileIdle: true,
             uiLocalNotificationDateInterpretation:
                 UILocalNotificationDateInterpretation.absoluteTime,
-            matchDateTimeComponents: DateTimeComponents.time,
+          );
+        }
+        if (_filters[i].replaceDate.difference(DateTime.now()).inDays >= 30) {
+          notiDesc = "${_filters[i].desc}  교체일이 30일 남았습니다.";
+
+          android = AndroidNotificationDetails("eins", notiTitle, notiDesc,
+              importance: Importance.max, priority: Priority.max);
+          ios = IOSNotificationDetails();
+          detail = NotificationDetails(android: android, iOS: ios);
+
+          await flutterLocalNotificationsPlugin.zonedSchedule(
+            0,
+            notiTitle,
+            notiDesc,
+            _setNotiTime(i, -30),
+            detail,
+            androidAllowWhileIdle: true,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
           );
         }
       }
@@ -225,7 +240,7 @@ class MyFilterProvider with ChangeNotifier {
         tz.local,
         _filters[index].replaceDate.year,
         _filters[index].replaceDate.month,
-        _filters[index].replaceDate.day - day,
+        _filters[index].replaceDate.day + day,
         _filters[index].replaceDate.hour,
         _filters[index].replaceDate.minute);
 

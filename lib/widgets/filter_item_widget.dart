@@ -81,59 +81,62 @@ class _FilterItemState extends State<FilterItem> {
 
   Future<void> _deleteFilter(BuildContext context) async {
     final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
-    late final bool result;
-
-    if (Platform.isIOS) {
-      result = await showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text("필터를 삭제하시겠습니까?"),
-            content: Text("필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다."),
-            actions: <Widget>[
-              CupertinoDialogAction(
-                child: Text("취소", style: TextStyle(color: kPrimaryColor)),
-                onPressed: () => Navigator.of(context).pop(false),
+    final bool result;
+    try {
+      if (Platform.isIOS) {
+        result = await showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: Text("필터를 삭제하시겠습니까?"),
+              content: Text("필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다."),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text("취소", style: TextStyle(color: Colors.blue)),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                CupertinoDialogAction(
+                  child: Text("삭제", style: TextStyle(color: Colors.red)),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        result = await showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("필터를 삭제하시겠습니까?"),
+              content: Text(
+                "필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다.",
+                style: TextStyle(color: Colors.black, fontSize: 16),
               ),
-              CupertinoDialogAction(
-                child: Text("삭제", style: TextStyle(color: Colors.red)),
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      result = await showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("필터를 삭제하시겠습니까?"),
-            content: Text(
-              "필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다.",
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text("삭제", style: TextStyle(color: kPrimaryColor)),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text("취소", style: TextStyle(color: kPrimaryColor)),
-              ),
-            ],
-          );
-        },
-      );
-    }
-
-    if (result == true) {
-      myFilterProv.deleteFilter(widget.index);
-      if (context.read<LocalStorageProvider>().isNotificated) {
-        context.read<MyFilterProvider>().dailyAtTimeNotification();
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text("삭제", style: TextStyle(color: kPrimaryColor)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text("취소", style: TextStyle(color: kPrimaryColor)),
+                ),
+              ],
+            );
+          },
+        );
       }
+
+      if (result == true) {
+        await myFilterProv.deleteFilter(widget.index);
+      }
+    } catch (e) {
+      errorDialog(context, e);
+    }
+    if (context.read<LocalStorageProvider>().isNotificated) {
+      context.read<MyFilterProvider>().dailyAtTimeNotification();
     }
   }
 
@@ -231,7 +234,7 @@ class _FilterItemState extends State<FilterItem> {
         await context
             .read<MyFilterProvider>()
             .addFilter(context, id!, widget.index);
-        myFilterProv.editFilter(widget.index, tempDesc);
+        await myFilterProv.editFilter(widget.index, tempDesc);
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
       }
@@ -422,7 +425,7 @@ class _FilterItemState extends State<FilterItem> {
                         ),
                       ),
                       _isEditable
-                          ? InkWell(
+                          ? GestureDetector(
                               child: Icon(
                                 Icons.check,
                                 size: 24,
@@ -455,7 +458,7 @@ class _FilterItemState extends State<FilterItem> {
                                 });
                               },
                             )
-                          : InkWell(
+                          : GestureDetector(
                               child: Icon(
                                 Icons.edit,
                                 size: 24,
@@ -589,7 +592,7 @@ class _FilterItemState extends State<FilterItem> {
                                 Container(
                                   width: 120,
                                   child: usageDay == allDay
-                                      ? InkWell(
+                                      ? GestureDetector(
                                           child: Icon(
                                             Icons.change_circle,
                                             size: 36,

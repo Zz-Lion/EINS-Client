@@ -40,7 +40,7 @@ class SaleItem extends StatelessWidget {
         .reversed
         .toList()
         .asMap()
-        .forEach((i, element) {
+        .forEach((int i, String element) {
       if (i % 3 == 0 && i != 0)
         cost = element + "," + cost;
       else

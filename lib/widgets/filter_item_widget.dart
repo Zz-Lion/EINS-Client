@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/models/filter_model.dart';
@@ -13,6 +15,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 import 'package:provider/provider.dart';
 
 class FilterItem extends StatefulWidget {
@@ -35,6 +38,8 @@ class _FilterItemState extends State<FilterItem> {
   late bool _isEditable;
   late TextEditingController _descTextController;
   late FocusNode _focus;
+  Timer? _timer;
+  double _opacity = 0.0;
 
   @override
   void initState() {
@@ -48,6 +53,13 @@ class _FilterItemState extends State<FilterItem> {
       usageDay = DateTime.now().difference(startDate).inDays;
     } else {
       usageDay = allDay;
+      _timer = Timer.periodic(const Duration(milliseconds: 700), (_) {
+        WidgetsBinding.instance?.addPostFrameCallback((_) {
+          setState(() {
+            _opacity = _opacity == 0.0 ? 1.0 : 0.0;
+          });
+        });
+      });
     }
 
     filterImage =
@@ -62,6 +74,7 @@ class _FilterItemState extends State<FilterItem> {
   void dispose() {
     _descTextController.dispose();
     _focus.dispose();
+    _timer?.cancel();
 
     super.dispose();
   }
@@ -121,6 +134,113 @@ class _FilterItemState extends State<FilterItem> {
       if (context.read<LocalStorageProvider>().isNotificated) {
         context.read<MyFilterProvider>().dailyAtTimeNotification();
       }
+    }
+  }
+
+  String _handleTag(NfcTag tag) {
+    try {
+      final List<int> tempIntList =
+          List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+      String id = "";
+
+      tempIntList.forEach((element) {
+        id = id + element.toRadixString(16);
+      });
+
+      return id;
+    } catch (e) {
+      throw "NFC 데이터를 가져올 수 없습니다.";
+    }
+  }
+
+  Future<void> _replaceFilter(BuildContext context) async {
+    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
+
+    try {
+      String? id;
+
+      if (!(await NfcManager.instance.isAvailable())) {
+        if (Platform.isAndroid) {
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("오류"),
+              content: Text(
+                "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.",
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                    AppSettings.openNFCSettings();
+                  },
+                  child: Text("설정", style: TextStyle(color: kPrimaryColor)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("확인", style: TextStyle(color: kPrimaryColor)),
+                ),
+              ],
+            ),
+          );
+
+          return;
+        }
+
+        throw "NFC를 지원하지 않는 기기이거나 일시적으로 비활성화 되어 있습니다.";
+      }
+
+      try {
+        if (Platform.isIOS) {
+          await NfcManager.instance.startSession(
+            alertMessage: "기기를 필터 가까이에 가져다주세요.",
+            onDiscovered: (NfcTag tag) async {
+              try {
+                id = _handleTag(tag);
+                await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
+              } catch (e) {
+                id = null;
+
+                throw "NFC태그 정보를 불러올 수 없습니다.";
+              }
+            },
+          );
+        }
+
+        if (Platform.isAndroid) {
+          id = await showDialog(
+            context: context,
+            builder: (context) =>
+                _AndroidSessionDialog("기기를 필터 가까이에 가져다주세요.", _handleTag),
+          );
+        }
+      } catch (e) {
+        throw "NFC태그 정보를 불러올 수 없습니다.";
+      }
+
+      if (id != null) {
+        if (context.read<MyFilterProvider>().findIndex(id!) != null) {
+          throw "이미 등록된 필터 입니다";
+        }
+
+        final String tempDesc = myFilterProv.filters[widget.index].desc;
+
+        await myFilterProv.deleteFilter(widget.index);
+        await context
+            .read<MyFilterProvider>()
+            .addFilter(context, id!, widget.index);
+        myFilterProv.editFilter(widget.index, tempDesc);
+      } else {
+        throw "NFC태그 id를 확인할 수 없습니다.";
+      }
+    } catch (e) {
+      errorDialog(context, e);
+    }
+
+    if (context.read<LocalStorageProvider>().isNotificated) {
+      context.read<MyFilterProvider>().dailyAtTimeNotification();
     }
   }
 
@@ -468,51 +588,76 @@ class _FilterItemState extends State<FilterItem> {
                                 ),
                                 Container(
                                   width: 120,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        "마지막 교체",
-                                        style: TextStyle(
+                                  child: usageDay == allDay
+                                      ? InkWell(
+                                          child: Icon(
+                                            Icons.change_circle,
+                                            size: 36,
                                             color: kBackgroundColor,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.6),
-                                      ),
-                                      Text(
-                                        "${usageDay ~/ 30}개월 전",
-                                        style: TextStyle(
-                                            color: kBackgroundColor,
-                                            fontSize: 12,
-                                            height: 1.6),
-                                      )
-                                    ],
-                                  ),
+                                          ),
+                                          onTap: () {
+                                            _replaceFilter(context);
+                                          },
+                                        )
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Text(
+                                              "마지막 교체",
+                                              style: TextStyle(
+                                                  color: kBackgroundColor,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  height: 1.6),
+                                            ),
+                                            Text(
+                                              "${usageDay ~/ 30}개월 전",
+                                              style: TextStyle(
+                                                  color: kBackgroundColor,
+                                                  fontSize: 12,
+                                                  height: 1.6),
+                                            )
+                                          ],
+                                        ),
                                 ),
                                 Container(
                                   width: 120,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        "다음 교체",
-                                        style: TextStyle(
-                                            color: kBackgroundColor,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            height: 1.6),
-                                      ),
-                                      Text(
-                                        "${(allDay - usageDay) ~/ 30}개월 후",
-                                        style: TextStyle(
-                                            color: kBackgroundColor,
-                                            fontSize: 12,
-                                            height: 1.6),
-                                      )
-                                    ],
-                                  ),
+                                  child: usageDay == allDay
+                                      ? AnimatedOpacity(
+                                          duration:
+                                              const Duration(milliseconds: 700),
+                                          opacity: _opacity,
+                                          child: Text(
+                                            "필터 교체 버튼",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                color: kBackgroundColor,
+                                                fontSize: 12,
+                                                height: 1.2),
+                                          ),
+                                        )
+                                      : Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Text(
+                                              "다음 교체",
+                                              style: TextStyle(
+                                                  color: kBackgroundColor,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  height: 1.6),
+                                            ),
+                                            Text(
+                                              "${(allDay - usageDay) ~/ 30}개월 후",
+                                              style: TextStyle(
+                                                  color: kBackgroundColor,
+                                                  fontSize: 12,
+                                                  height: 1.6),
+                                            )
+                                          ],
+                                        ),
                                 ),
                               ],
                             ),
@@ -551,5 +696,82 @@ class MyPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
+  }
+}
+
+class _AndroidSessionDialog extends StatefulWidget {
+  const _AndroidSessionDialog(this.alertMessage, this.handleTag);
+
+  final String alertMessage;
+
+  final String Function(NfcTag tag) handleTag;
+
+  @override
+  State<StatefulWidget> createState() => _AndroidSessionDialogState();
+}
+
+class _AndroidSessionDialogState extends State<_AndroidSessionDialog> {
+  String? _alertMessage;
+  String? _errorMessage;
+
+  String? _result;
+
+  @override
+  void initState() {
+    super.initState();
+
+    NfcManager.instance.startSession(
+      onDiscovered: (NfcTag tag) async {
+        try {
+          _result = widget.handleTag(tag);
+
+          await NfcManager.instance.stopSession();
+
+          setState(() => _alertMessage = "NFC 태그를 인식하였습니다.");
+        } catch (e) {
+          await NfcManager.instance.stopSession();
+
+          setState(() => _errorMessage = '$e');
+        }
+      },
+    ).catchError((e) => setState(() => _errorMessage = '$e'));
+  }
+
+  @override
+  void dispose() {
+    NfcManager.instance.stopSession();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        _errorMessage?.isNotEmpty == true
+            ? "오류"
+            : _alertMessage?.isNotEmpty == true
+                ? "성공"
+                : "준비",
+      ),
+      content: Text(
+        _errorMessage?.isNotEmpty == true
+            ? _errorMessage!
+            : _alertMessage?.isNotEmpty == true
+                ? _alertMessage!
+                : widget.alertMessage,
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: Text(
+              _errorMessage?.isNotEmpty == true
+                  ? "확인"
+                  : _alertMessage?.isNotEmpty == true
+                      ? "완료"
+                      : "취소",
+              style: TextStyle(color: kPrimaryColor)),
+          onPressed: () => Navigator.of(context).pop(_result),
+        ),
+      ],
+    );
   }
 }

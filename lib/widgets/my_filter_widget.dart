@@ -124,7 +124,7 @@ class _MyFilterState extends State<MyFilter> {
 
         _currentPage = 0;
         _controller.jumpToPage(0);
-        context.read<MyFilterProvider>().addFilter(context, id!);
+        context.read<MyFilterProvider>().addFilter(context, id!, 0);
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
       }

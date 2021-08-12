@@ -31,7 +31,7 @@ class MyFilterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addFilter(BuildContext context, String id) async {
+  Future<void> addFilter(BuildContext context, String id, int index) async {
     DocumentSnapshot<Map<String, dynamic>> filterData =
         await filtersRef.doc(id).get();
 
@@ -103,7 +103,7 @@ class MyFilterProvider with ChangeNotifier {
       filterData = newFilterData;
     }
 
-    _filters.insert(0, FilterModel.fromDoc(filterData));
+    _filters.insert(index, FilterModel.fromDoc(filterData));
     _length++;
     await localStorageProv.saveData(_filters);
 

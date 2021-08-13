@@ -92,11 +92,13 @@ class _FilterItemState extends State<FilterItem> {
               content: Text("필터 정보를 삭제하시면 다시 필터를 등록해야만 복구됩니다."),
               actions: <Widget>[
                 CupertinoDialogAction(
-                  child: Text("취소", style: TextStyle(color: Colors.blue)),
+                  isDefaultAction: true,
+                  child: Text("취소"),
                   onPressed: () => Navigator.of(context).pop(false),
                 ),
                 CupertinoDialogAction(
-                  child: Text("삭제", style: TextStyle(color: Colors.red)),
+                  isDestructiveAction: true,
+                  child: Text("삭제"),
                   onPressed: () => Navigator.of(context).pop(true),
                 ),
               ],

@@ -31,7 +31,8 @@ void errorDialog(BuildContext context, dynamic e,
             content: Text(errorPlugin + "\n" + errorMessage),
             actions: <Widget>[
               CupertinoDialogAction(
-                child: Text("확인", style: TextStyle(color: kPrimaryColor)),
+                isDefaultAction: true,
+                child: Text("확인"),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],

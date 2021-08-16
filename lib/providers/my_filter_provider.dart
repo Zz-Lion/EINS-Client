@@ -111,17 +111,20 @@ class MyFilterProvider with ChangeNotifier {
   }
 
   Future<void> editFilter(int index, String desc) async {
-    final FilterModel tempFilter = _filters[index].copyWith(desc: desc);
+    final FilterModel tempFilter = _filters[index];
 
-    await filtersRef.doc(_filters[index].id).set(tempFilter.toDoc());
+    try {
+      _filters[index] = tempFilter.copyWith(desc: desc);
 
-    _filters[index] = tempFilter;
+      await filtersRef.doc(_filters[index].id).set(tempFilter.toDoc());
 
-    localStorageProv.saveData(_filters);
+      await localStorageProv.saveData(_filters);
 
-    await dailyAtTimeNotification();
-
-    notifyListeners();
+      notifyListeners();
+    } catch (e) {
+      _filters[index] = tempFilter;
+      rethrow;
+    }
   }
 
   Future<void> deleteFilter(int index) async {

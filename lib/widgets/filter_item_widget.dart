@@ -232,10 +232,12 @@ class _FilterItemState extends State<FilterItem> {
 
         final String tempDesc = myFilterProv.filters[widget.index].desc;
 
-        await myFilterProv.deleteFilter(widget.index);
         await context
             .read<MyFilterProvider>()
             .addFilter(context, id!, widget.index);
+
+        await myFilterProv.deleteFilter(widget.index + 1);
+
         await myFilterProv.editFilter(widget.index, tempDesc);
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
@@ -249,11 +251,31 @@ class _FilterItemState extends State<FilterItem> {
     }
   }
 
+  Future<void> _editFilter(BuildContext context, String originalText) async {
+    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
+
+    try {
+      await myFilterProv.editFilter(widget.index, _descTextController.text);
+
+      if (context.read<LocalStorageProvider>().isNotificated) {
+        context.read<MyFilterProvider>().dailyAtTimeNotification();
+      }
+    } catch (e) {
+      _descTextController.text = originalText;
+
+      errorDialog(context, "필터 이름을 다시 설정해주세요.");
+    } finally {
+      setState(() {
+        _isEditable = false;
+        _focus.unfocus();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size mediaSize = MediaQuery.of(context).size;
-    final MyFilterProvider myFilterProv = context.read<MyFilterProvider>();
-    final originalText = _descTextController.text;
+    final String originalText = _descTextController.text;
 
     return Stack(
       children: <Widget>[
@@ -434,30 +456,7 @@ class _FilterItemState extends State<FilterItem> {
                                 color: kBackgroundColor,
                               ),
                               onTap: () {
-                                myFilterProv
-                                    .editFilter(
-                                        widget.index, _descTextController.text)
-                                    .then((_) {
-                                  setState(() {
-                                    _isEditable = false;
-                                    _focus.unfocus();
-                                  });
-                                }, onError: (e) {
-                                  errorDialog(context, "필터 이름을 다시 설정해주세요.");
-
-                                  setState(() {
-                                    _descTextController.text = originalText;
-                                    _isEditable = false;
-                                    _focus.unfocus();
-                                    if (context
-                                        .read<LocalStorageProvider>()
-                                        .isNotificated) {
-                                      context
-                                          .read<MyFilterProvider>()
-                                          .dailyAtTimeNotification();
-                                    }
-                                  });
-                                });
+                                _editFilter(context, originalText);
                               },
                             )
                           : GestureDetector(
@@ -477,7 +476,7 @@ class _FilterItemState extends State<FilterItem> {
                         width: 10,
                         height: 30,
                       ),
-                      InkWell(
+                      GestureDetector(
                         child: Icon(
                           Icons.delete,
                           size: 24,
@@ -594,15 +593,18 @@ class _FilterItemState extends State<FilterItem> {
                                 Container(
                                   width: 120,
                                   child: usageDay == allDay
-                                      ? GestureDetector(
-                                          child: Icon(
-                                            Icons.change_circle,
-                                            size: 36,
-                                            color: kBackgroundColor,
+                                      ? Align(
+                                          alignment: Alignment.centerRight,
+                                          child: GestureDetector(
+                                            child: Icon(
+                                              Icons.change_circle,
+                                              size: 36,
+                                              color: kBackgroundColor,
+                                            ),
+                                            onTap: () {
+                                              _replaceFilter(context);
+                                            },
                                           ),
-                                          onTap: () {
-                                            _replaceFilter(context);
-                                          },
                                         )
                                       : Row(
                                           mainAxisAlignment:
@@ -629,17 +631,20 @@ class _FilterItemState extends State<FilterItem> {
                                 Container(
                                   width: 120,
                                   child: usageDay == allDay
-                                      ? AnimatedOpacity(
-                                          duration:
-                                              const Duration(milliseconds: 700),
-                                          opacity: _opacity,
-                                          child: Text(
-                                            "필터 교체 버튼",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                                color: kBackgroundColor,
-                                                fontSize: 12,
-                                                height: 1.2),
+                                      ? Align(
+                                          alignment: Alignment.centerRight,
+                                          child: AnimatedOpacity(
+                                            duration: const Duration(
+                                                milliseconds: 700),
+                                            opacity: _opacity,
+                                            child: Text(
+                                              "필터 교체 버튼",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: kBackgroundColor,
+                                                  fontSize: 12,
+                                                  height: 1.2),
+                                            ),
                                           ),
                                         )
                                       : Row(

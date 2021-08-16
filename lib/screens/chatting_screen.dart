@@ -93,12 +93,14 @@ class _ChattingScreenState extends State<ChattingScreen> {
                   _focus.unfocus();
                 },
                 child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 15),
                   color: kPrimaryColor.withOpacity(0.2),
                   child: ListView(
                     reverse: true,
                     children: chattingProv.chattingList
-                        .map<ChattingItem>(
-                            (e) => ChattingItem(chattingModel: e))
+                        .map<ChattingItem>((e) =>
+                            ChattingItem(key: UniqueKey(), chattingModel: e))
                         .toList(),
                   ),
                 ),
@@ -107,14 +109,16 @@ class _ChattingScreenState extends State<ChattingScreen> {
             Container(
               constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.3),
-              margin: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).padding.bottom),
+              // safe area 겹침
+              // margin: EdgeInsets.only(
+              //     bottom: MediaQuery.of(context).padding.bottom),
               decoration: BoxDecoration(
                 color: kBackgroundColor,
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
+                    offset: Offset(0, -15),
                   ),
                 ],
               ),

@@ -232,7 +232,9 @@ class _CustomerPageState extends State<CustomerPage> {
           );
         }),
       ),
-      bottomNavigationBar: bottomNavigationBar(context, widget.controller, 3),
+      bottomNavigationBar: Container(
+          color: Colors.grey[300],
+          child: bottomNavigationBar(context, widget.controller, 3)),
     );
   }
 }

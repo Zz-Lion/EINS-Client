@@ -87,8 +87,9 @@ class _InfoPageState extends State<InfoPage>
                   );
                 }),
               ),
-              bottomNavigationBar:
-                  bottomNavigationBar(context, widget.controller, 1),
+              bottomNavigationBar: Container(
+                  color: Colors.grey[300],
+                  child: bottomNavigationBar(context, widget.controller, 1)),
             )).build(context);
 
     return OrientationBuilder(builder: (context, orientation) {

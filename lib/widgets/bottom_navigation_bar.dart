@@ -14,8 +14,9 @@ Widget bottomNavigationBar(
       color: Colors.grey[300],
       boxShadow: <BoxShadow>[
         BoxShadow(
-          color: Colors.black.withOpacity(0.3),
-          blurRadius: 10,
+          color: Colors.black.withOpacity(0.15),
+          blurRadius: 7,
+          offset: Offset(0, -8),
         ),
       ],
     ),

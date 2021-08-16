@@ -1,6 +1,7 @@
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/my_filter_widget.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -11,8 +12,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size mediaSize = MediaQuery.of(context).size;
-
-    print(MediaQuery.of(context).padding.bottom);
 
     return Scaffold(
       appBar: appBar(),
@@ -27,9 +26,13 @@ class HomePage extends StatelessWidget {
               child: MyFilter(),
             );
           }),
+          //추후에 수정요망
+          reverse: true,
         ),
       ),
-      bottomNavigationBar: bottomNavigationBar(context, controller, 0),
+      bottomNavigationBar: Container(
+          color: Colors.grey[300],
+          child: bottomNavigationBar(context, controller, 0)),
     );
   }
 }

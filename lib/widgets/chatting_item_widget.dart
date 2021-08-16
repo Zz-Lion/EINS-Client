@@ -52,8 +52,9 @@ class ChattingItem extends StatelessWidget {
               ),
               Container(
                 constraints: BoxConstraints(
-                    maxWidth:
-                        mediaSize.width - (chattingModel.isClient ? 90 : 140)),
+                    maxWidth: mediaSize.width -
+                        (chattingModel.isClient ? 90 : 140) -
+                        10),
                 margin: EdgeInsets.symmetric(horizontal: 5),
                 padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                 decoration: BoxDecoration(

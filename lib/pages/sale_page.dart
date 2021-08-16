@@ -33,7 +33,9 @@ class SalePage extends StatelessWidget {
           );
         }),
       ),
-      bottomNavigationBar: bottomNavigationBar(context, controller, 2),
+      bottomNavigationBar: Container(
+          color: Colors.grey[300],
+          child: bottomNavigationBar(context, controller, 2)),
     );
   }
 }

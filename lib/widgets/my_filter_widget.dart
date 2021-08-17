@@ -98,13 +98,13 @@ class _MyFilterState extends State<MyFilter> {
             },
             alertMessage: "기기를 필터 가까이에 가져다주세요.",
             onDiscovered: (NfcTag tag) async {
+              print('test');
               try {
                 id = _handleTag(tag);
-
-                await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
               } catch (e) {
                 id = null;
               }
+              await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
             },
           );
         }

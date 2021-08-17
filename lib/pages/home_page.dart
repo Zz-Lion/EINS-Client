@@ -1,7 +1,6 @@
 import 'package:eins_client/widgets/app_bar.dart';
 import 'package:eins_client/widgets/bottom_navigation_bar.dart';
 import 'package:eins_client/widgets/my_filter_widget.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {

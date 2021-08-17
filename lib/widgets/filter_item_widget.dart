@@ -199,16 +199,23 @@ class _FilterItemState extends State<FilterItem> {
 
       try {
         if (Platform.isIOS) {
-          await NfcManager.instance.startSession(
+          NfcManager.instance.startSession(
+            pollingOptions: {
+              NfcPollingOption.iso14443,
+              NfcPollingOption.iso15693,
+              NfcPollingOption.iso18092,
+            },
             alertMessage: "기기를 필터 가까이에 가져다주세요.",
             onDiscovered: (NfcTag tag) async {
+              print('test');
               try {
                 id = _handleTag(tag);
+
                 await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
               } catch (e) {
-                id = null;
+                await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
 
-                throw "NFC태그 정보를 불러올 수 없습니다.";
+                id = null;
               }
             },
           );
@@ -456,7 +463,14 @@ class _FilterItemState extends State<FilterItem> {
                                 color: kBackgroundColor,
                               ),
                               onTap: () {
-                                _editFilter(context, originalText);
+                                if (originalText != _descTextController.text) {
+                                  _editFilter(context, originalText);
+                                } else {
+                                  setState(() {
+                                    _isEditable = false;
+                                    _focus.unfocus();
+                                  });
+                                }
                               },
                             )
                           : GestureDetector(

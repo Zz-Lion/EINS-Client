@@ -103,8 +103,6 @@ class _MyFilterState extends State<MyFilter> {
 
                 await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
               } catch (e) {
-                await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
-
                 id = null;
               }
             },

@@ -91,22 +91,53 @@ class _MyFilterState extends State<MyFilter> {
 
       try {
         if (Platform.isIOS) {
-          NfcManager.instance.startSession(
-            pollingOptions: {
-              NfcPollingOption.iso14443,
-              NfcPollingOption.iso15693,
-            },
-            alertMessage: "기기를 필터 가까이에 가져다주세요.",
-            onDiscovered: (NfcTag tag) async {
-              print('test');
-              try {
-                id = _handleTag(tag);
-              } catch (e) {
-                id = null;
-              }
-              await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
-            },
-          );
+          await Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) {
+            return Scaffold(
+              body: SafeArea(
+                child: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    NfcManager.instance.startSession(
+                      pollingOptions: {
+                        NfcPollingOption.iso14443,
+                        NfcPollingOption.iso15693,
+                      },
+                      alertMessage: "기기를 필터 가까이에 가져다주세요.",
+                      onDiscovered: (NfcTag tag) async {
+                        print('test');
+                        try {
+                          setState(() {
+                            id = _handleTag(tag);
+                          });
+                        } catch (e) {
+                          setState(() {
+                            id = null;
+                          });
+                        } finally {
+                          await NfcManager.instance
+                              .stopSession(alertMessage: "완료되었습니다.");
+                        }
+                      },
+                    );
+                    return Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          id == null ? "취소" : "확인",
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          }));
         }
 
         if (Platform.isAndroid) {

@@ -95,11 +95,9 @@ class _MyFilterState extends State<MyFilter> {
             pollingOptions: {
               NfcPollingOption.iso14443,
               NfcPollingOption.iso15693,
-              NfcPollingOption.iso18092,
             },
             alertMessage: "기기를 필터 가까이에 가져다주세요.",
             onDiscovered: (NfcTag tag) async {
-              print('test');
               try {
                 id = _handleTag(tag);
 

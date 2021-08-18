@@ -144,8 +144,14 @@ class _FilterItemState extends State<FilterItem> {
 
   String _handleTag(NfcTag tag) {
     try {
-      final List<int> tempIntList =
-          List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+      final List<int> tempIntList;
+
+      if (Platform.isIOS) {
+        tempIntList = List<int>.from(tag.data["mifare"]["identifier"]);
+      } else {
+        tempIntList =
+            List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+      }
       String id = "";
 
       tempIntList.forEach((element) {
@@ -199,22 +205,52 @@ class _FilterItemState extends State<FilterItem> {
 
       try {
         if (Platform.isIOS) {
-          NfcManager.instance.startSession(
-            pollingOptions: {
-              NfcPollingOption.iso14443,
-              NfcPollingOption.iso15693,
-            },
-            alertMessage: "기기를 필터 가까이에 가져다주세요.",
-            onDiscovered: (NfcTag tag) async {
-              try {
-                id = _handleTag(tag);
-
-                await NfcManager.instance.stopSession(alertMessage: "완료되었습니다.");
-              } catch (e) {
-                id = null;
-              }
-            },
-          );
+          await Navigator.of(context)
+              .push(MaterialPageRoute(builder: (context) {
+            return Scaffold(
+              body: SafeArea(
+                child: StatefulBuilder(
+                  builder: (BuildContext context, StateSetter setState) {
+                    NfcManager.instance.startSession(
+                      pollingOptions: {
+                        NfcPollingOption.iso14443,
+                        NfcPollingOption.iso15693,
+                      },
+                      alertMessage: "기기를 필터 가까이에 가져다주세요.",
+                      onDiscovered: (NfcTag tag) async {
+                        try {
+                          setState(() {
+                            id = _handleTag(tag);
+                          });
+                        } catch (e) {
+                          setState(() {
+                            id = null;
+                          });
+                        } finally {
+                          await NfcManager.instance
+                              .stopSession(alertMessage: "완료되었습니다.");
+                        }
+                      },
+                    );
+                    return Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          id == null ? "취소" : "확인",
+                          style: TextStyle(
+                              color: kPrimaryColor,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          }));
         }
 
         if (Platform.isAndroid) {
@@ -383,12 +419,27 @@ class _FilterItemState extends State<FilterItem> {
                             border: Border.all(color: kPrimaryColor, width: 2),
                           ),
                           child: Center(
-                            child: Text(
-                              "${(usageDay / allDay * 100).toInt()}%",
-                              style: TextStyle(
-                                color: kPrimaryColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                            child: Text.rich(
+                              TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text:
+                                        "${(usageDay / allDay * 100).toInt()}",
+                                    style: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "%",
+                                    style: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontSize: 8,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -531,12 +582,27 @@ class _FilterItemState extends State<FilterItem> {
                                       shape: BoxShape.circle,
                                       color: kBackgroundColor),
                                   child: Center(
-                                    child: Text(
-                                      "${(usageDay / allDay * 100).toInt()}%",
-                                      style: TextStyle(
-                                        color: kPrimaryColor,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
+                                    child: Text.rich(
+                                      TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            text:
+                                                "${(usageDay / allDay * 100).toInt()}",
+                                            style: TextStyle(
+                                              color: kPrimaryColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: "%",
+                                            style: TextStyle(
+                                              color: kPrimaryColor,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -583,12 +649,26 @@ class _FilterItemState extends State<FilterItem> {
                                         MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
-                                      Text(
-                                        "${(usageDay / allDay * 100).toInt()}%  ",
-                                        style: TextStyle(
-                                            color: kBackgroundColor,
-                                            fontSize: 24,
-                                            height: 1.2),
+                                      Text.rich(
+                                        TextSpan(
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                              text:
+                                                  "${(usageDay / allDay * 100).toInt()}",
+                                              style: TextStyle(
+                                                color: kBackgroundColor,
+                                                fontSize: 24,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: "%",
+                                              style: TextStyle(
+                                                color: kBackgroundColor,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       Text(
                                         "사용",

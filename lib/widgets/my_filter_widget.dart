@@ -38,8 +38,14 @@ class _MyFilterState extends State<MyFilter> {
 
   String _handleTag(NfcTag tag) {
     try {
-      final List<int> tempIntList =
-          List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+      final List<int> tempIntList;
+
+      if (Platform.isIOS) {
+        tempIntList = List<int>.from(tag.data["mifare"]["identifier"]);
+      } else {
+        tempIntList =
+            List<int>.from(Ndef.from(tag)?.additionalData["identifier"]);
+      }
       String id = "";
 
       tempIntList.forEach((element) {
@@ -76,7 +82,7 @@ class _MyFilterState extends State<MyFilter> {
                   child: Text("설정", style: TextStyle(color: kPrimaryColor)),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.of(context).pop(),
                   child: Text("확인", style: TextStyle(color: kPrimaryColor)),
                 ),
               ],
@@ -104,7 +110,6 @@ class _MyFilterState extends State<MyFilter> {
                       },
                       alertMessage: "기기를 필터 가까이에 가져다주세요.",
                       onDiscovered: (NfcTag tag) async {
-                        print('test');
                         try {
                           setState(() {
                             id = _handleTag(tag);

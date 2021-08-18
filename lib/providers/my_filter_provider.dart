@@ -223,6 +223,8 @@ class MyFilterProvider with ChangeNotifier {
           );
         }
       }
+    } else {
+      throw "알림 설정 권한이 없습니다.";
     }
   }
 
@@ -268,11 +270,11 @@ Widget _bottomSheetButton(BuildContext context,
           children: <Widget>[
             Icon(
               icon,
-              color: Colors.white,
+              color: kBackgroundColor,
             ),
             Text(
               text,
-              style: TextStyle(fontSize: 14, color: Colors.white),
+              style: TextStyle(fontSize: 12, color: kBackgroundColor),
             ),
           ],
         ),

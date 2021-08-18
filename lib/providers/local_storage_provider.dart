@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eins_client/models/filter_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:localstorage/localstorage.dart';
@@ -33,7 +35,7 @@ class LocalStorageProvider with ChangeNotifier {
 
     var notificationData = _notificationStorage.getItem('eins_notification');
 
-    _isNotificated = notificationData ?? false;
+    _isNotificated = notificationData ?? Platform.isIOS ? false : true;
     await _notificationStorage.setItem('eins_notification', _isNotificated);
   }
 

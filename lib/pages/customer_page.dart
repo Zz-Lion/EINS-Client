@@ -37,6 +37,20 @@ class _CustomerPageState extends State<CustomerPage> {
     }
   }
 
+  Future<void> _toggle(BuildContext context) async {
+    try {
+      if (context.read<LocalStorageProvider>().isNotificated) {
+        await context.read<MyFilterProvider>().deleteNotification();
+      } else {
+        await context.read<MyFilterProvider>().dailyAtTimeNotification();
+      }
+
+      await context.read<LocalStorageProvider>().toggleNotification();
+    } catch (e) {
+      errorDialog(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size mediaSize = MediaQuery.of(context).size;
@@ -71,7 +85,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       Divider(height: 10),
                       ListTile(
                         onTap: () {
-                          _makePhoneCall(context, "tel:01055085350");
+                          _makePhoneCall(context, "tel:88767836");
                         },
                         leading: Icon(
                           Icons.call,
@@ -92,21 +106,7 @@ class _CustomerPageState extends State<CustomerPage> {
                             style:
                                 TextStyle(fontSize: 16, color: Colors.black)),
                         onChanged: (_) {
-                          if (context
-                              .read<LocalStorageProvider>()
-                              .isNotificated) {
-                            context
-                                .read<MyFilterProvider>()
-                                .deleteNotification();
-                          } else {
-                            context
-                                .read<MyFilterProvider>()
-                                .dailyAtTimeNotification();
-                          }
-
-                          context
-                              .read<LocalStorageProvider>()
-                              .toggleNotification();
+                          _toggle(context);
                         },
                         value:
                             context.watch<LocalStorageProvider>().isNotificated,

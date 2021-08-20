@@ -132,7 +132,7 @@ class MyFilterProvider with ChangeNotifier {
 
     _length--;
 
-    localStorageProv.saveData(_filters);
+    await localStorageProv.saveData(_filters);
 
     dailyAtTimeNotification();
 
@@ -196,7 +196,7 @@ class MyFilterProvider with ChangeNotifier {
             0,
             notiTitle,
             notiDesc,
-            _setNotiTime(i, -7),
+            _setNotiTime(i, 7),
             detail,
             androidAllowWhileIdle: true,
             uiLocalNotificationDateInterpretation:
@@ -215,7 +215,7 @@ class MyFilterProvider with ChangeNotifier {
             0,
             notiTitle,
             notiDesc,
-            _setNotiTime(i, -30),
+            _setNotiTime(i, 30),
             detail,
             androidAllowWhileIdle: true,
             uiLocalNotificationDateInterpretation:
@@ -241,13 +241,10 @@ class MyFilterProvider with ChangeNotifier {
     tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
 
+    DateTime temp = _filters[index].replaceDate.subtract(Duration(days: day));
+
     tz.TZDateTime scheduledDate = tz.TZDateTime(
-        tz.local,
-        _filters[index].replaceDate.year,
-        _filters[index].replaceDate.month,
-        _filters[index].replaceDate.day + day,
-        _filters[index].replaceDate.hour,
-        _filters[index].replaceDate.minute);
+        tz.local, temp.year, temp.month, temp.day, temp.hour, temp.minute);
 
     return scheduledDate;
   }

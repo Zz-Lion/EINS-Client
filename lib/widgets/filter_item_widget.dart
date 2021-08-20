@@ -281,12 +281,12 @@ class _FilterItemState extends State<FilterItem> {
       } else {
         throw "NFC태그 id를 확인할 수 없습니다.";
       }
+
+      if (context.read<LocalStorageProvider>().isNotificated) {
+        await context.read<MyFilterProvider>().dailyAtTimeNotification();
+      }
     } catch (e) {
       errorDialog(context, e);
-    }
-
-    if (context.read<LocalStorageProvider>().isNotificated) {
-      context.read<MyFilterProvider>().dailyAtTimeNotification();
     }
   }
 

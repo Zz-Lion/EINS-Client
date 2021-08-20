@@ -164,12 +164,13 @@ class _MyFilterState extends State<MyFilter> {
         _currentPage = 0;
         _controller.jumpToPage(0);
         await context.read<MyFilterProvider>().addFilter(context, id!, 0);
-      } else {
-        throw "NFC태그 id를 확인할 수 없습니다.";
-      }
 
+        
       if (context.read<LocalStorageProvider>().isNotificated) {
         await context.read<MyFilterProvider>().dailyAtTimeNotification();
+      }
+      } else {
+        throw "NFC태그 id를 확인할 수 없습니다.";
       }
     } catch (e) {
       errorDialog(context, e);

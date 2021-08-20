@@ -107,6 +107,10 @@ class MyFilterProvider with ChangeNotifier {
     _length++;
     await localStorageProv.saveData(_filters);
 
+    if (localStorageProv.isNotificated) {
+      await dailyAtTimeNotification();
+    }
+
     notifyListeners();
   }
 
@@ -134,7 +138,7 @@ class MyFilterProvider with ChangeNotifier {
 
     await localStorageProv.saveData(_filters);
 
-    dailyAtTimeNotification();
+    await dailyAtTimeNotification();
 
     notifyListeners();
   }

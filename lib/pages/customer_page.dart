@@ -71,8 +71,8 @@ class _CustomerPageState extends State<CustomerPage> {
                     children: <Widget>[
                       ListTile(
                         onTap: () {
-                          Navigator.pushNamed(
-                              context, QuestionScreen.routeName);
+                          Navigator.of(context)
+                              .pushNamed(QuestionScreen.routeName);
                         },
                         leading: Icon(
                           Icons.help_outline,
@@ -85,7 +85,7 @@ class _CustomerPageState extends State<CustomerPage> {
                       Divider(height: 10),
                       ListTile(
                         onTap: () {
-                          _makePhoneCall(context, "tel:88767836");
+                          _makePhoneCall(context, "tel:01088767836");
                         },
                         leading: Icon(
                           Icons.call,

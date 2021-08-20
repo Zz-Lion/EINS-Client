@@ -41,9 +41,14 @@ void main() {
             productProv: ProductProvider(),
             localStorageProv: LocalStorageProvider()),
         update: (_, ProductProvider productProv,
-                LocalStorageProvider localStorageProv, __) =>
-            MyFilterProvider(
-                productProv: productProv, localStorageProv: localStorageProv),
+            LocalStorageProvider localStorageProv, __) {
+          MyFilterProvider myFilterProv = MyFilterProvider(
+              productProv: productProv, localStorageProv: localStorageProv);
+
+          myFilterProv.initFilter();
+
+          return myFilterProv;
+        },
       ),
       ChangeNotifierProxyProvider<LocalStorageProvider, ChattingProvider>(
         create: (_) => ChattingProvider(""),

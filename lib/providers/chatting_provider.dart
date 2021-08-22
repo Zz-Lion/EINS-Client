@@ -99,7 +99,7 @@ class ChattingProvider with ChangeNotifier {
             uploadTime: Timestamp.fromDate(now),
           ).toDoc());
 
-      await customerRef.doc(uid).set({"isUpdate": true});
+      await customerRef.doc(uid).set({"is_update": true});
 
       state = state.copyWith(loading: false);
       notifyListeners();

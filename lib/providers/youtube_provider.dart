@@ -52,7 +52,7 @@ class YoutubeProvider with ChangeNotifier {
   }
 
   void initController(int index) {
-    final GlobalKey playerKey = GlobalKey();
+    final GlobalObjectKey playerKey;
     final String? id = YoutubePlayer.convertUrlToId(_urlList[index]);
 
     if (id == null) {
@@ -63,6 +63,8 @@ class YoutubeProvider with ChangeNotifier {
 
       throw "receive wrong url";
     }
+
+    playerKey = GlobalObjectKey(id);
 
     _youtubeControllerList[index] = YoutubePlayerController(
       initialVideoId: id,

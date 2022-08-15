@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:eins_client/constants/color_constant.dart';
-import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
 import 'package:eins_client/widgets/error_dialog.dart';
 import 'package:eins_client/widgets/filter_item_widget.dart';

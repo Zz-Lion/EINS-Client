@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:eins_client/constants/color_constant.dart';
 import 'package:eins_client/providers/local_storage_provider.dart';
 import 'package:eins_client/providers/my_filter_provider.dart';
@@ -47,7 +48,9 @@ class _CustomerPageState extends State<CustomerPage> {
 
       await context.read<LocalStorageProvider>().toggleNotification();
     } catch (e) {
-      errorDialog(context, e);
+      errorDialog(context, e, afterDialog: (_) {
+        AppSettings.openNotificationSettings();
+      });
     }
   }
 

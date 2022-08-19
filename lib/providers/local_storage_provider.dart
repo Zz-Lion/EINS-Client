@@ -35,7 +35,7 @@ class LocalStorageProvider with ChangeNotifier {
 
     var notificationData = _notificationStorage.getItem('eins_notification');
 
-    _isNotificated = notificationData ?? Platform.isIOS ? false : true;
+    _isNotificated = notificationData ?? (Platform.isIOS ? false : true);
     await _notificationStorage.setItem('eins_notification', _isNotificated);
   }
 
